@@ -3,3 +3,5 @@ private/
 .env.local
 node_modules/
 *.log
+# PRD·인계 문서 — PC 경로·연동 계획이 있어 공개 저장소에 올리지 않는다 (Dropbox에만)
+tasks/
