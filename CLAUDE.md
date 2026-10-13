@@ -22,6 +22,7 @@ papers-wiki(논문 한 편 단위)와 달리 studylog는 **주제 단위**다. �
 - `topics/<id>.md` 주제 — frontmatter `title`, `parent`(2단계까지), `updated`, `color`. 본문 절: `## 한 줄 정의` · `## 지금까지 정리한 것` · `## 이어서 정리할 것`(체크리스트)
 - `items/<id>.md` 자료 — `title`, `section`(study|lecture), `topics`[], `kind`(site|slide|repo|pdf|note), `url`, `date`, `course`, `tags`, `public`, `source`(로컬 원본 상대 경로)
 - `private/` 비밀글 원본 (**git 제외**, Dropbox로만 백업). 빌드 시 `.env.local`의 `STUDYLOG_PIN`으로 AES-GCM 암호화해 `docs/secret.json`에만 들어감
+- 주제 frontmatter `papers: [태그]` → 빌드 시 `studylog.config.json`의 `papersDir`(papers-wiki/wiki/sources)에서 태그가 겹치는 논문 노트를 "관련 논문"으로 연결 (`lib/papers.js`). 공개 HTML엔 제목·저자·연도만, 이 PC에서 열 때만 `site/app.js`가 노트(4711/#id)·원문 PDF(4711/pdf/파일) 링크를 붙인다 — 노트 내용·PDF는 저작권 때문에 배포하지 않는다.
 - `assets/<자료id>/` 로컬 슬라이드·PDF 사본 (공개 자료가 쓰는 것만 `docs/assets/`로 복사)
 - `docs/` 빌드 결과 — **직접 고치지 않는다**
 - `lib/` md(파서·렌더) · store(읽기·검증·저장) · pages(템플릿) · secret · candidates(등록 후보) · buildwork(Notion) · fsutil(Dropbox 잠금 재시도)

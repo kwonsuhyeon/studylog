@@ -8,6 +8,7 @@ const store = require('./lib/store');
 const pages = require('./lib/pages');
 const secret = require('./lib/secret');
 const md = require('./lib/md');
+const { loadPapers } = require('./lib/papers');
 const { writeIfChanged, copyIfChanged, removeFile, walk } = require('./lib/fsutil');
 
 function build(root = store.ROOT, { log = console.log } = {}) {
@@ -43,6 +44,8 @@ function build(root = store.ROOT, { log = console.log } = {}) {
     return { topics, items: its, children, topicById: new Map(topics.map(t => [t.id, t])) };
   };
   const ctx = ctxFor(pubTopics, pubItems);
+  const papers = config.papersDir ? loadPapers(path.resolve(root, config.papersDir)) : [];
+  ctx.papers = papers;
 
   const out = new Map(); // docs 상대 경로 -> 내용
   const put = (rel, content) => out.set(rel, content);
@@ -57,6 +60,7 @@ function build(root = store.ROOT, { log = console.log } = {}) {
     else {
       if (String(pin).length < 8) warnings.push('PIN이 8자 미만이에요 — 암호문을 내려받으면 짧은 시간에 전수 대입할 수 있어요');
       const sctx = ctxFor(valid.topics, items);
+      sctx.papers = papers;
       sctx.secretTopics = secretTopics;
       put('secret.json', JSON.stringify(secret.encrypt(pages.secretPayload(sctx), pin, Number(env.STUDYLOG_PIN_ITER) || secret.ITER)));
       ctx.hasSecret = true;

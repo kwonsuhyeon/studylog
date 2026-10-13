@@ -1,5 +1,6 @@
 ---
 title: 지식추적
+papers: [지식추적]
 parent: la
 updated: 2026-10-13
 ---

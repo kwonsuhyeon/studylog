@@ -17,7 +17,9 @@ let pass = 0, fail = 0;
 const check = (name, ok, detail = '') => { ok ? pass++ : fail++; console.log(`${ok ? '✅' : '❌'} ${name}${!ok && detail ? ` — ${detail}` : ''}`); };
 
 async function main() {
-  const root = makeRoot({ ...BASIC, 'studylog.config.json': JSON.stringify({ siteTitle: 'E2E 지도', staleDays: 60, scanDirs: [] }) });
+  const root = makeRoot({ ...BASIC, 'studylog.config.json': JSON.stringify({ siteTitle: 'E2E 지도', staleDays: 60, scanDirs: [], papersDir: 'pw' }),
+    'topics/kt.md': BASIC['topics/kt.md'].replace('parent: la\n', 'parent: la\npapers: [지식추적]\n'),
+    'pw/Piech_2015_DKT.md': '---\ntitle: Deep Knowledge Tracing\nauthors: Piech et al.\nyear: 2015\ntags: [지식추적]\npdf: raw/papers/Piech_2015_DKT.pdf\n---\n' });
   const server = createServer({ root });
   server.rebuild();
   await new Promise(r => server.listen(PORT, '127.0.0.1', r));
@@ -106,6 +108,9 @@ async function main() {
     await go(`${O}/t/kt.html`);
     r = await evalJs(`return { href: document.querySelector('a.pw')?.href, cb: document.querySelectorAll('ul.tasks input[type=checkbox]').length, checked: document.querySelectorAll('ul.tasks input:checked').length }`);
     check('논문 링크: 로컬에선 papers-wiki(4711)로', /127\.0\.0\.1:4711\/#Piech_2015_DKT/.test(r.href || ''), r.href);
+    const pr = await evalJs(`const li=document.querySelector('li.paper'); return { note: li.querySelector('a.p-title')?.href, pdf: li.querySelector('a.p-pdf')?.href }`);
+    check('관련 논문: 이 PC에선 노트 링크', /127\.0\.0\.1:4711\/#Piech_2015_DKT$/.test(pr.note || ''), JSON.stringify(pr));
+    check('관련 논문: 이 PC에선 원문 PDF 링크', /127\.0\.0\.1:4711\/pdf\/Piech_2015_DKT\.pdf$/.test(pr.pdf || ''), JSON.stringify(pr));
     check('이어서 정리할 것: 실제 체크박스 2개(1개 완료)', r.cb === 2 && r.checked === 1, JSON.stringify(r));
 
     // ---------- 등록 페이지 ----------

@@ -136,7 +136,8 @@ function createServer({ root = store.ROOT, port } = {}) {
         if (all.topics.some(t => t.parent === id)) return fail(res, 400, '하위 주제가 있는 주제는 다른 주제 아래로 옮길 수 없어요');
       }
       const parts = { ...(prev ? prev.parts : {}), ...(b.parts || {}) };
-      const data = { title: String(b.title || id).trim(), parent: b.parent || '', updated: today(), color: b.color || '', secret: b.secret === true };
+      const papers = (Array.isArray(b.papers) ? b.papers : String(b.papers ?? (prev ? prev.papers.join(',') : '')).split(',')).map(s => String(s).trim()).filter(Boolean);
+      const data = { title: String(b.title || id).trim(), parent: b.parent || '', updated: today(), color: b.color || '', papers, secret: b.secret === true };
       store.saveDoc('topic', id, data, store.topicBody(parts), root);
       return send(res, 200, { id, build: rebuild() });
     }
@@ -242,7 +243,7 @@ function createServer({ root = store.ROOT, port } = {}) {
   function touchTopic(id) {
     const t = store.load(root).topics.find(x => x.id === id);
     if (!t || t.updated === today()) return;
-    store.saveDoc('topic', id, { title: t.title, parent: t.parent, color: t.color, secret: t.secret, updated: today() }, t.body, root);
+    store.saveDoc('topic', id, { title: t.title, parent: t.parent, color: t.color, papers: t.papers, secret: t.secret, updated: today() }, t.body, root);
   }
 
   const server = http.createServer(async (req, res) => {

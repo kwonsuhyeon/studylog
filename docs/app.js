@@ -21,6 +21,22 @@
     else { const s = document.createElement('span'); s.className = 'pw'; s.title = 'papers-wiki 노트 (로컬에서만 열림)'; s.textContent = a.textContent; a.replaceWith(s); }
   }
 
+  // ---- 관련 논문: 이 PC에서만 노트·원문 PDF 링크 (공개 사이트는 제목·저자·연도만) ----
+  if (local) {
+    $$('.papers-note').forEach(n => { n.textContent = '제목을 누르면 papers-wiki 노트가, "원문 PDF"를 누르면 PDF가 열려요.'; });
+    for (const li of $$('li.paper')) {
+      const t = $('.p-title', li);
+      const a = document.createElement('a');
+      a.className = 'p-title'; a.href = `${body.dataset.papers}/#${encodeURIComponent(li.dataset.note)}`; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = t.textContent; t.replaceWith(a);
+      if (li.dataset.pdf) {
+        const p = document.createElement('a');
+        p.className = 'p-pdf'; p.href = `${body.dataset.papers}/pdf/${encodeURIComponent(li.dataset.pdf)}`; p.target = '_blank'; p.rel = 'noopener';
+        p.textContent = '원문 PDF ↗'; li.appendChild(p);
+      }
+    }
+  } else $$('.papers-note').forEach(n => n.remove());
+
   // ---- 홈: 필터·정렬 (URL 쿼리로 유지) ----
   const map = $('#map');
   if (map) {

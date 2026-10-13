@@ -223,6 +223,7 @@
     renderTopicTree();
     TF.title.value = t?.title || ''; TF.id.value = t?.id || ''; TF.id.readOnly = !!t;
     TF.parent.value = t?.parent || '';
+    TF.papers.value = (t?.papers || []).join(', ');
     TF.useColor.checked = !!t?.color; if (t?.color) TF.color.value = t.color;
     const p = sectionsOf(t?.body);
     TF.p0.value = p[PARTS[0]] || ''; TF.p1.value = p[PARTS[1]] || ''; TF.p2.value = p[PARTS[2]] || '';
@@ -239,7 +240,7 @@
     e.preventDefault();
     const body = {
       id: TF.id.value.trim(), isNew: !editingTopic, title: TF.title.value, parent: TF.parent.value,
-      color: TF.useColor.checked ? TF.color.value : '', secret: TF.secret.checked,
+      color: TF.useColor.checked ? TF.color.value : '', secret: TF.secret.checked, papers: TF.papers.value,
       parts: { [PARTS[0]]: TF.p0.value, [PARTS[1]]: TF.p1.value, [PARTS[2]]: TF.p2.value },
     };
     try {

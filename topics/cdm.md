@@ -1,5 +1,6 @@
 ---
 title: 인지진단
+papers: [인지진단모형, Q행렬]
 parent: la
 updated: 2026-10-13
 ---

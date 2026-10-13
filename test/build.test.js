@@ -153,6 +153,28 @@ test('build: 다시 빌드하면 바뀐 파일만 쓰고, 지운 주제의 페�
   assert.ok(r3.removed >= 3);
 });
 
+test('build: papers-wiki 관련 논문 — 태그로 연결, 공개 HTML엔 제목·저자·연도만', () => {
+  const root = makeRoot({
+    ...BASIC,
+    'studylog.config.json': JSON.stringify({ papersDir: 'pw' }),
+    'topics/kt.md': BASIC['topics/kt.md'].replace('parent: la\n', 'parent: la\npapers: [지식추적]\n'),
+    'pw/Piech_2015_DKT.md': '---\ntitle: Deep Knowledge Tracing\nauthors: Piech et al.\nyear: 2015\ntags: [지식추적, 딥러닝]\npdf: raw/papers/Piech_2015_DKT.pdf\n---\n\n## 📌 AI 요약\n\n노트본문비밀문장\n',
+    'pw/Other_2020_X.md': '---\ntitle: Unrelated\nyear: 2020\ntags: [교육평가]\n---\n',
+  });
+  build(root, quiet);
+  const kt = read(root, 'docs/t/kt.html');
+  assert.match(kt, /관련 논문 <span class="mono">1<\/span>/);
+  assert.match(kt, /<li class="paper" data-note="Piech_2015_DKT" data-pdf="Piech_2015_DKT.pdf"><span class="p-title">Deep Knowledge Tracing<\/span><span class="p-meta mono">Piech et al. · 2015<\/span><\/li>/);
+  assert.doesNotMatch(kt, /Unrelated/);
+  assert.doesNotMatch(kt, /노트본문비밀문장|raw\/papers/, '노트 내용·PDF 경로는 공개 HTML에 없음');
+  // 상위 주제는 하위 주제 논문까지, 카드에 논문 수
+  assert.match(read(root, 'docs/t/la.html'), /Deep Knowledge Tracing/);
+  assert.match(read(root, 'docs/index.html'), /data-title="학습분석"[\s\S]*?논문 <b class="mono">1<\/b>/);
+  // papersDir 없으면 섹션 없음
+  const r2 = makeRoot(BASIC); build(r2, quiet);
+  assert.doesNotMatch(read(r2, 'docs/t/kt.html'), /관련 논문/);
+});
+
 test('build: indexable 설정', () => {
   const root = makeRoot({ ...BASIC, 'studylog.config.json': JSON.stringify({ indexable: true }) });
   build(root, quiet);
