@@ -170,6 +170,12 @@ test('build: papers-wiki 관련 논문 — 태그로 연결, 공개 HTML엔 제�
   // 상위 주제는 하위 주제 논문까지, 카드에 논문 수
   assert.match(read(root, 'docs/t/la.html'), /Deep Knowledge Tracing/);
   assert.match(read(root, 'docs/index.html'), /data-title="학습분석"[\s\S]*?논문 <b class="mono">1<\/b>/);
+  // 순서: 정리한 것 -> 관련 논문 -> 자료, 0건 묶음은 숨김 (kt: 공부 1 · 강의 0)
+  const iSum = kt.indexOf('지금까지 정리한 것'), iPap = kt.indexOf('관련 논문'), iItem = kt.indexOf('이 주제로 만든 것');
+  assert.ok(iSum < iPap && iPap < iItem, `순서 ${iSum} ${iPap} ${iItem}`);
+  assert.match(kt, /<h3>공부 <span class="mono">1<\/span><\/h3>/);
+  assert.doesNotMatch(kt, /<h3>강의 /, '강의 0건 묶음은 숨김');
+  assert.doesNotMatch(read(root, 'docs/t/cdm.html'), /이 주제로 만든 것/, '자료가 하나도 없으면 자료 영역 전체 숨김');
   // papersDir 없으면 섹션 없음
   const r2 = makeRoot(BASIC); build(r2, quiet);
   assert.doesNotMatch(read(r2, 'docs/t/kt.html'), /관련 논문/);
