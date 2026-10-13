@@ -1,0 +1,13 @@
+{
+  "siteTitle": "호호의 지식 지도",
+  "siteUrl": "https://kwonsuhyeon.github.io/studylog/",
+  "githubUser": "kwonsuhyeon",
+  "papersWiki": "http://127.0.0.1:4711",
+  "staleDays": 60,
+  "indexable": false,
+  "scanDirs": ["C:/Users/user/Dropbox/2026_phd"],
+  "scanSkip": ["node_modules", ".git", ".next", "dist", ".cache", "raw", "sources", "__pycache__", ".venv", "venv", "AI_Data", "data", "docs", "cc-wiki", "daily-wiki"],
+  "scanDepth": 6,
+  "scanMaxFiles": 3000,
+  "excludeRepos": ["test", "test.github.io", "file-upload-test", "file-upload-test2", "studylog"]
+}

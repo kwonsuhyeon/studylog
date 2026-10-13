@@ -1,0 +1,5 @@
+# 비밀글 평문 · PIN · API 키는 절대 올리지 않는다
+private/
+.env.local
+node_modules/
+*.log

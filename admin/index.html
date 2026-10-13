@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>✏️ studylog 등록</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-row">
+    <span class="brand">studylog 등록 페이지</span>
+    <nav class="tabs" role="tablist">
+      <button class="tab on" data-tab="items">자료 등록</button>
+      <button class="tab" data-tab="topics">주제 관리</button>
+      <button class="tab" data-tab="publish">게시</button>
+    </nav>
+    <a class="site-link" href="/" target="_blank">사이트 보기 ↗</a>
+  </div>
+</header>
+<main class="wrap">
+  <div id="toast" class="toast" hidden></div>
+  <div id="build-status" class="build-status"></div>
+
+  <!-- 자료 등록 -->
+  <section id="tab-items" class="panel">
+    <div class="cols">
+      <div class="col-main">
+        <form id="item-form" class="card form">
+          <h2 id="item-form-title">새 자료 등록</h2>
+          <input type="hidden" name="id">
+          <input type="hidden" name="source">
+          <label>제목 <input name="title" required placeholder="예: 페르소나 실험 정리 사이트"></label>
+          <div class="row">
+            <fieldset><legend>구분</legend>
+              <label class="inline"><input type="radio" name="section" value="study" checked> 공부·연구</label>
+              <label class="inline"><input type="radio" name="section" value="lecture"> 강의</label>
+            </fieldset>
+            <label>종류 <select name="kind">
+              <option value="site">사이트 (GitHub Pages 등)</option>
+              <option value="slide">슬라이드 (HTML)</option>
+              <option value="pdf">PDF</option>
+              <option value="repo">저장소</option>
+              <option value="note">노트 (본문만)</option>
+            </select></label>
+            <label>만든 날 <input type="date" name="date"></label>
+          </div>
+          <label class="course-field" hidden>강의 과정명 <input name="course" list="course-list" placeholder="예: SEM 연구자 특강"></label>
+          <datalist id="course-list"></datalist>
+          <div class="field"><span class="lbl">주제 <small>(여러 개 가능)</small></span><div id="topic-picks" class="topic-picks"></div></div>
+          <label>URL 또는 파일 <input name="url" placeholder="https://… 또는 아래에서 파일 선택"></label>
+          <div class="file-row">
+            <label class="btn ghost">파일 올리기 <input id="upload" type="file" accept=".html,.htm,.pdf" hidden></label>
+            <span id="file-note" class="muted"></span>
+          </div>
+          <label>무엇을 정리했는지 <small>(1~3줄, 마크다운 가능)</small><textarea name="body" rows="4" placeholder="예: 페르소나 생성 프롬프트 실험 결과를 표로 비교"></textarea></label>
+          <label>태그 <small>(쉼표로 구분, 선택)</small><input name="tags" placeholder="예: LLM, 실험"></label>
+          <div class="row checks">
+            <label class="inline"><input type="checkbox" name="public"> buildwork.kr에 공개</label>
+            <label class="inline"><input type="checkbox" name="secret"> 🔒 비밀글 (PIN으로 나만 보기)</label>
+          </div>
+          <div class="row actions">
+            <button class="btn" type="submit">저장</button>
+            <button class="btn ghost" type="button" id="item-reset">새로 쓰기</button>
+          </div>
+        </form>
+
+        <div class="card">
+          <h2>등록된 자료 <small id="item-count"></small></h2>
+          <input id="item-filter" class="filter" placeholder="제목·주제로 거르기">
+          <table class="list"><thead><tr><th>제목</th><th>구분</th><th>주제</th><th>날짜</th><th></th></tr></thead><tbody id="item-list"></tbody></table>
+        </div>
+      </div>
+
+      <aside class="col-side card">
+        <h2>등록 후보</h2>
+        <div class="subtabs"><button class="stab on" data-src="github">GitHub Pages</button><button class="stab" data-src="local">로컬 폴더</button><button id="cand-refresh" class="btn ghost sm" title="다시 스캔">↻</button></div>
+        <input id="cand-filter" class="filter" placeholder="이름으로 거르기">
+        <label class="inline small"><input type="checkbox" id="cand-hide-done" checked> 등록된 것 숨기기</label>
+        <div id="cand-msg" class="muted small"></div>
+        <ul id="cand-list" class="cand-list"></ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 주제 관리 -->
+  <section id="tab-topics" class="panel" hidden>
+    <div class="cols">
+      <div class="col-side card">
+        <h2>주제 <button id="topic-new" class="btn sm">+ 새 주제</button></h2>
+        <ul id="topic-tree" class="topic-tree"></ul>
+      </div>
+      <form id="topic-form" class="col-main card form">
+        <h2 id="topic-form-title">새 주제</h2>
+        <div class="row">
+          <label>이름 <input name="title" required placeholder="예: 지식추적"></label>
+          <label>id <small>(주소에 쓰임, 영문 권장)</small><input name="id" required pattern="[a-z0-9가-힣][a-z0-9가-힣_\-]*" placeholder="예: kt"></label>
+          <label>상위 주제 <select name="parent"><option value="">(없음 — 최상위)</option></select></label>
+          <label>색 <small>(선택)</small><input name="color" type="color" value="#2563eb"> <label class="inline small"><input type="checkbox" name="useColor"> 지정</label></label>
+        </div>
+        <label>한 줄 정의<textarea name="p0" rows="2"></textarea></label>
+        <label>지금까지 정리한 것 <small>(마크다운: 목록, 표, -> 화살표, [[papers:노트id]])</small><textarea name="p1" rows="10"></textarea></label>
+        <label>이어서 정리할 것 <small>(한 줄에 "- [ ] 할 일", 끝나면 "- [x]")</small><textarea name="p2" rows="5"></textarea></label>
+        <label class="inline"><input type="checkbox" name="secret"> 🔒 비밀 주제 (PIN으로 나만 보기)</label>
+        <div class="row actions">
+          <button class="btn" type="submit">저장</button>
+          <button class="btn danger ghost" type="button" id="topic-delete" hidden>삭제</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 게시 -->
+  <section id="tab-publish" class="panel" hidden>
+    <div class="cols">
+      <div class="col-main card">
+        <h2>GitHub Pages에 게시</h2>
+        <p class="muted">바뀐 파일을 커밋하고 push해요. push하면 1~2분 뒤 사이트에 반영돼요.</p>
+        <div id="git-info" class="muted small"></div>
+        <ul id="git-changes" class="changes"></ul>
+        <label>커밋 메시지 <input id="git-msg" placeholder="예: 페르소나 자료 2개 추가"></label>
+        <div class="row actions"><button id="git-refresh" class="btn ghost">바뀐 파일 다시 보기</button><button id="git-publish" class="btn">게시하기</button></div>
+        <pre id="git-log" class="log" hidden></pre>
+      </div>
+      <div class="col-side card">
+        <h2>buildwork.kr로 내보내기</h2>
+        <p class="muted small">"buildwork.kr에 공개"를 체크한 자료만 강의자료(Notion)로 보내요. 먼저 미리보기를 보고 반영하세요.</p>
+        <div class="row actions"><button id="bw-preview" class="btn ghost">미리보기</button><button id="bw-apply" class="btn" disabled>반영하기</button></div>
+        <div id="bw-result" class="small"></div>
+        <h2 class="mt">빌드 경고</h2>
+        <ul id="warn-list" class="warn-list small"></ul>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="admin.js"></script>
+</body>
+</html>

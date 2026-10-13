@@ -1,0 +1,17 @@
+{
+  "name": "studylog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "호호의 지식 지도 — 공부·연구·강의 자료를 주제별로 모아 보는 정적 사이트",
+  "scripts": {
+    "build": "node build.js",
+    "check": "node check.js",
+    "start": "node serve.js",
+    "publish:buildwork": "node publish.js",
+    "test": "node --test test/build.test.js test/serve.test.js",
+    "test:e2e": "node --experimental-websocket test/e2e.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
