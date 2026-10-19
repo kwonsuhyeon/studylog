@@ -1,0 +1,43 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gemini 퀴즈 듣기</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{--bg:#f9f9f7;--card:#fff;--ink:#1f2328;--muted:#5f6670;--line:#e6e6e1;--blue:#2a78d6;--orange:#eb6834}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Malgun Gothic",sans-serif;line-height:1.7}
+.wrap{max-width:1280px;margin:0 auto;padding:28px 16px 80px}
+header,section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 26px;margin-bottom:16px}
+h1{margin:0 0 6px} h2{margin:0 0 10px;font-size:19px} .d{color:var(--muted);font-size:14px;font-weight:500}
+audio{width:100%} summary{cursor:pointer;color:var(--blue)} .list{margin-top:8px}
+ol.qa li{padding:4px 0;border-bottom:1px dashed var(--line)} ol.qa details{display:inline-block;margin-left:10px;color:var(--orange)}
+section.now{border-color:var(--orange);box-shadow:0 0 0 2px #fde2d6}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.ctl button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+#toTop{position:fixed;right:22px;bottom:22px;width:46px;height:46px;border-radius:50%;background:#111;color:#fff;border:none;font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s}
+#toTop.show{opacity:1;pointer-events:auto}
+</style></head><body><div class="wrap">
+<header><h1>지능형영상처리 암기 퀴즈 듣기 (Gemini 음성)</h1>
+<p class="d">완성된 2개 트랙, 34문제 · Gemini TTS 2화자(진행자 질문 → 선생님 정답) · 나머지 트랙은 생성 중이며 전체 151문제는 <a href="../quiz_ms/퀴즈듣기.html">Microsoft 음성 퀴즈</a>에 있음</p>
+<div class="ctl">재생 속도 <button data-r="1">1.0×</button><button data-r="1.15">1.15×</button><button data-r="1.3">1.3×</button><button data-r="1.5">1.5×</button></div>
+</header>
+<section><h2>01. 필터링 기본 <span class="d">20문제 · 2:15</span></h2>
+<audio controls preload="none" src="Q01.mp3"></audio>
+<details class="list"><summary>문제 목록 보기</summary><ol class="qa"><li>필터링과 워핑의 차이는?<details><summary>정답</summary>필터링은 화소의 값을 바꾸고, 워핑은 화소의 위치를 바꿉니다.</details></li><li>합성곱과 상관의 차이는?<details><summary>정답</summary>합성곱은 커널을 상하좌우로 뒤집어서 곱하고, 상관은 뒤집지 않고 그대로 곱합니다.</details></li><li>합성곱과 상관의 결과가 같아지는 경우는?<details><summary>정답</summary>커널이 대칭일 때입니다. 박스, 가우시안, 라플라스 필터가 그렇습니다.</details></li><li>3 곱하기 3 박스 필터의 정규화 상수는?<details><summary>정답</summary>9분의 1입니다.</details></li><li>3 곱하기 3 가우시안 커널을 말해 보세요.<details><summary>정답</summary>1 2 1, 2 4 2, 1 2 1입니다.</details></li><li>3 곱하기 3 가우시안 커널의 정규화 상수는?<details><summary>정답</summary>16분의 1입니다. 커널 숫자를 모두 더하면 16이기 때문입니다.</details></li><li>정규화 상수는 어떻게 구하나요?<details><summary>정답</summary>커널 값을 모두 더한 합의 역수입니다.</details></li><li>정규화를 하는 이유는?<details><summary>정답</summary>가중치 합을 1로 맞춰서 평균 밝기를 유지하기 위해서입니다.</details></li><li>소벨이나 라플라스 같은 미분 필터는 정규화하나요?<details><summary>정답</summary>하지 않습니다. 합이 0이기 때문입니다.</details></li><li>박스 필터 결과가 많이 뭉개지는 이유는?<details><summary>정답</summary>모든 화소에 같은 가중치를 주기 때문입니다.</details></li><li>가장 대표적인 저역 통과 필터는?<details><summary>정답</summary>가우시안 필터입니다.</details></li><li>가우시안 필터는 보통 어디서 자르나요?<details><summary>정답</summary>중심에서 2에서 3 시그마입니다.</details></li><li>저역 통과 필터를 쓰는 이유는?<details><summary>정답</summary>고주파인 노이즈를 막아서 노이즈를 제거하기 위해서입니다.</details></li><li>가운데만 1인 커널을 적용하면?<details><summary>정답</summary>영상에 아무 변화가 없습니다.</details></li><li>가운데 오른쪽 칸만 1인 커널을 적용하면?<details><summary>정답</summary>영상이 왼쪽으로 한 픽셀 이동합니다.</details></li><li>선명화를 한 문장으로 말하면?<details><summary>정답</summary>원본에, 원본 빼기 흐린 영상을 더하는 것입니다.</details></li><li>고역 통과 필터는 저역 통과 필터로 어떻게 만드나요?<details><summary>정답</summary>델타 함수에서 저역 통과 필터를 뺍니다.</details></li><li>선명화를 하면 노이즈는 어떻게 되나요?<details><summary>정답</summary>노이즈도 고주파라서 같이 커집니다.</details></li><li>선명화를 너무 세게 하면 생기는 현상 두 가지는?<details><summary>정답</summary>halo와 overshoot입니다.</details></li><li>경계 처리 방법 다섯 가지는?<details><summary>정답</summary>clip, wrap around, copy edge, reflect, vary filter입니다.</details></li></ol></details></section><section><h2>02. Separable 필터 <span class="d">14문제 · 1:59</span></h2>
+<audio controls preload="none" src="Q02.mp3"></audio>
+<details class="list"><summary>문제 목록 보기</summary><ol class="qa"><li>separable 필터의 정의는?<details><summary>정답</summary>2차원 필터를 열 벡터 곱하기 행 벡터로 나눌 수 있는 필터입니다.</details></li><li>separable 필터가 되기 위한 조건은?<details><summary>정답</summary>필터 행렬의 랭크가 1이어야 합니다.</details></li><li>랭크가 1이라는 것은 행렬의 행이 어떻다는 뜻인가요?<details><summary>정답</summary>모든 행이 어느 한 행의 상수배라는 뜻입니다.</details></li><li>가우시안 1 2 1, 2 4 2, 1 2 1을 두 개의 1차원 필터로 나누면?<details><summary>정답</summary>열 1 2 1 곱하기 행 1 2 1입니다.</details></li><li>3 곱하기 3 박스 필터를 나누면?<details><summary>정답</summary>열 1 1 1 곱하기 행 1 1 1입니다.</details></li><li>가로 소벨 필터를 나누면?<details><summary>정답</summary>열 1 2 1 곱하기 행 1 0 마이너스 1입니다.</details></li><li>라플라스 필터 0 1 0, 1 마이너스 4 1, 0 1 0은 separable인가요?<details><summary>정답</summary>아닙니다. 행끼리 상수배가 아니라서 랭크가 2입니다.</details></li><li>1 2 3, 4 5 6, 7 8 9 행렬의 랭크는?<details><summary>정답</summary>2입니다. 그래서 separable이 아닙니다.</details></li><li>separable 필터가 중요한 이유는?<details><summary>정답</summary>계산량을 줄일 수 있기 때문입니다.</details></li><li>영상이 M 곱하기 M, 커널이 N 곱하기 N일 때 일반 2차원 합성곱의 계산량은?<details><summary>정답</summary>M 제곱 곱하기 N 제곱입니다.</details></li><li>같은 조건에서 separable 필터의 계산량은?<details><summary>정답</summary>2 곱하기 N 곱하기 M 제곱입니다.</details></li><li>separable 필터를 쓰면 화소 하나당 곱셈 수는 어떻게 바뀌나요?<details><summary>정답</summary>N 제곱에서 2N으로 줄어듭니다.</details></li><li>11 곱하기 11 커널이면 화소당 곱셈 수는?<details><summary>정답</summary>일반은 121번, separable은 22번입니다.</details></li><li>2 곱하기 2 커널에서 separable의 이득은?<details><summary>정답</summary>없습니다. N 제곱과 2N이 모두 4입니다.</details></li></ol></details></section>
+</div><button id="toTop" aria-label="맨 위로">↑</button>
+<script>
+var A=[].slice.call(document.querySelectorAll('audio'));
+var rate=1; try{rate=parseFloat(localStorage.getItem('ivp-quiz-rate'))||1}catch(e){}
+function setRate(r){rate=r;A.forEach(function(a){a.playbackRate=r});try{localStorage.setItem('ivp-quiz-rate',r)}catch(e){}}
+setRate(rate);
+document.querySelectorAll('.ctl button').forEach(function(b){b.onclick=function(){setRate(parseFloat(b.dataset.r))}});
+A.forEach(function(a,i){
+  a.addEventListener('play',function(){a.playbackRate=rate;A.forEach(function(o){if(o!==a)o.pause()});
+    document.querySelectorAll('section').forEach(function(s){s.classList.remove('now')});a.closest('section').classList.add('now')});
+  a.addEventListener('ended',function(){if(A[i+1]){A[i+1].play();A[i+1].scrollIntoView({behavior:'smooth',block:'center'})}});
+});
+var t=document.getElementById('toTop');
+addEventListener('scroll',function(){t.classList.toggle('show',scrollY>600)});
+t.onclick=function(){scrollTo({top:0,behavior:'smooth'})};
+</script></body></html>
