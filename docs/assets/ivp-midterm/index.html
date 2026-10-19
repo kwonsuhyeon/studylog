@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>지능형영상처리 중간고사 암기노트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<style>
+:root{
+  --bg:#f9f9f7; --card:#ffffff; --ink:#1f2328; --muted:#5f6670; --line:#e6e6e1;
+  --blue:#2a78d6; --blue-soft:#eaf2fc; --orange:#eb6834; --orange-soft:#fdf0ea;
+  --green:#2f8f5b; --green-soft:#eaf6ef; --code:#f3f3ef;
+  --toc-w:230px; --max:1320px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,"Malgun Gothic",sans-serif;line-height:1.7;font-size:16px}
+.wrap{max-width:var(--max);margin:0 auto;padding:28px 16px 80px;display:grid;grid-template-columns:var(--toc-w) 1fr;gap:28px}
+nav.toc{position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto;font-size:14px}
+nav.toc .ttl{font-weight:700;margin-bottom:8px;color:var(--muted)}
+nav.toc a{display:block;padding:5px 10px;border-radius:8px;color:var(--ink);text-decoration:none}
+nav.toc a:hover{background:var(--blue-soft);color:var(--blue)}
+nav.toc a.sub{padding-left:22px;color:var(--muted);font-size:13px}
+header.hero{grid-column:1/-1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 30px}
+header.hero h1{margin:0 0 6px;font-size:28px}
+header.hero p{margin:4px 0;color:var(--muted)}
+main{min-width:0}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 30px;margin-bottom:22px;counter-increment:sec}
+main{counter-reset:sec}
+section>h2{display:flex;align-items:center;gap:12px;margin:0 0 14px;font-size:22px}
+section>h2::before{content:counter(sec);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;flex:0 0 34px}
+h3{margin:22px 0 8px;font-size:18px;color:var(--blue)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px 18px;background:#fff}
+.must{border-left:5px solid var(--orange);background:var(--orange-soft);border-radius:10px;padding:12px 18px;margin:12px 0}
+.must b.tag,.calc b.tag,.tip b.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:20px;margin-right:6px;color:#fff;background:var(--orange)}
+.calc{border-left:5px solid var(--blue);background:var(--blue-soft);border-radius:10px;padding:12px 18px;margin:12px 0}
+.calc b.tag{background:var(--blue)}
+.tip{border-left:5px solid var(--green);background:var(--green-soft);border-radius:10px;padding:12px 18px;margin:12px 0}
+.tip b.tag{background:var(--green)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px 10px;vertical-align:middle;text-align:left}
+th{background:#f4f6f8}
+td.c,th.c{text-align:center}
+.k{display:inline-grid;border:2px solid #333;border-radius:4px;margin:4px 6px;vertical-align:middle;font-variant-numeric:tabular-nums}
+.k span{border:1px solid #ccc;min-width:34px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.k3{grid-template-columns:repeat(3,auto)}
+.k1{grid-template-columns:auto}
+.kv{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+td .kv{flex-wrap:nowrap}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font-size:14px}
+pre{background:var(--code);padding:12px 14px;border-radius:10px;overflow:auto;font-size:14px}
+details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0;background:#fff}
+details summary{cursor:pointer;font-weight:600}
+details[open] summary{color:var(--blue);margin-bottom:6px}
+.check{list-style:none;padding:0;margin:8px 0}
+.check li{padding:4px 0}
+.check label{cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.check input{width:18px;height:18px;margin-top:4px;accent-color:var(--blue);flex:0 0 18px}
+.check input:checked+span{color:var(--muted);text-decoration:line-through}
+.hl{color:var(--orange);font-weight:700}
+.bl{color:var(--blue);font-weight:700}
+.muted{color:var(--muted)}
+.star{color:var(--orange);font-weight:800}
+.voice{display:inline-block;font-size:12px;padding:0 7px;border-radius:20px;background:#efe9fb;color:#6b46c1;font-weight:700;margin-right:4px;vertical-align:1px}
+.pill{display:inline-block;padding:0 9px;border-radius:20px;background:var(--blue-soft);color:var(--blue);font-size:13px;font-weight:600;margin-right:4px}
+#toTop{position:fixed;right:22px;bottom:22px;width:46px;height:46px;border-radius:50%;background:#111;color:#fff;border:none;font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+#toTop.show{opacity:1;pointer-events:auto}
+@media (max-width:960px){
+  .wrap{grid-template-columns:1fr}
+  nav.toc{position:static;max-height:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  section,header.hero{padding:20px 16px}
+}
+@media print{nav.toc,#toTop{display:none}.wrap{grid-template-columns:1fr}details{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>지능형영상처리 중간고사 암기노트</h1>
+  <p>범위: Lec 02 Filtering · 03 Frequency Domain · 04 Edge-Aware Filtering · 05 Blending · 06 Warping · 07 Global Optimization (PDF + 녹취 기준)</p>
+  <p>형식: 1시간, 오픈북 아님, 학부 시험 수준, "어렵지 않게, 많이 풀 수 있게" 출제.</p>
+  <div class="must" style="margin-top:12px"><b class="tag">교수님 예고 (녹취 원문 요지)</b>
+    7주차 00:00 "필터링이 어떤 거고, <b>separable 필터가 무엇이고</b>, 그다음에 <b>계산은 어떻게 이루어지고</b> … 워핑이나 블렌딩 했을 때는 <b>알파 블렌딩은 도대체 뭐고, 포아송 블렌딩은 뭐고</b> … <b>각각 특징들만</b> 알고 있으면 쉽게 풀 수 있게."<br>
+    6주차 00:00 "<b>separable 필터가 되려면 어떤 조건</b>이 있어야 되는지 알고 있으면 문제를 풀 수 있고, <b>약간의 계산</b>이 들어가는 걸로 냈음."
+  </div>
+  <p class="muted">표시: <span class="star">★</span> = 녹취에서 교수님이 "중요", "핵심"이라 하거나 여러 번 반복한 부분. <span class="voice">강의</span> = 슬라이드에는 없고 수업에서 말로 설명한 부분.</p>
+</header>
+
+<nav class="toc">
+  <div class="ttl">목차</div>
+  <a href="#plan">4시간 공부 순서</a>
+  <a href="#filter-def">★ 필터링 정의 · 합성곱</a>
+  <a href="#filters">대표 필터 모음</a>
+  <a href="#separable">★ Separable 필터</a>
+  <a href="#gradient">미분 필터 · 에지</a>
+  <a href="#freq">주파수 영역 (3주)</a>
+  <a href="#edgeaware">에지 보존 필터 (4주)</a>
+  <a href="#alpha">★ 알파 블렌딩</a>
+  <a href="#multiband">다중 대역 블렌딩</a>
+  <a href="#poisson">★ 포아송 블렌딩</a>
+  <a href="#blend-cmp">★ 블렌딩 방법 비교표</a>
+  <a href="#warp-basic">★ 워핑 기본 · 2×2 행렬</a>
+  <a href="#warp-homo">동차 좌표 · 변환 계층</a>
+  <a href="#warp-fwdinv">정방향 · 역방향 워핑</a>
+  <a href="#globalopt">전역 최적화 (7주)</a>
+  <a href="#quiz">연습 문제 54</a>
+  <a href="#final">시험 직전 체크리스트</a>
+</nav>
+
+<main>
+
+<!-- ============ 0. 공부 순서 ============ -->
+<section id="plan">
+  <h2>4시간 공부 순서</h2>
+  <ul class="check" data-key="plan">
+    <li><label><input type="checkbox"><span><b>0:00–0:40</b> ★ 필터링 정의, 합성곱 vs 상관, 대표 필터, 계산 1</span></label></li>
+    <li><label><input type="checkbox"><span><b>0:40–1:05</b> ★ Separable 조건(랭크 1), 비용 $M^2N^2$ vs $2NM^2$, 계산 2</span></label></li>
+    <li><label><input type="checkbox"><span><b>1:05–1:25</b> 미분 필터: 차분, Sobel, 크기·방향, DoG·LoG, 계산 3·4</span></label></li>
+    <li><label><input type="checkbox"><span><b>1:25–2:10</b> ★ 블렌딩: 알파 공식, feathering, 창 크기, 피라미드, 포아송("기울기는 source, 색은 주변"), 비교표, 계산 5·6</span></label></li>
+    <li><label><input type="checkbox"><span><b>2:10–2:50</b> ★ 워핑: 2×2 변환, 원점 → 원점, 합성 순서, 동차 좌표, DOF 표, 정방향·역방향, 계산 7·8</span></label></li>
+    <li><label><input type="checkbox"><span><b>2:50–3:10</b> 3주차: 합성곱 정리, DC 성분, FFT 계산량, ringing vs Gaussian, JPEG</span></label></li>
+    <li><label><input type="checkbox"><span><b>3:10–3:25</b> 4주차: bilateral 두 가중치, guided a·b 식과 ε, SAT 계산 9</span></label></li>
+    <li><label><input type="checkbox"><span><b>3:25–3:40</b> 7주차: ill-posed·ill-conditioned, $\mathcal E_d+\lambda\mathcal E_s$, L2 vs TV, Bayes·MAP = regularization</span></label></li>
+    <li><label><input type="checkbox"><span><b>3:40–4:00</b> 연습 문제 54개 훑고 틀린 것만 다시, 마지막 체크리스트</span></label></li>
+  </ul>
+</section>
+
+<!-- ============ 1. 필터링 정의 ============ -->
+<section id="filter-def">
+  <h2>필터링 정의 · 합성곱</h2>
+
+  <div class="must"><b class="tag">암기</b>
+    <b>필터링</b>은 화소 <b>값</b>(range)을 바꾸는 연산, <b>워핑</b>은 화소 <b>위치</b>(domain)를 바꾸는 연산.
+    <br>필터링: $G(x)=h(F(x))$ &nbsp;/&nbsp; 워핑: $G(x)=F(h(x))$
+  </div>
+
+  <h3>선형 필터링 = 합성곱(convolution)</h3>
+  <div class="grid2">
+    <div class="box">
+      <b>1D 연속</b>
+      $$ (f*g)(x)=\int_{-\infty}^{\infty} f(y)\,g(x-y)\,dy $$
+      <span class="muted">$f$: 필터, $g$: 입력 신호. <span class="hl">$x-y$ → 필터를 뒤집음(flip)</span></span>
+    </div>
+    <div class="box">
+      <b>2D 이산 (영상)</b>
+      $$ (f*I)(x,y)=\sum_{i,j=-k}^{k} f(i,j)\,I(x-i,\;y-j) $$
+      <span class="muted">3×3 커널이면 $-1\le i,j\le 1$. 커널(kernel) = 필터 $f(i,j)$를 행렬로 쓴 것.</span>
+    </div>
+  </div>
+
+  <h3>합성곱 vs 상관(correlation)</h3>
+  <table>
+    <tr><th>구분</th><th>식</th><th>특징</th></tr>
+    <tr><td><b>합성곱</b> convolution</td><td>$\sum f(i,j)\,I(x-i,y-j)$</td><td>커널을 <b>상하·좌우로 뒤집은 뒤</b> 곱해서 더함</td></tr>
+    <tr><td><b>상관</b> correlation</td><td>$\sum f(i,j)\,I(x+i,y+j)$</td><td>뒤집지 않고 그대로 곱해서 더함</td></tr>
+  </table>
+  <div class="tip"><b class="tag">포인트</b>커널이 <b>대칭</b>(box, Gaussian, Laplace)이면 둘의 결과가 같음. 비대칭 커널(미분, 이동)일 때만 차이가 남. 상관 커널을 상하·좌우로 뒤집으면 합성곱 커널이 됨.</div>
+
+  <h3>경계 처리 (Image boundary problem)</h3>
+  <p>영상 가장자리에서는 필터 창이 영상 밖으로 나가므로 바깥 값을 정해야 함(외삽, extrapolate).
+  <span class="voice">강의</span> 패딩이 없으면 출력 크기가 줄어듦 (PyTorch·TensorFlow의 padding 옵션과 같은 문제).</p>
+  <table>
+    <tr><th>방법</th><th>뜻</th></tr>
+    <tr><td>Clip filter (zero padding)</td><td>바깥을 0(검정)으로 채움 → 가장자리가 어두워짐</td></tr>
+    <tr><td>Wrap around</td><td>반대편 끝 값을 가져옴 (주기 신호 가정)</td></tr>
+    <tr><td>Copy edge</td><td>가장자리 화소 값을 그대로 늘림</td></tr>
+    <tr><td>Reflect across edge</td><td>경계를 거울처럼 반사</td></tr>
+    <tr><td>Vary filter near edge</td><td>경계 근처에서는 필터 모양·크기를 바꿈</td></tr>
+  </table>
+</section>
+
+<!-- ============ 2. 대표 필터 ============ -->
+<section id="filters">
+  <h2>대표 필터 모음</h2>
+
+  <table>
+    <tr><th>필터</th><th class="c">커널</th><th>결과 · 특징</th></tr>
+    <tr><td><b>Box</b> (평균)</td>
+      <td class="c"><span class="kv">$\tfrac19$<span class="k k3"><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span></span></span></td>
+      <td>주변 9칸 평균 → 흐림. <span class="voice">강의</span> <b>모든 화소에 같은 가중치</b>라 영상이 많이 뭉개지고 에지가 거의 사라짐</td></tr>
+    <tr><td><b>Gaussian</b></td>
+      <td class="c"><span class="kv">$\tfrac1{16}$<span class="k k3"><span>1</span><span>2</span><span>1</span><span>2</span><span>4</span><span>2</span><span>1</span><span>2</span><span>1</span></span></span></td>
+      <td><b>가장 대표적인 저역 통과(low-pass) 필터</b>. 중심에서 멀수록 가중치 감소 → box보다 자연스러운 흐림</td></tr>
+    <tr><td><b>Identity</b></td>
+      <td class="c"><span class="k k3"><span>0</span><span>0</span><span>0</span><span>0</span><span>1</span><span>0</span><span>0</span><span>0</span><span>0</span></span></td>
+      <td>변화 없음 (unchanged)</td></tr>
+    <tr><td><b>Shift</b></td>
+      <td class="c"><span class="k k3"><span>0</span><span>0</span><span>0</span><span>0</span><span>0</span><span>1</span><span>0</span><span>0</span><span>0</span></span></td>
+      <td>슬라이드 정답: <b>왼쪽으로 1픽셀 이동</b> (shift to left by one)</td></tr>
+    <tr><td><b>Sharpening</b></td>
+      <td class="c"><span class="kv"><span class="k k3"><span>0</span><span>0</span><span>0</span><span>0</span><span>2</span><span>0</span><span>0</span><span>0</span><span>0</span></span>$-\tfrac19$<span class="k k3"><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span></span></span></td>
+      <td>평탄한 곳은 그대로, 밝기 봉우리(peak)는 강조 → 선명해짐</td></tr>
+  </table>
+
+  <h3>Gaussian 필터</h3>
+  <div class="grid2">
+    <div class="box">
+      $$ f(x,y)=\frac{1}{2\pi\sigma^2}\,e^{-\frac{x^2+y^2}{2\sigma^2}} $$
+      <ul>
+        <li>이론상 무한히 퍼짐 → 실제로는 <span class="hl">2~3σ에서 자름</span>(truncate)</li>
+        <li>σ가 클수록 더 많이 흐려짐</li>
+      </ul>
+    </div>
+    <div class="box">
+      <b>Gaussian vs Box (7×7)</b>
+      <ul>
+        <li>Box: 모든 이웃에 같은 가중치 → 많이 뭉개지고 에지가 거의 사라짐</li>
+        <li>Gaussian: 거리에 따라 가중치가 매끄럽게 줄어듦 → 에지가 약하게나마 남고 더 자연스러운 흐림</li>
+      </ul>
+    </div>
+  </div>
+  <div class="tip"><b class="tag">강의</b>
+    <b>저역 통과 필터를 왜 쓰나?</b> 저주파 = 전반적 색감·평탄한 영역, 고주파 = 에지·머리카락·주름·<b>노이즈</b>·흠집.
+    저역 통과 필터는 고주파를 막으므로 <b>노이즈 제거</b>에 적합함 (2주차 10:25).
+  </div>
+
+  <div class="calc"><b class="tag">정규화 상수 구하는 법</b>
+    <b>정규화 상수 = 1 / (커널 값을 모두 더한 합)</b> → 가중치 합이 1이 되어 <b>평균 밝기가 변하지 않음</b> (안 하면 영상이 밝아지거나 어두워짐).
+    <ul>
+      <li>Box 3×3: 1이 9개 → 합 9 → $\tfrac19$ / Box 5×5: 합 25 → $\tfrac1{25}$</li>
+      <li>Gaussian 3×3: 모서리 $1\times4$ + 변 $2\times4$ + 가운데 $4$ = $4+8+4=16$ → $\tfrac1{16}$</li>
+      <li>separable로 보면 더 쉬움: $[1,2,1]$의 합 4 → $4\times4=16$. 5×5 Gaussian $[1,4,6,4,1]$은 합 16 → $16\times16=256$ → $\tfrac1{256}$</li>
+      <li>커널 만드는 법: $[1,2,1]^T\times[1,2,1]$ 외적 → 1행 $1\cdot[1,2,1]$, 2행 $2\cdot[1,2,1]$, 3행 $1\cdot[1,2,1]$ = <code>[1 2 1; 2 4 2; 1 2 1]</code></li>
+      <li>미분 필터(Sobel, Laplace)는 합이 0 → 정규화하지 않음 (평탄한 곳 출력 0이 정상)</li>
+    </ul>
+  </div>
+
+  <h3>Sharpening 분해 (자주 나옴)</h3>
+  $$ g*\Big(2\delta-\tfrac19\mathbf{1}\Big)= g*\delta \;+\; g*\Big(\delta-\tfrac19\mathbf{1}\Big) $$
+  <div class="must"><b class="tag">암기</b>
+    <b>고역 통과(high-pass) 필터 = 델타 함수 − 저역 통과 필터</b>.
+    선명화 = 원본 + 고주파 세부(detail).
+    너무 세게 하면 <b>halo 인공물</b>과 <b>overshoot</b>(경계 옆 밝기 넘침)가 생김.
+  </div>
+  <ul>
+    <li><span class="voice">강의</span> 고역 통과 필터는 단독으로 설계하기 어려워 <b>저역 통과 필터를 빼서</b> 얻음 (17:45)</li>
+    <li><span class="voice">강의</span> <span class="star">★</span> <b>노이즈도 고주파</b> → 선명화하면 노이즈도 같이 커져 자글자글해짐 (20:04)</li>
+    <li><span class="voice">강의</span> 과도한 선명화: 경계의 어두운 쪽은 더 어둡게, 밝은 쪽은 더 하얗게 → halo, 전경과 배경이 분리된 듯 보임</li>
+  </ul>
+
+  <h3>손계산 예제</h3>
+  <div class="calc"><b class="tag">계산 1</b> 아래 3×3 패치의 가운데 출력값 구하기
+    <div class="kv" style="margin:6px 0"><span>패치</span><span class="k k3"><span>2</span><span>2</span><span>2</span><span>2</span><span>10</span><span>2</span><span>2</span><span>2</span><span>2</span></span></div>
+    <ul>
+      <li><b>Box</b>: $(8\times2+10)/9 = 26/9 \approx 2.89$</li>
+      <li><b>Gaussian</b>: $(4\cdot10 + 2\cdot(2\cdot4) + 1\cdot(2\cdot4))/16 = (40+16+8)/16 = 4$</li>
+      <li><b>Sharpening</b>: $2\cdot10 - 26/9 = 20-2.89 \approx 17.11$ → 봉우리가 더 튐</li>
+      <li><b>평탄한 패치</b>(전부 5)에 sharpening: $2\cdot5 - 45/9 = 5$ → 변화 없음</li>
+    </ul>
+    <span class="muted">요령: 대칭 커널은 뒤집기를 신경 쓸 필요 없이 "같은 자리끼리 곱해서 모두 더하기".</span>
+  </div>
+</section>
+
+<!-- ============ 3. Separable ============ -->
+<section id="separable">
+  <h2>Separable 필터</h2>
+  <div class="must"><b class="tag">정의</b>
+    2D 필터를 <b>열 벡터(column) × 행 벡터(row)</b>의 곱(외적)으로 쓸 수 있으면 separable.
+    ⇔ 필터 행렬의 <b>랭크(rank) = 1</b>.
+    <br>separable 필터의 2D 합성곱 = <b>1D 합성곱 2번</b>(열 필터 한 번, 행 필터 한 번).
+  </div>
+
+  <div class="grid3">
+    <div class="box"><b>Box</b><br>
+      <span class="kv"><span class="k k3"><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span><span>1</span></span>=<span class="k k1"><span>1</span><span>1</span><span>1</span></span>*<span class="k k3"><span>1</span><span>1</span><span>1</span></span></span></div>
+    <div class="box"><b>Gaussian</b><br>
+      <span class="kv"><span class="k k3"><span>1</span><span>2</span><span>1</span><span>2</span><span>4</span><span>2</span><span>1</span><span>2</span><span>1</span></span>=<span class="k k1"><span>1</span><span>2</span><span>1</span></span>*<span class="k k3"><span>1</span><span>2</span><span>1</span></span></span></div>
+    <div class="box"><b>Sobel (가로)</b><br>
+      <span class="kv"><span class="k k3"><span>1</span><span>0</span><span>-1</span><span>2</span><span>0</span><span>-2</span><span>1</span><span>0</span><span>-1</span></span>=<span class="k k1"><span>1</span><span>2</span><span>1</span></span>*<span class="k k3"><span>1</span><span>0</span><span>-1</span></span></span></div>
+  </div>
+
+  <div class="must"><b class="tag">★ 시험 예고: separable이 되는 조건</b>
+    <b>필터 행렬의 랭크가 1</b> = <b>모든 행이 한 행의 상수배</b> = 열 벡터 × 행 벡터로 분해 가능.<br>
+    <span class="voice">강의</span> "어떤 행이 다른 행의 상수배로 표현되면 랭크가 떨어지고, 랭크가 1일 때 separable filter" (2주차 00:29–02:13).
+    <br>주의: 교수님이 <code>[1 2 3; 4 5 6; 7 8 9]</code>를 말로 "랭크 3"이라 했지만 실제 랭크는 <b>2</b> (3행 = 2×2행 − 1행). 시험에 나오면 2로 답하고, 어쨌든 1이 아니므로 separable 아님.
+  </div>
+
+  <h3>왜 중요한가: 계산량 <span class="star">★</span></h3>
+  <p><span class="voice">강의</span> "이게 왜 중요하냐 → 계산량을 줄일 수 있기 때문" (02:16, 이후 3분간 반복 설명).</p>
+  <ul>
+    <li>2D: 화소 하나당 $N\times N$번 곱셈, 화소 $M^2$개 → $M^2N^2$</li>
+    <li>separable: 열 필터 $N\cdot M^2$ + 행 필터 $N\cdot M^2$ = $2NM^2$</li>
+  </ul>
+  <table>
+    <tr><th>조건</th><th>non-separable</th><th>separable</th></tr>
+    <tr><td>영상 $M\times M$, 커널 $N\times N$</td><td class="c"><b>$M^2 \times N^2$</b></td><td class="c"><b>$2 \times N \times M^2$</b></td></tr>
+    <tr><td>예: $M=1000,\ N=7$</td><td class="c">$10^6\times49 = 4{,}900$만 번</td><td class="c">$2\times7\times10^6 = 1{,}400$만 번</td></tr>
+  </table>
+  <p>화소 하나당 곱셈 수가 $N^2 \to 2N$으로 줄어듦. 절약 비율은 $N/2$배 (7×7이면 3.5배, 15×15면 7.5배).
+  <span class="voice">강의</span> 2×2 커널은 $2N=N^2=4$라 <b>이득 없음</b>, 11×11이면 화소당 121번 → 22번. <b>커널이 클수록 이득이 큼.</b></p>
+
+  <div class="tip"><b class="tag">판별법</b>
+    모든 행이 한 행의 상수배인지 확인 (= 랭크 1).
+    예: <code>[1 2 1; 2 4 2; 1 2 1]</code> → 2행 = 1행×2, 3행 = 1행×1 → separable.
+    <code>[0 1 0; 1 -4 1; 0 1 0]</code>(Laplace) → 행끼리 상수배가 아님 → separable 아님.
+  </div>
+
+  <div class="calc"><b class="tag">계산 2</b> separable로 두 번 나눠 계산해도 결과가 같은지 확인 (계산 1의 패치, Gaussian)
+    <ol>
+      <li>각 행에 $[1\;2\;1]/4$ 적용 (가운데 열 결과): 1행 $(2+4+2)/4=2$, 2행 $(2+20+2)/4=6$, 3행 $2$</li>
+      <li>그 열 $[2,6,2]^T$에 $[1\;2\;1]^T/4$ 적용: $(2+12+2)/4 = \mathbf{4}$</li>
+    </ol>
+    → 2D Gaussian으로 바로 구한 값 4와 같음. 곱셈 수: 9번 대신 3+3번.
+  </div>
+</section>
+
+<!-- ============ 4. Gradient ============ -->
+<section id="gradient">
+  <h2>미분 필터 · 에지</h2>
+  <h3>영상 기울기(gradient)</h3>
+  $$ \nabla f=\Big[\frac{\partial f}{\partial x},\ \frac{\partial f}{\partial y}\Big],\qquad
+     |\nabla f|=\sqrt{\Big(\frac{\partial f}{\partial x}\Big)^2+\Big(\frac{\partial f}{\partial y}\Big)^2},\qquad
+     \theta=\tan^{-1}\!\Big(\frac{\partial f/\partial y}{\partial f/\partial x}\Big) $$
+  <p>영상은 연속 함수가 아니므로 <b>유한 차분(finite difference)</b>으로 근사. 기울기 방향은 <b>에지에 수직</b>(밝기가 가장 빨리 커지는 방향).</p>
+
+  <table>
+    <tr><th>차분</th><th>식 ($h=1$)</th><th class="c">합성곱 커널 (뒤집힌 모양)</th></tr>
+    <tr><td>전진 forward</td><td>$f(x+1,y)-f(x,y)$</td><td class="c"><code>[1, -1, 0]</code></td></tr>
+    <tr><td>후진 backward</td><td>$f(x,y)-f(x-1,y)$</td><td class="c"><code>[0, 1, -1]</code></td></tr>
+    <tr><td>중앙 central</td><td>$\{f(x+1,y)-f(x-1,y)\}/2$</td><td class="c"><code>[0.5, 0, -0.5]</code></td></tr>
+  </table>
+  <p class="muted">커널이 식과 부호 순서가 반대로 보이는 이유: 합성곱 정의에서 커널을 뒤집기 때문.</p>
+
+  <h3>Sobel 필터 — 가장 많이 쓰는 기울기 필터</h3>
+  <div class="grid2">
+    <div class="box">
+      <b>가로(horizontal) Sobel $S_x$</b> → $\partial f/\partial x$, <b>세로 에지</b>가 잘 보임
+      <div><span class="k k3"><span>1</span><span>0</span><span>-1</span><span>2</span><span>0</span><span>-2</span><span>1</span><span>0</span><span>-1</span></span> = $[1,2,1]^T * [1,0,-1]$</div>
+    </div>
+    <div class="box">
+      <b>세로(vertical) Sobel $S_y$</b> → $\partial f/\partial y$, <b>가로 에지</b>가 잘 보임
+      <div><span class="k k3"><span>1</span><span>2</span><span>1</span><span>0</span><span>0</span><span>0</span><span>-1</span><span>-2</span><span>-1</span></span> = $[1,0,-1]^T * [1,2,1]$</div>
+    </div>
+  </div>
+  <div class="must"><b class="tag">왜 Sobel?</b>
+    ① <b>중앙 차분</b> $[1,0,-1]$ 사용 → 전진·후진 차분은 에지 응답이 0.5픽셀 밀리는데 중앙 차분은 안 밀림.
+    ② 다른 방향으로 <b>작은 1×3 Gaussian</b> $[1,2,1]$ 적용 → 단순 중앙 차분보다 <b>잡음에 덜 민감</b>.
+    ③ separable (2행 = 1행 × 2 → 랭크 1). <span class="voice">강의</span> $[1,2,1]$은 저역 통과(노이즈 억제), $[1,0,-1]$은 미분 담당.
+  </div>
+  <div class="tip"><b class="tag">어느 Sobel?</b>
+    수직 에지(세로선)를 찾으려면 <b>horizontal Sobel</b>($\partial/\partial x$), 수평 에지(가로선)는 <b>vertical Sobel</b>($\partial/\partial y$).
+    x 미분은 수직 에지에서 큰 값, 평탄한 내부는 0. <span class="voice">강의</span> 예: 0과 255 경계 → 경계에서만 큰 값, 안쪽은 0.
+  </div>
+
+  <div class="calc"><b class="tag">계산 3</b> 세로 에지 패치에서 기울기
+    <div class="kv" style="margin:6px 0"><span>패치</span><span class="k k3"><span>10</span><span>10</span><span>50</span><span>10</span><span>10</span><span>50</span><span>10</span><span>10</span><span>50</span></span></div>
+    <ul>
+      <li>$S_x$를 뒤집으면 <code>[-1 0 1; -2 0 2; -1 0 1]</code> → $(50-10)\cdot1+(50-10)\cdot2+(50-10)\cdot1 = \mathbf{160}$</li>
+      <li>$S_y$: 위아래 행이 같음 → $\mathbf{0}$</li>
+      <li>크기 $|\nabla f|=\sqrt{160^2+0^2}=160$, 방향 $\theta=\tan^{-1}(0/160)=0^\circ$ → x축 방향(에지에 수직)</li>
+    </ul>
+  </div>
+
+  <h3>잡음 문제 → 먼저 흐리기</h3>
+  <ul>
+    <li><span class="star">★</span> 미분은 <b>잡음에 민감</b>함. <span class="voice">강의</span> 노이즈는 세기는 약해도 변화가 매우 빠르고, 미분은 인접 화소만 비교하므로 노이즈가 급변으로 잡힘 (56:13). 미분 필터 전에 반드시 <b>Gaussian으로 흐림</b>.</li>
+    <li><b>얼마나 흐리나?</b> <span class="voice">강의</span> 세게 흐리면 노이즈는 사라지지만 에지도 완만해짐, 약하면 노이즈가 남지만 에지는 가파름 → 노이즈 제거와 에지 선명도의 균형으로 결정.</li>
+    <li><b>미분 정리</b>: $\frac{\partial}{\partial x}(h*f) = \big(\frac{\partial h}{\partial x}\big)*f$ → Gaussian을 미리 미분한 <b>DoG(Derivative of Gaussian)</b> 필터 한 번만 적용하면 됨. <span class="voice">강의</span> "컨볼루션 양이 반으로 줄었죠"(2번 → 1번).</li>
+    <li>용어 주의: 이 강의의 DoG = <b>Derivative</b> of Gaussian (Difference of Gaussians 아님).</li>
+  </ul>
+
+  <h3>Laplace · LoG</h3>
+  <div class="grid2">
+    <div class="box">
+      <b>Laplace 필터</b> = 2차 미분
+      $$ f''(x)\approx f(x+1)-2f(x)+f(x-1) $$
+      1D: <code>[1, -2, 1]</code> &nbsp; 2D: <span class="k k3"><span>0</span><span>1</span><span>0</span><span>1</span><span>-4</span><span>1</span><span>0</span><span>1</span><span>0</span></span>
+    </div>
+    <div class="box">
+      <b>LoG vs DoG</b>
+      <ul>
+        <li>LoG(Laplacian of Gaussian): 에지에서 <b>영교차(zero crossing)</b></li>
+        <li>DoG(Derivative of Gaussian): 에지에서 <b>봉우리(peak)</b></li>
+        <li><span class="star">★</span> 영교차가 에지 위치(localization)를 더 정확히 잡지만 다루기는 불편함 (72:51)</li>
+        <li>DoG 결과는 에지가 두껍고 뭉툭, LoG는 에지 중심이 0이고 양옆이 밝아 얇음</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="calc"><b class="tag">계산 4</b> 1D 신호 $f=[3,5,9,10]$, 두 번째 값(5) 위치에서
+    전진 $9-5=4$, 후진 $5-3=2$, 중앙 $(9-3)/2=3$, Laplace $3-2\cdot5+9=2$
+  </div>
+</section>
+
+<!-- ============ W3. Frequency ============ -->
+<section id="freq">
+  <h2>주파수 영역 (3주차)</h2>
+  <div class="must"><b class="tag">★ 강의 핵심</b>
+    "여기서 <b>가장 중요한 게 Computational Efficiency</b>" (05:12) — 주파수 영역을 쓰는 핵심 이유는 계산 효율.
+    <b>합성곱 정리</b>를 4번 반복 설명 (55:58, 57:38, 60:46, 91:05): <b>공간 영역 합성곱 = 주파수 영역 원소별 곱셈</b>.
+  </div>
+
+  <h3>주파수 개념</h3>
+  <ul>
+    <li><b>저주파</b> = 전반적 형상·색상(coarse), <b>고주파</b> = 에지·노이즈·머리카락처럼 급격히 변하는 부분(fine). 둘을 더하면 원신호.</li>
+    <li><b>Fourier 아이디어</b>(1807): 어떤 주기 함수든 서로 다른 주파수의 sin·cos 가중합으로 표현 가능. 기본 단위 $A\sin(\omega x+\phi)$, 자유도 3개 (A 진폭, ω 주파수, φ 위상).</li>
+    <li>예: $g(t)=\sin(2\pi ft)+\tfrac13\sin(2\pi\cdot3ft)$ → 두 번째 항은 진폭 1/3, 주파수 3배. $\sum \tfrac1k\sin(2\pi kt)$를 계속 더하면 사각파에 가까워짐.</li>
+  </ul>
+
+  <h3>푸리에 변환</h3>
+  <div class="grid2">
+    <div class="box">
+      $$ F(\omega)=\int f(x)\,e^{-i2\pi\omega x}\,dx \qquad f(x)=\int F(\omega)\,e^{i2\pi\omega x}\,d\omega $$
+      역변환은 지수 부호가 −→+, $dx$→$d\omega$.
+      <br>$F=R+iI=Ae^{i\phi}$: 진폭(spectrum) $A=\sqrt{R^2+I^2}$, 위상 $\phi=\tan^{-1}(I/R)$, 파워 스펙트럼 $A^2$. 보통 위상보다 <b>스펙트럼</b>에 관심.
+    </div>
+    <div class="box">
+      <b>DFT (1D, M개 샘플)</b>
+      $$ F(u)=\frac1M\sum_{x=0}^{M-1} f(x)\,e^{-i2\pi ux/M} $$
+      <span class="voice">강의</span> "인버스 할 때는 1/M을 하지 않는다" (31:40) → 정규화 상수는 <b>한쪽에만</b> 붙음.
+      2D: $\frac{1}{MN}\sum\sum f(x,y)e^{-i2\pi(ux/M+vy/N)}$.
+    </div>
+  </div>
+
+  <h3>스펙트럼 읽기</h3>
+  <ul>
+    <li><span class="star">★</span> <b>가운데 = DC 성분</b>(가장 저주파) = 영상의 평균 밝기·색감 (49:51). 바깥으로 갈수록 고주파. 평균 $\bar f=\frac{1}{MN}F(0,0)$.</li>
+    <li><b>fftshift</b>(두 번 설명): shift를 안 하면 저주파가 네 꼭짓점, 고주파가 가운데 → 보기 편하게 DC를 가운데로 옮김. 순서 fft2 → abs → log → fftshift.</li>
+    <li>스펙트럼의 선이 길수록 더 높은 주파수까지 포함, 선 방향은 공간 영역 에지와 <b>직교</b>.</li>
+    <li>스펙트럼 일부를 지우고 역변환하면 그 방향의 선·에지가 사라짐.</li>
+    <li>DFT 성질: 주기성(영상이 무한히 반복된다고 가정), 선형성, 임펄스 $\delta \Leftrightarrow 1$(모든 주파수 포함).</li>
+  </ul>
+
+  <h3>합성곱 정리와 계산량</h3>
+  $$ \mathcal F[f*h]=\mathcal F[f]\cdot\mathcal F[h] \qquad g=\mathcal F^{-1}\{\mathcal F[f]\cdot\mathcal F[h]\} $$
+  <table>
+    <tr><th>방식</th><th>계산량 (영상 N화소, 필터 M원소)</th></tr>
+    <tr><td>공간 영역 합성곱</td><td class="c">$O(MN)$</td></tr>
+    <tr><td>FFT 방식: FFT 2번 + 곱셈 N번 + 역FFT 1번</td><td class="c">$3N\log N+N = O(N\log N)$</td></tr>
+  </table>
+  <p><span class="voice">강의</span> "log 256이라도 8밖에 안 나옴" → 필터가 클수록 FFT가 유리, 11×11 예에서 "100배 이상" 절약 언급. 주파수 영역 필터링 전에 필터를 <b>영상 크기와 같게 0 패딩</b>함 (순서: 0 패딩 → 중심을 왼쪽 위로 이동 → 2D FFT).
+  변환쌍: <b>Box ⇔ sinc</b>, <b>Gaussian ⇔ Gaussian</b>.</p>
+
+  <h3>LPF · HPF · BPF</h3>
+  <table>
+    <tr><th>필터</th><th>통과</th><th>효과</th></tr>
+    <tr><td>LPF</td><td>중심(저주파)</td><td>블러, 노이즈 감소</td></tr>
+    <tr><td>HPF $=1-H_{LP}$</td><td>바깥(고주파)</td><td>에지와 노이즈가 남음</td></tr>
+    <tr><td>BPF</td><td>특정 대역</td><td><span class="voice">강의</span> 노이즈가 많을 때 HPF는 노이즈까지 통과 → BPF로 너무 높은 주파수(노이즈)를 빼고 에지만 추출</td></tr>
+  </table>
+  <div class="grid2">
+    <div class="box"><b>Ideal LPF</b>: $D(u,v)\le D_0$면 1, 아니면 0 ($D$ = 중심까지 거리). $D_0$가 작을수록 더 흐려짐.
+      <br><span class="star">★</span> <b>Ringing</b>: 경계가 급격해 공간 영역에서 sinc처럼 오르내리는 물결 → 결과에 물결무늬 (98:07–100:21 길게 설명). Ideal HPF도 같음.</div>
+    <div class="box"><b>Gaussian LPF</b>: $H=e^{-D^2(u,v)/2D_0^2}$, $D_0$ = spread factor.
+      <br>"<b>리플·링잉 효과가 없는 필터</b>" (101:03). Gaussian HPF $=1-e^{-D^2/2D_0^2}$.</div>
+  </div>
+
+  <h3>Campbell-Robson 곡선 · JPEG</h3>
+  <ul>
+    <li><b>Campbell-Robson</b>: 주파수별 사람 눈의 대비 민감도. 아주 높은 주파수는 잘 안 보임 (R·G·B마다 다름). <span class="voice">강의</span> 예: 고속도로 차 바퀴가 거꾸로 도는 것처럼 보이는 현상.</li>
+    <li><b>JPEG</b>: 8×8 블록에 DCT → 64개 계수(여기까지 무손실). 눈에 잘 안 띄는 <b>고주파 계수를 버려</b> 손실 압축 (예: 89k → 12k).</li>
+    <li>Things to remember: 큰 필터는 FFT가 빠름 $O(N\log N)$ vs $O(NM)$, 지나친 고주파는 잘 안 보이므로 압축의 근거.</li>
+  </ul>
+</section>
+
+<!-- ============ W4. Edge-aware ============ -->
+<section id="edgeaware">
+  <h2>에지 보존 필터 (4주차)</h2>
+  <p class="muted">4주차는 녹음이 없어 슬라이드만 기준.</p>
+  <p><b>Edge-aware filter</b>: 작은 디테일은 평활화하고 구조적 에지는 보존. Gaussian은 커널이 에지를 가로질러 평균을 내서 에지가 흐려짐 → 대표 해법 <b>bilateral</b>(Tomasi & Manduchi 1998), <b>guided</b>(He et al. 2010).</p>
+
+  <h3>Bilateral filter</h3>
+  $$ h(m,n)=\frac{1}{W_{mn}}\sum_{k,l} g(k,l)\; r_{mn}(k,l)\; f(m+k,n+l) $$
+  <table>
+    <tr><th>요소</th><th>식</th><th>역할</th></tr>
+    <tr><td>공간 가중치</td><td>$g(k,l)=e^{-(k^2+l^2)/2\sigma_s^2}$</td><td><b>가까운</b> 화소 우대</td></tr>
+    <tr><td>range(밝기) 가중치</td><td>$r_{mn}(k,l)=e^{-(f(m+k,n+l)-f(m,n))^2/2\sigma_r^2}$</td><td>밝기가 <b>비슷한</b> 화소 우대 → 에지 건너편은 가중치 ≈ 0</td></tr>
+    <tr><td>정규화 인자</td><td>$W_{mn}=\sum g\cdot r_{mn}$</td><td>가중치 합을 1로</td></tr>
+  </table>
+  <ul>
+    <li>Gaussian은 공간 거리만, bilateral은 <b>공간 거리 + 밝기 거리</b> 둘 다 가까운 화소만 평균.</li>
+    <li>$\sigma_r=\infty$면 range 가중치가 모두 1 → <b>Gaussian 블러와 같음</b>.</li>
+    <li>단점: 얇은 에지는 가로질러 흐려짐, 선형 모델이 없음, 느림.</li>
+    <li>응용: 노이즈 제거, tone mapping, 피부 보정. <b>Joint bilateral</b>: range 가중치를 guide(flash 사진)에서 계산해 no-flash 영상 노이즈 제거.</li>
+  </ul>
+
+  <h3>Guided filter</h3>
+  <ul>
+    <li>입력 $p$, 가이드 $I$ (같아도 됨) → 출력 $q$. 가이드가 에지 정보를 제공. bilateral과 결과는 비슷하고 <b>훨씬 빠름</b>.</li>
+    <li><b>국소 선형 모델</b>: 창마다 $q_i=aI_i+b$ → $\nabla q=a\nabla I$ (가이드의 에지가 출력으로 옮겨짐).</li>
+    <li>목적함수 $\min_{a,b}\sum_i (aI_i+b-p_i)^2+\epsilon a^2$ (정규화 항 $\epsilon a^2$이 작은 $a$를 선호)</li>
+  </ul>
+  <div class="must"><b class="tag">암기</b>
+    $$ a=\frac{\operatorname{cov}(I,p)}{\operatorname{var}(I)+\epsilon},\qquad b=\bar p-a\bar I $$
+    $\epsilon$이 크면 $a$가 작아져 평활화가 강해짐. ($p=I$일 때) <b>평탄 영역</b>: $a\approx0,\ b\approx\bar p$ → 노이즈 제거 / <b>에지 부근</b>: $a\approx1,\ b\approx0$ → 원래 화소 보존.
+  </div>
+  <p>Algorithm 1은 전부 <b>평균 필터(f_mean)</b>로만 구성: mean_I, mean_p, corr_I, corr_Ip → var_I, cov_Ip → a, b → mean_a, mean_b → $q=\text{mean}_a I+\text{mean}_b$ (겹치는 창의 결과를 평균).</p>
+
+  <h3>Summed area table (적분 영상)</h3>
+  <p>k×k 박스 평균: 합성곱 $O(k^2N)$, FFT $O(N\log N)$, <b>SAT $O(N)$ (k와 무관)</b>. $T(Y,X)=\sum_{y\le Y}\sum_{x\le X}\text{img}(y,x)$ — 가로 누적합 후 세로 누적합.</p>
+  <div class="calc"><b class="tag">계산 9</b> 슬라이드 예제 (영역 합 = 4개 값의 덧셈·뺄셈)
+    <div class="grid2" style="margin-top:6px">
+      <div>입력<br><span class="k" style="grid-template-columns:repeat(5,auto)"><span>1</span><span>3</span><span>3</span><span>2</span><span>6</span><span>5</span><span>7</span><span>2</span><span>5</span><span>4</span><span>2</span><span>1</span><span style="background:#fde2d6">4</span><span style="background:#fde2d6">3</span><span>5</span><span>3</span><span>3</span><span style="background:#fde2d6">2</span><span style="background:#fde2d6">2</span><span>5</span><span>5</span><span>6</span><span>7</span><span>6</span><span>5</span></span></div>
+      <div>SAT<br><span class="k" style="grid-template-columns:repeat(5,auto)"><span>1</span><span>4</span><span>7</span><span>9</span><span>15</span><span>6</span><span style="background:#e3eefb">16</span><span>21</span><span style="background:#e3eefb">28</span><span>38</span><span>8</span><span>19</span><span>28</span><span>38</span><span>53</span><span>11</span><span style="background:#e3eefb">25</span><span>36</span><span style="background:#e3eefb">48</span><span>68</span><span>16</span><span>33</span><span>54</span><span>72</span><span>97</span></span></div>
+    </div>
+    영역 합 = $T[\text{아래,오른}] - T[\text{위}-1,\text{오른}] - T[\text{아래},\text{왼}-1] + T[\text{위}-1,\text{왼}-1]$
+    <br>3~4행·3~4열(4,3,2,2): $48-28-25+16=\mathbf{11}$ ✔ (4+3+2+2)
+  </div>
+  <ul>
+    <li>Detail enhancement: output = input + α(input − f(input)), f = bilateral 또는 guided (unsharp masking과 같은 원리).</li>
+    <li>Guided filter 응용: flash/no-flash 노이즈 제거, <b>feathering/alpha matting</b>(가이드 = 원본, 입력 = 거친 binary mask → 출력 alpha matte), haze removal.</li>
+  </ul>
+</section>
+
+<!-- ============ 5. Alpha ============ -->
+<section id="alpha">
+  <h2>알파 블렌딩</h2>
+  <p>합성 방법 4가지 흐름: <span class="pill">Cut-and-paste</span>→<span class="pill">Alpha (linear) blending</span>→<span class="pill">Multi-band blending</span>→<span class="pill">Poisson blending</span></p>
+  <p><span class="voice">강의</span> 블렌딩의 목표: "특징을 잘 따서 <b>최대한 자연스럽게 합성</b>하는 게 핵심" (02:41).
+  <span class="star">★</span> "블렌딩은 웬만하면 <b>모든 게 마스크가 필요</b>" (10:12) — 마스크는 배경의 어느 위치에 붙일지 정함, <b>0 = 배경, 1 = 전경</b>.</p>
+  <p><b>Cut-and-paste</b>(콜라주): 객체(sprite, 요즘 말로 segmentation map)를 잘라 붙임. 누구나 쉽게 쓸 수 있지만 <b>색감·밝기·조도를 전혀 고려하지 않아</b> 이질적임 (예: 펭귄 색감이 동떨어짐). 건물 sprite를 함께 쓰면 사람을 건물 뒤에 넣을 수 있음.</p>
+
+  <div class="must"><b class="tag">공식</b>
+    $$ \text{output} = \text{foreground}\times\alpha + \text{background}\times(1-\alpha) $$
+    $\alpha$ = mask 값 (0~1). 화소마다 두 영상의 <b>가중 평균</b> → 선형(linear) 블렌딩.
+  </div>
+
+  <div class="grid2">
+    <div class="box"><b>Binary mask</b> ($\alpha\in\{0,1\}$)<br>1에서 0으로 넘어가는 차이가 커서 흰 테두리 에지·색 불일치가 생김 (seam이 보임)</div>
+    <div class="box"><b>Non-binary mask = feathering</b><br><span class="star">★</span> binary mask에 <b>low-pass filter(blur)</b>를 적용 → 경계 값이 1, 0.9, 0.8 …처럼 서서히 변함 (20:31)</div>
+  </div>
+  <p><span class="voice">강의</span> 알파 블렌딩은 "크게 대단한 방법은 아니고" α를 조정해 경계의 갭을 줄이는 방법 (09:28). <b>한계: 두 영상의 밝기·대비 차이 자체는 보정 못 함</b> (25:00).</p>
+
+  <h3>Center seam으로 mask 만들기 (두 장 이어 붙이기)</h3>
+  <ol>
+    <li>두 영상 각각 <b>거리 변환(distance transform, <code>bwdist</code>)</b> 계산: 각 화소가 그 영상 가장자리에서 얼마나 떨어졌는지</li>
+    <li>거리가 더 큰 쪽(=그 영상의 안쪽)을 1로 하는 binary mask 설정 → 가운데에 seam</li>
+    <li>mask를 blur → feathering</li>
+    <li>blur를 넘어서는 non-binary: <span class="voice">강의</span> 두 영역이 겹치는 곳에 0.5를 줘서 <b>두 영상의 평균</b> → 그래도 경계 에지가 보임 ("Still not OK")</li>
+    <li>더 정교한 non-binary: 어느 영상에 가까운지를 <b>0~1 연속값</b>으로 나타낸 mask → 훨씬 깔끔하지만 일부에서 값이 급격히 바뀌는 곳이 남음 ("some dangers remain")
+      <br><span class="muted">(계산 예시용으로 거리 비율 $\alpha_1 = d_1/(d_1+d_2)$을 생각할 수 있으나 강의에서 직접 말한 식은 아님)</span></li>
+  </ol>
+  <p><b>좌우 두 장 블렌딩의 mask</b>: 왼쪽 영상은 1에서 부드럽게 0으로, 오른쪽 영상은 0에서 부드럽게 1로.</p>
+
+  <h3>창(window) 크기 = 섞는 구간 폭 <span class="star">★</span></h3>
+  <p><span class="voice">강의</span> "윈도우를 잘 설정하는 게 <b>매우 중요</b>" (34:01). "고스팅이 발생했다 = 윈도우가 지나치게 커졌다", "불연속 = largest prominent feature보다 많이 작아졌다" (36:13).
+  큰 물체 = 저주파, 작은 무늬·땡땡이·노이즈·물고기 눈 = 고주파. 창이 넓으면 고주파 디테일이 겹쳐 ghosting.</p>
+  <table>
+    <tr><th>창</th><th>결과</th></tr>
+    <tr><td>너무 큼</td><td><b>Ghosting</b> (두 영상이 겹쳐 유령처럼 이중으로 보임)</td></tr>
+    <tr><td>너무 작음</td><td><b>Seam</b> (경계가 매끄럽지 않게 보임)</td></tr>
+    <tr><td>적당</td><td>매끄럽고 ghosting 없음</td></tr>
+  </table>
+  <div class="must"><b class="tag">암기</b>
+    불연속(seam)을 피하려면: <b>창 ≈ 가장 큰 두드러진 특징의 크기</b><br>
+    Ghosting을 피하려면: <b>창 ≤ 2 × 가장 작은 두드러진 특징의 크기</b><br>
+    주파수 해석: 영상 주파수가 대략 <b>한 옥타브</b>(2배 범위) 안에 있을 때만 선형 블렌딩이 잘 됨.
+    그런데 <b>자연 영상은 주파수 범위가 매우 넓음</b> → 한 개 창으로 둘 다 만족 불가 → <b>다중 대역 블렌딩</b> 필요.
+  </div>
+
+  <div class="calc"><b class="tag">계산 5</b>
+    전경 200, 배경 100, $\alpha=0.3$ → $0.3\times200+0.7\times100 = 60+70=\mathbf{130}$.<br>
+    거리 비율 mask: $d_1=3,\ d_2=1$ → $\alpha_1=3/4=0.75$, $\alpha_2=0.25$.
+  </div>
+</section>
+
+<!-- ============ 6. Multi-band ============ -->
+<section id="multiband">
+  <h2>다중 대역 블렌딩 (Laplacian pyramid)</h2>
+  <div class="must"><b class="tag">핵심 아이디어</b>
+    <b>저주파는 천천히</b> 섞어 seam을 없애고 (넓은 전이 구간),
+    <b>고주파는 빠르게</b> 섞어 ghosting을 없앰 (좁은 전이 구간).
+  </div>
+  <ol>
+    <li>두 영상 각각 <b>Laplacian pyramid</b> 만들기 (Gaussian pyramid의 인접 단계 차이 = 주파수 대역별 영상)</li>
+    <li>mask의 <b>Gaussian pyramid</b> $R$를 만들어 단계마다 블렌딩:
+      $$ L_{12}^{\,i} = L_1^{\,i}\cdot R^{\,i} + L_2^{\,i}\cdot(1-R^{\,i}) $$</li>
+    <li>피라미드를 다시 합쳐(collapse) 최종 영상</li>
+  </ol>
+  <p><b>Which mask goes where?</b> 고주파 단계 → 좁은(거의 binary) mask, 저주파 단계 → 넓은 mask.</p>
+  <p><b>단계별 블렌딩 구간 크기?</b> → <span class="hl">그 단계를 만들 때 쓴 blur(Gaussian) 커널 크기 정도</span> (48:05). 레벨 0은 좁고, 레벨이 올라갈수록 넓어짐.</p>
+  <ul>
+    <li><span class="voice">강의</span> Laplacian pyramid 한 단계 = 영상 − Gaussian으로 흐린 영상 = 고주파 성분. <b>레벨 0에는 노이즈·에지만, 꼭대기 레벨에는 거의 색 정보</b>만 남음.</li>
+    <li>대표 결과: 사과+오렌지 "orapple". 알파 mask 하나만 쓰면 오렌지 모공이 사과 쪽에 보이고 seam과 ghosting이 같이 생김 → 다중 대역은 둘 다 피함 (54:47).</li>
+  </ul>
+</section>
+
+<!-- ============ 7. Poisson ============ -->
+<section id="poisson">
+  <h2>포아송 블렌딩</h2>
+  <div class="must"><b class="tag">핵심 한 줄</b>
+    화소 <b>값</b>이 아니라 <b>기울기(gradient)</b>를 최대한 유지하며 붙임.
+    경계에서는 배경(destination)과 값이 같도록 맞추고, 안쪽은 source의 기울기를 따라감.
+    → 그래서 붙인 영역의 <b>색이 배경에 맞게 전체적으로 바뀜</b>(색이 부드럽게 녹아듦).
+  </div>
+  <div class="must"><b class="tag">★★ 교수님이 4번 반복 (시험 1순위)</b>
+    "<b>기울기(변화량)만 같게, 색깔은 주변에 있는 색깔 정보를 쓰겠다 … 이게 핵심</b>" (67:31, 72:41, 77:23, 81:36).<br>
+    변화량은 source($g$)에서, 화소 값(색)은 destination($f^*$, 주변)에서 가져옴.
+    <br><span class="voice">강의</span> 이 강의 블렌딩 기법 중 <b>가장 최신</b> (56:20). <b>다중 대역 = 주파수 기반, 포아송 = gradient 기반</b> (56:47).
+  </div>
+  <p><b>1D 예시 (p42)</b>: 하나는 고주파·밝은 신호, 하나는 저주파·어두운 신호. 그냥 붙이면 경계가 불연속, <b>미분값으로 블렌딩</b>하면 자연스럽게 이어짐.</p>
+
+  <h3>기호</h3>
+  <table>
+    <tr><th class="c">기호</th><th>뜻</th><th>알려짐?</th></tr>
+    <tr><td class="c">$g$</td><td>source 함수 (붙일 영상)</td><td>알려짐</td></tr>
+    <tr><td class="c">$S$</td><td>destination (배경 전체)</td><td>알려짐</td></tr>
+    <tr><td class="c">$\Omega$</td><td>destination 안의 붙일 영역, 경계는 $\partial\Omega$</td><td>—</td></tr>
+    <tr><td class="c">$f^*$</td><td>destination 함수 (Ω 바깥의 배경 값)</td><td>알려짐</td></tr>
+    <tr><td class="c">$f$</td><td>Ω 안의 보간 함수 = <b>구하려는 값</b></td><td><b class="hl">미지수</b></td></tr>
+  </table>
+  <p><span class="star">★</span> <span class="voice">강의</span> 질문 "알 수 없는 게 무엇이냐" → 답 "$f$(interpolation function)" (64:40). "<b>인터폴레이션 펑션을 어떻게 결정하냐가 가장 중요한 문제</b>" (65:41).
+  $g$처럼 할까 $f^*$처럼 할까? → <b>기울기는 $g$를 따르고, 경계 값은 $f^*$와 같게</b>.</p>
+
+  <h3>변분 문제 → 포아송 방정식</h3>
+  <div class="grid2">
+    <div class="box">
+      <b>변분 문제</b> (variational: 미지수가 함수 전체인 최적화)
+      $$ \min_f \iint_\Omega |\nabla f - \mathbf v|^2 \quad \text{with}\quad f|_{\partial\Omega}=f^*|_{\partial\Omega} $$
+      $\mathbf v=(u,v)=\nabla g$ (source 기울기, 알려짐)<br>
+      앞항: $f$의 기울기가 $g$의 기울기를 닮게 / 조건: 경계에서 $f=f^*$
+    </div>
+    <div class="box">
+      <b>포아송 방정식 (Dirichlet 경계 조건)</b>
+      $$ \Delta f = \operatorname{div}\mathbf v = \Delta g \ \ \text{over } \Omega,\quad f|_{\partial\Omega}=f^*|_{\partial\Omega} $$
+      Laplacian $\Delta f = \frac{\partial^2 f}{\partial x^2}+\frac{\partial^2 f}{\partial y^2}$<br>
+      Divergence $\operatorname{div}\mathbf v = \frac{\partial u}{\partial x}+\frac{\partial v}{\partial y}$ → $\mathbf v=\nabla g$이면 $\Delta g$
+    </div>
+  </div>
+
+  <h3>이산 영상에서 (화소 $p$마다)</h3>
+  $$ 4f_p - \sum_{q\in N_p} f_q \;=\; 4g_p - \sum_{q\in N_p} g_q $$
+  <p>Laplace 필터 <code>[0 1 0; 1 -4 1; 0 1 0]</code>를 $f$와 $g$에 똑같이 적용한 값이 같아지게 함. $N_p$ = 상하좌우 4이웃.
+  $f$는 경계를 빼고 모두 미지수, $g$와 $\Delta g$는 알려짐 → <b>선형 연립방정식 $Af=b$</b>.</p>
+
+  <h3>풀기: 최소제곱</h3>
+  $$ E = \|Af-b\|^2 \;\Rightarrow\; A^TAf = A^Tb \;\Rightarrow\; f=(A^TA)^{-1}A^Tb $$
+  <p><span class="voice">강의</span> 오차식이 $x^2$ 꼴의 <b>convex</b> 함수 → 미분해서 0인 곳이 최소점 (76:16). 역행렬은 <b>존재하지 않을 수도 있고 오래 걸려서</b> 보통 근사로 계산 (78:27).</p>
+
+  <div class="calc"><b class="tag">계산 6</b> 1D 포아송 블렌딩 (손으로 풀 수 있는 크기)
+    <p>경계: $f_0=10,\ f_3=20$ (배경 값). source $g=[0,2,6,4]$. 미지수 $f_1,f_2$. 1D Laplace $[1,-2,1]$ 사용 → $2f_p - f_{p-1} - f_{p+1} = 2g_p - g_{p-1} - g_{p+1}$</p>
+    <ul>
+      <li>$p=1$: $2f_1 - 10 - f_2 = 4-0-6=-2$ → $2f_1 - f_2 = 8$</li>
+      <li>$p=2$: $2f_2 - f_1 - 20 = 12-2-4 = 6$ → $-f_1+2f_2=26$</li>
+      <li>풀면 $f_1=14,\ f_2=20$ → 결과 $[10,14,20,20]$</li>
+    </ul>
+    해석: 기울기 $g$: $+2,+4,-2$ / 결과: $+4,+6,0$ → 모양(기울기 차이)은 유지하고, 경계 차이 10을 맞추느라 전체가 고르게 <b>+2씩</b> 올라감. 이게 "색이 배경에 맞게 바뀌는" 이유.
+  </div>
+
+  <h3>한계와 응용</h3>
+  <ul>
+    <li><b>대비(contrast) 문제</b>: 어두운 곳 → 밝은 곳으로 붙이면 대비가 줄어 흐릿해짐. 대비는 <b>곱셈적</b> 성질인데 포아송은 <b>선형 차이</b>를 맞추기 때문.
+      <span class="voice">강의</span> 예: 2→4는 2배 변화라 잘 보이지만 150→152는 차이가 같아도 거의 안 보임. <span class="hl">해결: 로그(log) 영역에서 블렌딩</span> → 차이 대신 <b>비율</b>이 보존됨.</li>
+    <li>응용: 투명 물체 합성(무지개를 칙칙하지 않게), <b>editing</b>(노란 꽃 색 바꾸기), <b>concealment</b>(주름·글씨처럼 gradient가 큰 것 지우기), <b>texture swapping</b>(색은 두고 질감만 교체).</li>
+  </ul>
+</section>
+
+<!-- ============ 8. 비교표 ============ -->
+<section id="blend-cmp">
+  <h2>블렌딩 방법 비교표</h2>
+  <table>
+    <tr><th>방법</th><th>무엇을 섞나</th><th>장점</th><th>단점 · 문제</th></tr>
+    <tr><td><b>Cut-and-paste</b></td><td>잘라서 그대로 붙임 (sprite)</td><td>가장 단순, 누구나 사용</td><td>색감·밝기·조도를 고려하지 않아 이질적</td></tr>
+    <tr><td><b>Alpha (binary)</b></td><td>화소 값, α∈{0,1}</td><td>단순, 빠름</td><td>경계 seam(흰 테두리)이 뚜렷</td></tr>
+    <tr><td><b>Alpha (feathering)</b></td><td>화소 값, blur된 α로 가중 평균</td><td>경계가 부드러움</td><td>창이 크면 <b>ghosting</b>, 작으면 <b>seam</b>. 밝기·대비 차이 보정 못 함. 주파수 범위 넓은 영상엔 창 하나로 한계</td></tr>
+    <tr><td><b>Multi-band</b></td><td><b>주파수 기반</b>: Laplacian pyramid 단계별로 다른 폭의 α</td><td>저주파 넓게·고주파 좁게 → seam·ghosting 둘 다 피함</td><td>피라미드 만들고 합치는 계산 필요</td></tr>
+    <tr><td><b>Poisson</b></td><td><b>gradient 기반</b>: 기울기는 source, 색은 주변(경계 값은 배경에 맞춤)</td><td>색·밝기가 배경에 자연스럽게 맞춰짐, seam 거의 없음. 가장 최신</td><td>선형 시스템을 풀어야 함(계산량), 붙인 영역 색이 바뀜, 대비 손실(→log 영역)</td></tr>
+  </table>
+</section>
+
+<!-- ============ 9. Warping basic ============ -->
+<section id="warp-basic">
+  <h2>워핑 기본 · 2×2 행렬</h2>
+  <p><span class="voice">강의</span> 필터링·블렌딩은 화소 <b>값</b>을 바꾸고(블러, 노이즈 조절), 워핑은 화소의 <b>위치(좌표)</b>를 바꿈 = 필터링은 치역(range), 워핑은 정의역(domain) 변경.</p>
+  <p><b>Parametric (global) warping</b>: 같은 변환 $T$를 <b>모든 화소에 동일하게</b> 적용, $T$는 <b>적은 수의 파라미터</b>로 표현. $p'=T(p)$.</p>
+  <pre>Result = WarpImage(Image, Warp)
+for y in 0..H-1:
+  for x in 0..W-1:
+    x2, y2 = Warp(x, y)
+    Result[y][x] = Image[y2][x2]</pre>
+
+  <table>
+    <tr><th>변환</th><th class="c">2×2 행렬</th><th>메모</th></tr>
+    <tr><td>Identity</td><td class="c">$\begin{bmatrix}1&0\\0&1\end{bmatrix}$</td><td></td></tr>
+    <tr><td>Scale</td><td class="c">$\begin{bmatrix}s_x&0\\0&s_y\end{bmatrix}$</td><td>uniform: $s_x=s_y$ / 역변환: $1/s_x,\,1/s_y$</td></tr>
+    <tr><td>Rotation</td><td class="c">$\begin{bmatrix}\cos\theta&-\sin\theta\\ \sin\theta&\cos\theta\end{bmatrix}$</td><td>파라미터 1개(θ). 역변환 $R^{-1}=R^T$ (=$-\theta$ 회전)</td></tr>
+    <tr><td>Shear</td><td class="c">$\begin{bmatrix}1&sh_x\\ sh_y&1\end{bmatrix}$</td><td>$x'=x+sh_x y,\ y'=sh_y x+y$</td></tr>
+    <tr><td>Mirror</td><td class="c">Y축 $\begin{bmatrix}-1&0\\0&1\end{bmatrix}$ / X축 $\begin{bmatrix}1&0\\0&-1\end{bmatrix}$</td><td>원점 대칭 $\begin{bmatrix}-1&0\\0&-1\end{bmatrix}$ = X축 대칭 후 Y축 대칭 = 180° 회전. 대칭은 음수 스케일의 일종</td></tr>
+    <tr><td><b>Translation</b></td><td class="c"><b class="hl">불가!</b></td><td>$x'=x+t_x$는 선형이 아님 → 2×2로 못 씀</td></tr>
+  </table>
+
+  <div class="must"><b class="tag">선형 변환 성질</b> (scale·rotation·shear·mirror의 조합)
+    원점 → 원점 / 직선 → 직선 / 평행선 유지 / 비율 유지 / 합성해도 선형(closed under composition)
+    <br><span class="star">★</span> <span class="voice">강의</span> 2×2 변환의 "가장 큰 특징"은 <b>원점이 원점으로 간다</b>는 것 (24:19, 28:03, 30:30 세 번 반복).
+  </div>
+  <div class="must"><b class="tag">★ 합성 순서</b>
+    "순서가 중요한 게, $(x,y)$ 벡터에 <b>가장 먼저 붙은(가장 오른쪽) 행렬이 처음 진행</b>할 변환" (33:20).
+    행렬 곱은 <b>교환법칙 불성립</b> → "순서를 지키는 것도 꼭 중요" (33:52). 결합법칙은 성립하므로 선형 변환 100개, 1000개도 행렬 하나로 합칠 수 있음.
+    <br>역변환 판정: 두 행렬을 곱해 $I$가 나오면 서로 역변환 ($AX=I \Rightarrow X=A^{-1}$). 회전은 $R^{-1}=R^T$.
+  </div>
+
+  <div class="tip"><b class="tag">왜 동차 좌표가 필요?</b>
+    회전·스케일만 연달아 하면 2×2 하나로 합쳐짐. 그런데 중간에 <b>이동</b>이 끼면 $A(Bx+t)$ 꼴이 되어 2×2 하나로 표현 불가 → 긴 변환 연쇄가 골치 아픔 → <b>동차 좌표 + 3×3 행렬</b>.
+  </div>
+</section>
+
+<!-- ============ 10. Homogeneous ============ -->
+<section id="warp-homo">
+  <h2>동차 좌표 · 변환 계층</h2>
+  <div class="grid2">
+    <div class="box">
+      <b>동차 좌표(homogeneous coordinates)</b>
+      $$ (x,y,w) \Leftrightarrow (x/w,\ y/w) $$
+      <ul>
+        <li>$(ax,ay,a) \Leftrightarrow (x,y,1) \Leftrightarrow (x,y)$ — 상수배는 같은 점</li>
+        <li>$(x,y,0)$: 무한원점 / 방향 ($w=0$이면 0으로 나누게 됨)</li>
+        <li>$(0,0,0)$: 허용 안 됨</li>
+      </ul>
+    </div>
+    <div class="box">
+      <b>이동(Translation)도 행렬 곱으로</b>
+      $$ \begin{bmatrix}x'\\y'\\1\end{bmatrix}=\begin{bmatrix}1&0&t_x\\0&1&t_y\\0&0&1\end{bmatrix}\begin{bmatrix}x\\y\\1\end{bmatrix}=\begin{bmatrix}x+t_x\\y+t_y\\1\end{bmatrix} $$
+      → 회전·스케일·이동을 <b>3×3 행렬 하나</b>로 합칠 수 있음
+    </div>
+  </div>
+
+  <h3>변환 계층 — 자유도(DOF)와 보존 성질 (표 통째로 암기)</h3>
+  <table>
+    <tr><th>이름</th><th class="c">행렬</th><th class="c">DOF</th><th>보존</th><th class="c">필요한 대응점 수</th></tr>
+    <tr><td>Translation</td><td class="c">$[\,I\ |\ t\,]$</td><td class="c"><b>2</b></td><td>방향(orientation) + 아래 전부</td><td class="c">1</td></tr>
+    <tr><td>Rigid (Euclidean)</td><td class="c">$[\,R\ |\ t\,]$</td><td class="c"><b>3</b></td><td>길이(lengths) + …</td><td class="c">2</td></tr>
+    <tr><td>Similarity</td><td class="c">$[\,sR\ |\ t\,]$</td><td class="c"><b>4</b></td><td>각도(angles) + …</td><td class="c">2</td></tr>
+    <tr><td>Affine</td><td class="c">$\begin{bmatrix}a&b&c\\d&e&f\\0&0&1\end{bmatrix}$</td><td class="c"><b>6</b></td><td>평행성(parallelism) + …</td><td class="c">3</td></tr>
+    <tr><td>Projective (homography)</td><td class="c">$\begin{bmatrix}a&b&c\\d&e&f\\g&h&1\end{bmatrix}$</td><td class="c"><b>8</b></td><td>직선(straight lines)만</td><td class="c">4</td></tr>
+  </table>
+  <div class="must"><b class="tag">암기 요령</b>
+    대응점 1개 = 식 2개($x', y'$). 그래서 <b>필요한 대응점 수 = ⌈DOF/2⌉</b>: 2→1, 3→2, 4→2, 6→3, 8→4.
+    <br>DOF 외우기: 이동 2 → +회전 1 = 3 → +스케일 1 = 4 → affine 6 → projective 8.
+  </div>
+
+  <div class="grid2">
+    <div class="box"><b>Affine</b> = 선형 변환 + 이동
+      <ul><li><span class="voice">강의</span> "가장 큰 특징": 이동이 섞여 <b>원점이 원점으로 가지 않음</b> (52:26)</li><li>직선 → 직선, <b>평행선 유지</b>, 비율 유지</li><li>합성에 닫혀 있음</li></ul></div>
+    <div class="box"><b>Projective</b> = affine + projective warp ($w$가 $x,y$에 영향)
+      <ul><li>직선 → 직선</li><li><b>평행선 유지 안 됨</b>, <b>비율 유지 안 됨</b> — $g,h$ 때문에 $w$가 좌표마다 달라져 나눗셈 비율이 바뀜 → 평행선이 한 점에서 만남 (PPT의 3D 회전 효과)</li><li>합성에 닫혀 있음</li><li><b>평면</b>을 두 카메라로 찍은 두 영상 사이 관계를 정확히 표현 (책 표지 예)</li></ul></div>
+  </div>
+
+  <h3>변환 찾기 (recovering transformations)</h3>
+  <p>대응점 $(p_x,p_y)\to(p_x',p_y')$ 하나면 이동은 바로 구함:
+  $M=\begin{bmatrix}1&0&p_x'-p_x\\0&1&p_y'-p_y\\0&0&1\end{bmatrix}$. 나머지는 위 표의 대응점 수만큼 연립방정식.</p>
+  <ul>
+    <li><span class="voice">강의</span> "<b>DOF 2당 한 점</b>" (69:29). 정리: 이동 1점, similarity 2점, affine 3점, projective 4점 (72:04).</li>
+    <li><b>Similarity 복원</b>: 두 점을 이은 선이 돌아간 각도 → θ, 선 길이의 비 → s, 한 점의 이동량 → t.</li>
+    <li>Affine·projective는 a~f를 직접 연립하기보다 <b>각 변환 행렬을 따로 만들어 곱(합성)</b>하는 쪽이 더 쉽다고 설명.</li>
+  </ul>
+
+  <div class="calc"><b class="tag">계산 7</b> 변환 계산
+    <ul>
+      <li>점 $(2,0)$을 90° 회전: $(2\cos90^\circ - 0,\ 2\sin90^\circ + 0) = (0,2)$</li>
+      <li>동차 좌표 $(6,4,2)$ → 일반 좌표 $(3,2)$</li>
+      <li><b>합성 순서는 오른쪽부터</b>: $p'=T\,R\,p$ (먼저 R, 다음 T). $(1,0)$을 90° 회전 → $(0,1)$, 다음 $(3,1)$ 이동 → $(3,2)$.
+        <br>순서를 바꿔 $R\,T\,p$: $(1,0)$ → 이동 $(4,1)$ → 회전 $(-1,4)$. <b>순서가 바뀌면 결과가 다름.</b></li>
+      <li>스케일 $(a,b)=(2,4)$의 역변환: $(1/2,\ 1/4)$</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 11. Forward / inverse ============ -->
+<section id="warp-fwdinv">
+  <h2>정방향 · 역방향 워핑</h2>
+  <p>주어진 것: 좌표 변환 $(x',y')=T(x,y)$, 원본 $f(x,y)$. 구할 것: $g(x',y')$.</p>
+  <table>
+    <tr><th></th><th>Forward warping (정방향)</th><th>Inverse warping (역방향)</th></tr>
+    <tr><td><b>방법</b></td><td>원본 화소 $f(x,y)$를 $T(x,y)$ 위치로 <b>보냄</b></td><td>결과 화소 $g(x',y')$마다 $T^{-1}(x',y')$ 위치에서 <b>가져옴</b></td></tr>
+    <tr><td><b>화소 사이에 떨어지면</b></td><td>이웃 화소들에 색을 나눠 줌 (splatting)</td><td>이웃 화소 값으로 <b>보간</b>(nearest, bilinear 등)</td></tr>
+    <tr><td><b>문제</b></td><td>확대(예: $T$ = 3배 스케일)하면 <b class="hl">구멍(hole)</b>이 생김 → 채우기 까다로움</td><td><b>구멍 문제 없음</b>. 단, <b>$T$의 역함수가 있어야</b> 함</td></tr>
+    <tr><td><b>문제 개수</b></td><td><b>2가지</b>: 화소 사이 좌표 + 확대 시 구멍</td><td><b>1가지</b>: 화소 사이 좌표 → 보간</td></tr>
+    <tr><td><b>결론</b></td><td colspan="2"><b>보통 역방향이 더 좋음</b> (구멍 제거). 지금까지 본 변환(이동~projective)은 역행렬 구하기 쉬움. 하지만 역행렬 계산이 불가능할 때도 있음 → <b>역행렬이 없으면 정방향 워핑</b>을 씀.</td></tr>
+  </table>
+  <p><span class="voice">강의</span> 정방향 예: (4,5)→(5.5,6)처럼 화소 사이에 떨어지면 주변 4화소에 거리 비율대로 색을 나눠 줌. 3배 확대에서 (4,4)→(12,12), (5,4)→(15,12)이면 13, 14번 칸이 비어 0(구멍)이 됨.</p>
+
+  <div class="calc"><b class="tag">계산 8</b> 역방향 워핑 + 쌍선형 보간
+    <p>2배 확대 $T$: 결과 $(5,3)$ ← 원본 $T^{-1}(5,3)=(2.5,\,1.5)$ (화소 사이). 주변 값 $f(2,1)=10,\ f(3,1)=20,\ f(2,2)=30,\ f(3,2)=40$</p>
+    <ul>
+      <li>$(2.5,1.5)$: 가로 보간 위 $15$, 아래 $35$ → 세로 보간 $\mathbf{25}$</li>
+      <li>$(2.25,1.75)$: 위 $10+0.25\cdot10=12.5$, 아래 $30+0.25\cdot10=32.5$ → $12.5+0.75\cdot(32.5-12.5)=\mathbf{27.5}$</li>
+    </ul>
+  </div>
+
+  <h3>더 복잡한 모델</h3>
+  <div class="grid2">
+    <div class="box"><b>Mesh grid</b>
+      <ul><li>영상을 타일로 나누고 <b>타일마다 다른 변환</b> 적용 가능 (이 타일은 이동, 저 타일은 shear·projective) — 전역 변환과의 차이</li>
+      <li>파라미터 수 = 타일 수 × 6 (affine) 또는 × 8 (projective). 예: 10×10 타일 + affine → 600</li>
+      <li><b>역방향 워핑 가능</b>, 구멍 문제를 피하려고 보통 역방향 사용</li></ul></div>
+    <div class="box"><b>Optical flow</b>
+      <ul><li>화소마다 자기만의 2D 움직임 벡터 (<b>이동만, 회전 없음</b>)</li>
+      <li>파라미터 수 = 2 × 화소 수 ($2WH$). 예: 640×480 → 614,400</li>
+      <li><span class="voice">강의</span> "옵티컬 플로우도 <b>인버스 워핑이 가능</b>하기 때문에 주로 이용" (91:34) → 영상 정합·복원에 활용</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ W7. Global optimization ============ -->
+<section id="globalopt">
+  <h2>전역 최적화 (7주차)</h2>
+  <div class="must"><b class="tag">★ 교수님 정리 (95:01–96:16)</b>
+    inverse problem · ill-posed · ill-conditioned 개념, <b>데이터 항과 smoothness(정규화) 항의 역할</b>.
+    "<b>이 수식만 좀 알고 있으시면</b> 나중에 영상 복원할 때 크게 도움" → $\mathcal E=\mathcal E_d+\lambda\mathcal E_s$.
+    정규화 항은 영상이 어떤 특성을 갖게 할지 정하고, 데이터 항은 관측 영상과 최대한 비슷하게 만듦.
+  </div>
+
+  <h3>기본 용어</h3>
+  <table>
+    <tr><th>용어</th><th>뜻</th><th>강의 예</th></tr>
+    <tr><td>최적화</td><td>$x^*=\arg\min_x f(x)$, 제약 $g_i(x)\le0$(부등식), $h_i(x)=0$(등식)</td><td>최소제곱 직선 맞춤 $\min\sum(y_i-(ax_i+b))^2$ → $x=(A^TA)^{-1}A^Tb$</td></tr>
+    <tr><td><b>Inverse problem</b></td><td>관측(샘플링된 점 $d_i$)으로 원래 함수 $f$를 복원하는 문제</td><td>2D 영상으로 3D 세계 복원</td></tr>
+    <tr><td><b>Ill-posed</b></td><td>해가 하나로 정해지지 않음 ("Many possible surfaces can fit this data"). ill = not, 잘 정의되지 않음</td><td><span class="star">★</span> 4화소 평균이 6 → 원래 값이 6,6,6,6일 수도, 9,10,1,4일 수도. 해가 무수히 많음 (20:48)</td></tr>
+    <tr><td><b>Ill-conditioned</b></td><td>입력이 조금만 바뀌어도 해가 크게 바뀜</td><td>$ax=b$에서 $a\approx0$이면 $b$가 0.0001만 움직여도 $x$가 수천~수만 배 변함 (25:43). 행렬이면 $A$가 거의 비가역</td></tr>
+  </table>
+
+  <h3>정규화(regularization) = 에너지 최소화</h3>
+  <div class="grid2">
+    <div class="box"><b>Data 항</b> — 관측값과 가깝게
+      $$ \mathcal E_d=\sum_i \big(f(x_i,y_i)-d_i\big)^2 $$
+      <span class="voice">강의</span> 학습 때 쓰는 MSE·L1 loss가 곧 data term (38:48).</div>
+    <div class="box"><b>Smoothness 항</b> — 매끄럽게 (regularizer)
+      $$ \mathcal E_s=\int f_x^2+f_y^2\,dx\,dy=\int\|\nabla f\|^2 $$
+      <span class="voice">강의</span> 노이즈 없는 영상은 부드러워 1차 미분이 거의 0이라 이 항을 추가 (39:47).</div>
+  </div>
+  $$ \mathcal E=\mathcal E_d+\lambda\,\mathcal E_s,\qquad f^*=\arg\min_f \mathcal E(f) $$
+  <ul>
+    <li><b>λ</b>(regularization parameter): smoothness 항을 얼마나 강하게 줄지 조절 (42:57).</li>
+    <li>이산형: $\mathcal E_s=\sum_{x,y}[f(x{+}1,y)-f(x,y)]^2+[f(x,y{+}1)-f(x,y)]^2$.</li>
+    <li>에너지가 $f$의 <b>2차(quadratic) 함수</b> → 미분해 0인 지점이 global minimum (55:06) → $\big(S^TS+\lambda(D_x^TD_x+D_y^TD_y)\big)f=S^Td$, 곧 <b>$Ax=b$</b> 꼴. 행렬이 $WH\times WH$로 커서 sparse 행렬 도구로 풂.</li>
+    <li>"Variational" = 미지수가 함수 전체인 최적화 (포아송 블렌딩도 같은 틀).</li>
+  </ul>
+
+  <h3>Denoising: L2 vs TV(L1)</h3>
+  <table>
+    <tr><th></th><th>식</th><th>결과</th></tr>
+    <tr><td>L2 smoothness</td><td>$\sum(f-g)^2+\lambda\sum\|\nabla f\|^2$</td><td><span class="star">★</span> 노이즈는 지워지지만 <b>blurry</b> — gradient를 모두 0으로 몰아 에지까지 약해짐 (61:25)</td></tr>
+    <tr><td>TV (Total Variation, L1)</td><td>$\sum|f(x{+}1,y)-f(x,y)|+|f(x,y{+}1)-f(x,y)|$</td><td><b>에지 보존, 더 선명</b>. 미분값 3이 L2에선 9로 튀지만 L1에선 3 → 큰 gradient(에지)에 벌점이 덜함 (64:47). 직접 못 풀어 IRLS로 반복</td></tr>
+  </table>
+
+  <h3>베이즈 접근 (Bayesian)</h3>
+  <p>관측 모델 $g=f+n,\ n\sim N(0,\sigma^2)$.</p>
+  $$ \underbrace{p(f|g)}_{\text{posterior}}=\frac{\overbrace{p(g|f)}^{\text{likelihood}}\;\overbrace{p(f)}^{\text{prior}}}{p(g)} $$
+  <ul>
+    <li><b>Posterior</b> $p(f|g)$: g를 관측한 뒤 f일 확률 / <b>Likelihood</b> $p(g|f)$: f일 때 g가 관측될 확률 / <b>Prior</b> $p(f)$: f 자체의 확률 (예: 매끄러운 영상일수록 높음).</li>
+    <li><span class="voice">강의</span> posterior는 직접 구하기 어려움 (노이즈 낀 100에서 원래 값 추정은 어려움), likelihood는 쉬움 (원래 79에 노이즈를 더한 분포) (75:03).</li>
+    <li>주의: 슬라이드 p41 likelihood 식의 $p(f|g)$는 <b>오타</b>, $p(g|f)$가 맞음 (교수님 정정 77:32).</li>
+    <li><b>ML</b> $=\arg\max_f p(g|f)$ → denoising에서는 $f^*=g$라 의미 없음 (82:33). <b>MAP</b> $=\arg\max_f p(f|g)$.</li>
+  </ul>
+  <div class="must"><b class="tag">★ 가장 중요 (86:31)</b>
+    MAP에 <b>−log</b>를 취하면 max → min:
+    $$ -\log p(f|g)=-\log p(g|f)-\log p(f)+C=\frac{1}{\sigma^2}\|f-g\|^2+\frac{1}{\sigma_p^2}\sum\|\nabla f\|^2+C $$
+    Gaussian likelihood → <b>제곱 오차 데이터 항</b>, prior → <b>smoothness 항</b>. 그래서 <b>MAP = regularization 에너지와 완전히 같은 식</b> (88:34).
+  </div>
+
+  <h3>MRF (Markov Random Field)</h3>
+  <ul>
+    <li>Likelihood = 관측이 미지값에 의존하는 관계, prior = 미지값이 <b>이웃 화소</b>에 의존하는 관계.</li>
+    <li>regularization과 달리 label 같은 <b>이산 변수</b>에도 정의 가능 → segmentation.</li>
+    <li>응용: multi-label MRF로 <b>Interactive Digital Photomontage</b>(Agarwala, SIGGRAPH'04) — 단체 사진에서 눈 감은 사람을 다른 장에서 가져와 합성. Graph cut 전경/배경 분할(Boykov & Funka-Lea) — 사용자 stroke로 가장 그럴듯한 binary segmentation.</li>
+  </ul>
+</section>
+
+<!-- ============ 12. Quiz ============ -->
+<section id="quiz">
+  <h2>연습 문제 54</h2>
+  <p class="muted">먼저 답을 말해 보고 펼쳐서 확인. 맞힌 문제는 체크.</p>
+  <h3>필터링</h3>
+  <div class="qlist" data-key="q-filter">
+  <details><summary>Q1. 필터링과 워핑의 차이를 한 줄로?</summary>필터링은 화소 값(range)을 바꾸고, 워핑은 화소 위치(domain)를 바꿈. $G=h(F(x))$ vs $G=F(h(x))$.</details>
+  <details><summary>Q2. 합성곱과 상관의 차이? 언제 결과가 같나?</summary>합성곱은 커널을 상하·좌우로 뒤집어 적용, 상관은 그대로 적용. 커널이 대칭이면 같음.</details>
+  <details><summary>Q3. 3×3 Gaussian 커널을 쓰고 정규화 상수는?</summary><code>[1 2 1; 2 4 2; 1 2 1]</code>, 합이 16이므로 1/16.</details>
+  <details><summary>Q4. Gaussian 필터는 보통 어디서 자르나?</summary>중심에서 2~3σ.</details>
+  <details><summary>Q5. Box보다 Gaussian 흐림이 나은 이유?</summary>거리에 따라 가중치가 부드럽게 줄어 네모난 인공물이 없고 자연스러움.</details>
+  <details><summary>Q6. 고역 통과 필터를 저역 통과 필터로 만드는 법?</summary>델타 함수 − 저역 통과 필터.</details>
+  <details><summary>Q7. Sharpening 커널 $2\delta - \frac19\mathbf 1$의 가운데 값은?</summary>$2-1/9 = 17/9$, 나머지 8칸은 $-1/9$.</details>
+  <details><summary>Q8. 선명화를 과하게 하면 생기는 인공물 2가지?</summary>Halo, overshoot.</details>
+  <details><summary>Q9. 경계 처리 방법 5가지?</summary>Clip filter, wrap around, copy edge, reflect across edge, vary filter near edge.</details>
+  <details><summary>Q10. ★ Separable 필터의 정의와 조건?</summary>열 벡터 × 행 벡터로 분해 가능한 필터. 조건: 행렬 랭크 1 = 모든 행이 한 행의 상수배.</details>
+  <details><summary>Q10-1. <code>[1 2 3; 4 5 6; 7 8 9]</code>는 separable인가? 랭크는?</summary>아님. 랭크 2 (3행 = 2×2행 − 1행, 1·2행은 상수배 아님).</details>
+  <details><summary>Q10-2. 3×3 커널 대신 2×2 커널이면 separable 이득은?</summary>없음. $N^2=2N=4$.</details>
+  <details><summary>Q11. 영상 1000×1000, 커널 5×5. non-separable / separable 곱셈 수?</summary>$10^6\times25 = 2{,}500$만 / $2\times5\times10^6 = 1{,}000$만.</details>
+  <details><summary>Q12. <code>[1 2 1; 2 4 2; 1 2 1]</code>을 두 1D 필터로?</summary>$[1,2,1]^T * [1,2,1]$.</details>
+  <details><summary>Q13. Laplace 커널 <code>[0 1 0;1 -4 1;0 1 0]</code>은 separable인가?</summary>아니오. 행들이 서로 상수배가 아님(랭크 2).</details>
+  <details><summary>Q14. 신호 $[2,4,8]$ 가운데에서 중앙 차분과 2차 차분?</summary>중앙 $(8-2)/2=3$, 2차 $2-8+8=2$.</details>
+  <details><summary>Q15. Sobel 필터가 인기 있는 이유 2가지?</summary>중앙 차분이라 에지 위치가 밀리지 않음, 1×3 Gaussian 평활이 들어 있어 잡음에 덜 민감.</details>
+  <details><summary>Q16. $\partial f/\partial x=3,\ \partial f/\partial y=4$일 때 기울기 크기?</summary>$\sqrt{9+16}=5$. 방향은 $\tan^{-1}(4/3)\approx53^\circ$.</details>
+  <details><summary>Q17. 미분 전에 흐리는 이유, 그리고 DoG의 장점?</summary>미분은 잡음에 민감. 미분 정리로 Gaussian을 미리 미분한 커널 하나만 쓰면 합성곱 1번 절약.</details>
+  <details><summary>Q18. LoG와 DoG에서 에지가 나타나는 모습?</summary>LoG: 영교차, DoG: 봉우리. 영교차가 위치는 더 정확.</details>
+  </div>
+
+  <h3>블렌딩</h3>
+  <details><summary>Q19. 알파 블렌딩 공식? F=100, B=50, α=0.6이면?</summary>$F\alpha + B(1-\alpha)$ = 60+20 = 80.</details>
+  <details><summary>Q20. Feathering이란? 구현 방법은?</summary>경계에서 α가 서서히 변하는 non-binary mask. binary mask를 blur해서 만듦.</details>
+  <details><summary>Q21. 창이 너무 크면/작으면?</summary>크면 ghosting, 작으면 seam(불연속).</details>
+  <details><summary>Q22. 자연 영상에 선형 블렌딩 하나로 부족한 이유?</summary>선형 블렌딩은 주파수가 한 옥타브 정도일 때만 잘 되는데, 자연 영상은 주파수 범위가 매우 넓음.</details>
+  <details><summary>Q23. 다중 대역 블렌딩에서 저주파·고주파는 각각 어떻게 섞나?</summary>저주파는 천천히(넓게) → seam 방지, 고주파는 빠르게(좁게) → ghosting 방지.</details>
+  <details><summary>Q24. 다중 대역 블렌딩 3단계?</summary>① 두 영상의 Laplacian pyramid ② 단계마다 mask의 Gaussian pyramid로 블렌딩 ③ collapse.</details>
+  <details><summary>Q25. ★ 포아송 블렌딩이 source에서 가져오는 것과 주변에서 가져오는 것? 미지수는?</summary>source에서 기울기(변화량), 주변(destination)에서 색(화소 값). 미지수는 Ω 안의 $f$ (경계는 $f^*$로 고정).</details>
+  <details><summary>Q25-1. 다중 대역과 포아송 블렌딩을 한 단어씩으로 구분하면?</summary>다중 대역 = 주파수 기반, 포아송 = gradient 기반.</details>
+  <details><summary>Q25-2. 블렌딩 mask에서 0과 1의 의미, feathering 만드는 법?</summary>0 = 배경, 1 = 전경. binary mask에 blur(low-pass filter).</details>
+  <details><summary>Q26. 포아송 방정식과 이산형을 쓰시오.</summary>$\Delta f=\operatorname{div}\nabla g=\Delta g$ over Ω, $f|_{\partial\Omega}=f^*|_{\partial\Omega}$. 이산: $4f_p-\sum_{N_p}f_q = 4g_p-\sum_{N_p}g_q$.</details>
+  <details><summary>Q27. 포아송 블렌딩 후 붙인 물체 색이 바뀌는 이유와 대비 문제 해결법?</summary>경계 값을 배경에 맞추고 기울기만 유지하므로 전체 밝기·색이 배경 쪽으로 이동. 대비는 곱셈적이라 선형 차이 매칭으로 손실 → 로그 영역에서 블렌딩.</details>
+
+  <h3>워핑</h3>
+  <details><summary>Q28. 2×2 행렬로 표현 못 하는 기본 변환과 그 이유?</summary>이동(translation). 원점이 원점으로 가지 않는, 선형이 아닌 변환이라서 → 동차 좌표 3×3 사용.</details>
+  <details><summary>Q29. 각 변환의 DOF와 필요한 대응점 수? (similarity, affine, projective)</summary>Similarity 4 / 2점, Affine 6 / 3점, Projective 8 / 4점.</details>
+  <details><summary>Q30. 정방향 워핑의 문제와 역방향 워핑의 조건?</summary>정방향: 화소 사이 좌표 + 확대 시 구멍(2가지). 역방향: 구멍은 없지만 변환의 역함수가 있어야 하고, 화소 사이 값은 보간(1가지). 역행렬이 없으면 정방향.</details>
+  <details><summary>Q31. 2×2 선형 변환의 가장 큰 특징과 affine의 가장 큰 특징?</summary>선형: 원점 → 원점. Affine: 이동이 섞여 원점이 원점으로 가지 않음 (평행선은 유지).</details>
+  <details><summary>Q32. $p'=TRSp$에서 가장 먼저 적용되는 변환은? 순서를 바꿔도 되나?</summary>S(가장 오른쪽). 행렬 곱은 교환법칙이 성립하지 않으므로 안 됨.</details>
+  <details><summary>Q33. 타일 20개에 projective를 쓰는 mesh grid, 100×100 영상의 optical flow 파라미터 수?</summary>20×8=160 / 100×100×2=20,000. 둘 다 역방향 워핑 가능.</details>
+
+  <h3>주파수 영역 (3주차)</h3>
+  <details><summary>Q34. 주파수 영역을 쓰는 가장 중요한 이유와 합성곱 정리?</summary>계산 효율. $\mathcal F[f*h]=\mathcal F[f]\cdot\mathcal F[h]$ — 공간 영역 합성곱 = 주파수 영역 원소별 곱.</details>
+  <details><summary>Q35. fftshift한 스펙트럼의 가운데 성분 이름과 의미?</summary>DC 성분(가장 저주파), 영상의 평균 밝기.</details>
+  <details><summary>Q36. 공간 영역 vs FFT 필터링 계산량?</summary>$O(MN)$ vs $O(N\log N)$ (FFT 2번 + 곱 N번 + 역FFT 1번 = $3N\log N+N$). 필터가 클수록 FFT 유리.</details>
+  <details><summary>Q37. Ideal LPF 결과의 물결무늬 이름·원인·대안?</summary>Ringing. 급격한 차단 → 공간 영역에서 sinc처럼 진동. 대안: 리플이 없는 Gaussian LPF.</details>
+  <details><summary>Q38. HPF를 LPF로 만드는 식, BPF를 쓰는 이유?</summary>$H_{HP}=1-H_{LP}$. HPF는 노이즈까지 통과시키므로 너무 높은 주파수를 빼고 에지만 얻으려고 BPF.</details>
+  <details><summary>Q39. JPEG이 손실 압축인 이유?</summary>8×8 DCT 계수 중 눈에 잘 안 띄는 고주파 계수를 버리기 때문 (Campbell-Robson 곡선이 근거).</details>
+
+  <h3>에지 보존 필터 (4주차)</h3>
+  <details><summary>Q40. Bilateral filter의 두 가중치와 W의 역할?</summary>공간 가중치(가까운 화소 우대), range 가중치(밝기가 비슷한 화소 우대), W = 가중치 합으로 나눠 정규화.</details>
+  <details><summary>Q41. Bilateral에서 $\sigma_r\to\infty$이면?</summary>range 가중치가 모두 1 → Gaussian 블러.</details>
+  <details><summary>Q42. Guided filter의 a, b 식과 ε의 역할?</summary>$a=\operatorname{cov}(I,p)/(\operatorname{var}(I)+\epsilon)$, $b=\bar p-a\bar I$. ε이 크면 a가 작아져 평활화가 강해짐.</details>
+  <details><summary>Q43. ($p=I$) 평탄 영역과 에지에서 a, b는?</summary>평탄: $a\approx0,\ b\approx\bar p$ (평균으로 노이즈 제거). 에지: $a\approx1,\ b\approx0$ (보존).</details>
+  <details><summary>Q44. 계산 9의 SAT로 1~2행·1~2열 합은? SAT 박스 필터 계산량은?</summary>$T[2,2]=16$ (1+3+5+7). $O(N)$, 창 크기와 무관.</details>
+
+  <h3>전역 최적화 (7주차)</h3>
+  <details><summary>Q45. 4화소 평균만 보고 원래 값을 찾는 문제가 ill-posed인 이유?</summary>해가 무수히 많아 유일하게 정해지지 않음.</details>
+  <details><summary>Q46. $ax=b$가 ill-conditioned가 되는 조건?</summary>$a\approx0$. b가 조금만 변해도 x가 크게 변함.</details>
+  <details><summary>Q47. $\mathcal E=\mathcal E_d+\lambda\mathcal E_s$에서 각 항과 λ의 역할?</summary>$\mathcal E_d$: 관측과 비슷하게, $\mathcal E_s$: 매끄럽게(정규화), λ: smoothness 항의 강도.</details>
+  <details><summary>Q48. L2 smoothness denoising 결과가 흐린 이유와 대안?</summary>모든 gradient를 0으로 몰아 에지도 약해짐. 대안 TV(L1) → 에지 보존.</details>
+  <details><summary>Q49. Bayes rule의 세 항 이름과 ML이 denoising에서 쓸모없는 이유?</summary>posterior $p(f|g)$, likelihood $p(g|f)$, prior $p(f)$. ML은 $f^*=g$(관측 그대로)가 되기 때문.</details>
+  <details><summary>Q50. MAP에 −log를 취하면?</summary>max → min. Gaussian likelihood → 제곱 오차 데이터 항, prior → smoothness 항 → regularization 에너지와 같은 식.</details>
+
+  <h3>맞힌 개수 체크</h3>
+  <ul class="check" data-key="quiz-done">
+    <li><label><input type="checkbox"><span>필터링 Q1–Q18 한 번 통과</span></label></li>
+    <li><label><input type="checkbox"><span>블렌딩 Q19–Q27 한 번 통과</span></label></li>
+    <li><label><input type="checkbox"><span>워핑 Q28–Q33 + 계산 7·8 통과</span></label></li>
+    <li><label><input type="checkbox"><span>3·4·7주차 Q34–Q50 + 계산 9 통과</span></label></li>
+    <li><label><input type="checkbox"><span>계산 1~8 답 안 보고 다시 풀기</span></label></li>
+  </ul>
+</section>
+
+<!-- ============ 14. Final ============ -->
+<section id="final">
+  <h2>시험 직전 체크리스트</h2>
+  <ul class="check" data-key="final">
+    <li><label><input type="checkbox"><span>합성곱 식 $\sum f(i,j)I(x-i,y-j)$와 "뒤집기"를 설명할 수 있음</span></label></li>
+    <li><label><input type="checkbox"><span>Box·Gaussian·Sharpening 커널을 쓰고 3×3 패치 출력값을 계산할 수 있음</span></label></li>
+    <li><label><input type="checkbox"><span>고역 통과 = 델타 − 저역 통과</span></label></li>
+    <li><label><input type="checkbox"><span>Separable = 랭크 1 = 열×행, 비용 $M^2N^2$ vs $2NM^2$</span></label></li>
+    <li><label><input type="checkbox"><span>Box·Gaussian·Sobel을 1D 두 개로 분해할 수 있음</span></label></li>
+    <li><label><input type="checkbox"><span>전진·후진·중앙 차분, Sobel 계산, 기울기 크기·방향</span></label></li>
+    <li><label><input type="checkbox"><span>DoG(봉우리) vs LoG(영교차), 미분 전 흐리기</span></label></li>
+    <li><label><input type="checkbox"><span>알파 블렌딩 공식, feathering, 창 크기 규칙(ghosting / seam)</span></label></li>
+    <li><label><input type="checkbox"><span>다중 대역: 저주파 천천히, 고주파 빠르게, 3단계</span></label></li>
+    <li><label><input type="checkbox"><span>포아송: 기울기 보존, 경계 $f=f^*$, $\Delta f=\Delta g$, 이산식, 색 변화·로그 영역</span></label></li>
+    <li><label><input type="checkbox"><span>2×2 행렬 5종 + 이동은 불가 이유</span></label></li>
+    <li><label><input type="checkbox"><span>동차 좌표 정의, 3×3 이동 행렬, 합성 순서(오른쪽부터)</span></label></li>
+    <li><label><input type="checkbox"><span>변환 계층 표: DOF 2·3·4·6·8, 보존 성질, 대응점 1·2·2·3·4</span></label></li>
+    <li><label><input type="checkbox"><span>정방향(구멍) vs 역방향(역함수 필요, 보간), 쌍선형 보간 계산, mesh grid·optical flow 파라미터 수</span></label></li>
+    <li><label><input type="checkbox"><span>3주차: 합성곱 정리, DC 성분·fftshift, $O(N\log N)$, ideal → ringing / Gaussian → 없음, HPF = 1 − LPF, JPEG</span></label></li>
+    <li><label><input type="checkbox"><span>4주차: bilateral(공간 × range, $\sigma_r=\infty$ → Gaussian), guided $a=\operatorname{cov}/(\operatorname{var}+\epsilon)$, $b=\bar p-a\bar I$, SAT 영역 합</span></label></li>
+    <li><label><input type="checkbox"><span>7주차: ill-posed(해 여러 개) · ill-conditioned($a\approx0$), $\mathcal E_d+\lambda\mathcal E_s$, L2 흐림 vs TV 에지 보존, posterior·likelihood·prior, −log MAP = 정규화 에너지</span></label></li>
+  </ul>
+  <p class="muted">체크 상태는 이 브라우저에 저장되어 다시 열어도 남아 있음.</p>
+</section>
+
+</main>
+</div>
+
+<button id="toTop" aria-label="맨 위로">↑</button>
+<script>
+(function(){
+  var KEY='ivp-midterm-notes-v1';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){state={}}
+  document.querySelectorAll('ul.check').forEach(function(ul){
+    var k=ul.dataset.key;
+    ul.querySelectorAll('input[type=checkbox]').forEach(function(cb,i){
+      var id=k+':'+i;
+      cb.checked=!!state[id];
+      cb.addEventListener('change',function(){
+        state[id]=cb.checked;
+        try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+      });
+    });
+  });
+  var btn=document.getElementById('toTop');
+  window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>600)});
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+})();
+</script>
+</body>
+</html>
