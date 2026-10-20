@@ -1,0 +1,997 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>데이터마이닝 압축노트</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})"></script>
+
+<style>
+:root{--ink:#111;--muted:#555;--line:#bbb;--a:#2a78d6;--b:#eb6834;--c:#1a8a5a;--d:#8a3fc0;
+  --fs:6.0pt;--cols:4}
+@page{size:A4;margin:4mm}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font-family:Pretendard,'Malgun Gothic',sans-serif;
+  font-size:var(--fs);line-height:1.16}
+.sheet{column-count:var(--cols);column-gap:1.6mm;column-rule:0.3pt solid var(--line);column-fill:auto}
+@media screen{body{background:#e9e9e6}.sheet{width:202mm;margin:8mm auto;background:#fff;padding:3mm;
+  column-fill:balance}.bar{display:block}}
+.bar{display:none;width:198mm;margin:6mm auto 0;font:12px Pretendard,sans-serif;color:#333}
+section{break-inside:auto}
+h1.part{font-size:calc(var(--fs) + 1.5pt);margin:0.8mm 0 0.4mm;padding:0.4mm 1mm;color:#fff;break-after:avoid}
+h1.a{background:var(--a)}h1.b{background:var(--b)}h1.c{background:var(--c)}h1.d{background:var(--d)}
+h2,h3{font-size:calc(var(--fs) + 0.5pt);margin:0.7mm 0 0.2mm;break-after:avoid;border-bottom:0.4pt solid var(--line)}
+h4{font-size:var(--fs);margin:0.6mm 0 0.2mm;break-after:avoid}
+p{margin:0.3mm 0}
+ul,ol{margin:0.2mm 0;padding-left:3mm}
+li{margin:0}
+table{border-collapse:collapse;width:100%;margin:0.5mm 0;font-size:calc(var(--fs) - 0.4pt);break-inside:avoid}
+th,td{border:0.3pt solid #999;padding:0 0.4mm;vertical-align:middle;text-align:left}
+th{background:#eee}
+code{font-size:calc(var(--fs) - 0.4pt)}
+pre{white-space:pre-wrap;margin:0.4mm 0;font-size:calc(var(--fs) - 0.6pt)}
+blockquote{margin:0.4mm 0;padding-left:1mm;border-left:1pt solid var(--b)}
+strong{color:#000}
+hr{display:none}
+.katex{font-size:1.02em}
+.katex-display{margin:0.4mm 0}
+</style></head>
+<body><div class="bar">인쇄: Ctrl+P → 용지 A4 · 여백 '기본값' · 배경 그래픽 켜기 · 양면 인쇄. Tan et al., Introduction to Data Mining 2e (2·3·5·7장)</div>
+<main class="sheet"><section><h1 class="part a">전처리 · 유사도/거리</h1><h2>A. 데이터 전처리 + 유사도·거리 (Ch.2 Data)</h2>
+<h3>A1. 속성 척도 (Attribute Types)</h3>
+<table>
+<thead>
+<tr>
+<th>척도</th>
+<th>성질</th>
+<th>허용 연산·통계</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>명목 (Nominal)</td>
+<td>구별 $=,\neq$</td>
+<td>최빈값(mode), 엔트로피, $\chi^2$</td>
+<td>ID, 우편번호, 눈 색</td>
+</tr>
+<tr>
+<td>순서 (Ordinal)</td>
+<td>+ 순서 $&lt;,&gt;$</td>
+<td>중앙값, 백분위, 순위상관</td>
+<td>성적 A~F, 만족도</td>
+</tr>
+<tr>
+<td>구간 (Interval)</td>
+<td>+ 차이 $+,-$</td>
+<td>평균, 표준편차, Pearson 상관</td>
+<td>섭씨, 날짜</td>
+</tr>
+<tr>
+<td>비율 (Ratio)</td>
+<td>+ 비율 $\times,\div$ (절대 0)</td>
+<td>기하·조화평균, 변동계수</td>
+<td>켈빈, 길이, 나이, 개수</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>명목·순서 = 범주형(categorical/qualitative), 구간·비율 = 수치형(numeric/quantitative)</li>
+<li>허용 변환: 명목=일대일 치환, 순서=순서 보존 단조 변환, 구간 $x'=ax+b$, 비율 $x'=ax$</li>
+<li>이산(discrete): 유한·가산 값, 이진(binary)은 특수형 / 연속(continuous): 실수값</li>
+<li>비대칭 속성(asymmetric): 0이 아닌 값(존재)만 의미, 예: 장바구니·문서 단어 → 0-0 일치 무시</li>
+</ul>
+<h3>A2. 데이터 품질 (Data Quality)</h3>
+<ul>
+<li>잡음(noise): 측정값의 무작위 왜곡 / 인공물(artifact): 결정적 왜곡</li>
+<li>이상치(outlier): 다른 객체와 동떨어진 값, 때로 분석 대상 자체(사기 탐지)</li>
+<li>결측값(missing): 객체 제거, 추정(평균·보간), 분석 시 무시</li>
+<li>중복(duplicate): 동일 객체 여러 레코드, 병합 시 발생 → 중복 제거(deduplication)</li>
+<li>정밀도(precision, 반복 측정 근접성) vs 편향(bias, 참값과의 체계적 차이) vs 정확도(accuracy)</li>
+</ul>
+<h3>A3. 전처리 기법 (Preprocessing)</h3>
+<table>
+<thead>
+<tr>
+<th>기법</th>
+<th>한 줄 요약</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>집계 (Aggregation)</td>
+<td>여러 객체를 하나로 합침, 데이터 축소·척도 변경·변동성 감소</td>
+</tr>
+<tr>
+<td>샘플링 (Sampling)</td>
+<td>대표성 있는 부분집합으로 처리비용 절감</td>
+</tr>
+<tr>
+<td>차원 축소 (Dimensionality Reduction)</td>
+<td>PCA, SVD 등 선형대수 기법으로 새 축 생성</td>
+</tr>
+<tr>
+<td>특성 부분집합 선택 (Feature Subset Selection)</td>
+<td>중복·무관 속성 제거, 내장(embedded)·필터(filter)·래퍼(wrapper)</td>
+</tr>
+<tr>
+<td>특성 생성 (Feature Creation)</td>
+<td>특성 추출, 새 공간으로 사상(푸리에·웨이블릿), 특성 구성</td>
+</tr>
+<tr>
+<td>이산화·이진화 (Discretization/Binarization)</td>
+<td>연속→범주, 범주→이진 변수</td>
+</tr>
+<tr>
+<td>변수 변환 (Variable Transformation)</td>
+<td>단순 함수($\log x$, $\sqrt{x}$, $1/x$), 정규화·표준화</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>샘플링: 단순 무작위(SRS) 비복원(without replacement)/복원(with replacement, 같은 객체 재선택 가능), 층화(stratified, 그룹별 추출 → 희귀 클래스 보존), 점진(progressive, 작은 표본에서 시작해 정확도 수렴 시까지 확대)</li>
+<li>차원의 저주(curse of dimensionality): 차원 증가 시 데이터가 희소, 점 간 거리 차이가 작아져 밀도·거리 개념 약화 → 군집·분류 성능 저하</li>
+<li>PCA: 분산 최대 방향의 서로 직교인 새 축(주성분)으로 선형 사상, 상위 성분만 유지</li>
+<li>이산화(비지도): 등간격(equal width, 구간 폭 동일, 이상치에 민감), 등빈도(equal frequency/depth, 구간별 개수 동일), K-means 군집 기반</li>
+<li>이산화(지도): 엔트로피 기반, 클래스 순도 최대 분할점 선택 → 최악(최고 엔트로피) 구간 반복 분할, $e_i=-\sum_j p_{ij}\log_2 p_{ij}$, 전체 $e=\sum_i w_i e_i$</li>
+<li>표준화(z-score): $x'=\frac{x-\bar{x}}{s_x}$ (평균 0, 표준편차 1), 이상치에 강건하려면 중앙값·절대편차 사용</li>
+<li>최소-최대 정규화(min-max): $x'=\frac{x-\min}{\max-\min}\in[0,1]$</li>
+</ul>
+<h3>A4. 유사도·거리 기본</h3>
+<ul>
+<li>유사도(similarity): 비슷할수록 큼, 보통 $[0,1]$ / 비유사도(dissimilarity): 비슷할수록 작음, 최소 0 / 둘을 합쳐 근접도(proximity)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>속성</th>
+<th>비유사도 $d$</th>
+<th>유사도 $s$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>명목</td>
+<td>$x=y$면 0, 아니면 1</td>
+<td>$x=y$면 1, 아니면 0</td>
+</tr>
+<tr>
+<td>순서 (값을 $0..n-1$로 사상)</td>
+<td>$\lvert x-y\rvert/(n-1)$</td>
+<td>$1-d$</td>
+</tr>
+<tr>
+<td>구간·비율</td>
+<td>$\lvert x-y\rvert$</td>
+<td>$-d$, $\frac{1}{1+d}$, $e^{-d}$, $1-\frac{d-\min_d}{\max_d-\min_d}$</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>거리→유사도 변환: $s=1-d$ ($d\in[0,1]$), $s=\frac{1}{1+d}$ ($d=0,1,10,100 \to s=1,0.5,0.09,0.01$, 비선형), $s=e^{-d}$, min-max 사상</li>
+</ul>
+<h3>A5. 민코프스키 계열 (Minkowski)</h3>
+<ul>
+<li>$d(\mathbf{x},\mathbf{y})=\left(\sum_{k=1}^{n}\lvert x_k-y_k\rvert^{r}\right)^{1/r}$, $r$(파라미터)과 $n$(차원 수) 혼동 금지</li>
+<li>$r=1$ 맨해튼(Manhattan, city block, $L_1$): 이진 벡터면 해밍 거리(Hamming, 다른 비트 수)</li>
+<li>$r=2$ 유클리드(Euclidean, $L_2$): 척도가 다르면 표준화 필수</li>
+<li>$r\to\infty$ 상한(supremum, $L_{\max}$, $L_\infty$): $\max_k\lvert x_k-y_k\rvert$</li>
+<li>슬라이드 예: p1(0,2), p2(2,0), p3(3,1), p4(5,1)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>쌍</th>
+<th>$L_1$</th>
+<th>$L_2$</th>
+<th>$L_\infty$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p1-p2</td>
+<td>4</td>
+<td>2.828</td>
+<td>2</td>
+</tr>
+<tr>
+<td>p1-p3</td>
+<td>4</td>
+<td>3.162</td>
+<td>3</td>
+</tr>
+<tr>
+<td>p1-p4</td>
+<td>6</td>
+<td>5.099</td>
+<td>5</td>
+</tr>
+<tr>
+<td>p2-p3</td>
+<td>2</td>
+<td>1.414</td>
+<td>1</td>
+</tr>
+<tr>
+<td>p2-p4</td>
+<td>4</td>
+<td>3.162</td>
+<td>3</td>
+</tr>
+<tr>
+<td>p3-p4</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>계산 예 p1-p4: 차이 (5,1) → $L_1=5+1=6$, $L_2=\sqrt{25+1}=5.099$, $L_\infty=\max(5,1)=5$</li>
+</ul>
+<h3>A6. 마할라노비스 (Mahalanobis)</h3>
+<ul>
+<li>$\text{mahal}(\mathbf{x},\mathbf{y})=(\mathbf{x}-\mathbf{y})\,\Sigma^{-1}(\mathbf{x}-\mathbf{y})^{T}$, $\Sigma$ = 데이터 공분산 행렬, $\Sigma_{jk}=\frac{1}{n-1}\sum_i(X_{ij}-\bar X_j)(X_{ik}-\bar X_k)$</li>
+<li>의미: 속성 간 상관·척도 차이 보정, 분포의 긴 축 방향 거리는 짧게 → 타원형 분포에 적합, $\Sigma=I$면 유클리드 제곱과 동일</li>
+<li>슬라이드 예: $\Sigma=\begin{pmatrix}0.3&amp;0.2\\0.2&amp;0.3\end{pmatrix}$, $\Sigma^{-1}=\begin{pmatrix}6&amp;-4\\-4&amp;6\end{pmatrix}$, A(0.5,0.5), B(0,1), C(1.5,1.5)</li>
+<li>A-B=(0.5,−0.5): $6(0.25)+6(0.25)-8(-0.25)=5$ → Mahal(A,B)=5</li>
+<li>A-C=(−1,−1): $6+6-8=4$ → Mahal(A,C)=4 (유클리드로는 C가 더 멀지만 상관 방향이라 더 가까움)</li>
+</ul>
+<h3>A7. 거리·유사도의 성질</h3>
+<ul>
+<li>거리(metric) 3성질: ① 양수성(positivity) $d\ge0$, $d=0 \iff x=y$ ② 대칭성(symmetry) $d(x,y)=d(y,x)$ ③ 삼각부등식(triangle inequality) $d(x,z)\le d(x,y)+d(y,z)$</li>
+<li>유사도 성질: $s=1$(최대) $\iff x=y$, 대칭성 / 삼각부등식 일반적으로 불성립</li>
+<li>비거리 예: 집합 차 $d(A,B)=\lvert A-B\rvert$(비대칭), 시간 차 $d=y-x$ 음수 가능</li>
+</ul>
+<h3>A8. 이진 벡터 유사도: SMC vs Jaccard</h3>
+<ul>
+<li>$M_{01},M_{10},M_{00},M_{11}$ = (x,y) 값 조합별 속성 개수</li>
+<li>SMC(Simple Matching Coefficient) $=\frac{M_{11}+M_{00}}{M_{01}+M_{10}+M_{11}+M_{00}}$: 0-0 일치 포함, 대칭 이진 속성(성별 등)</li>
+<li>Jaccard $J=\frac{M_{11}}{M_{01}+M_{10}+M_{11}}$: 0-0 일치 무시, 희소 비대칭 이진 데이터(장바구니·문서), 범위 $[0,1]$</li>
+<li>슬라이드 예: x=1000000000, y=0000001001 → $M_{01}=2, M_{10}=1, M_{00}=7, M_{11}=0$</li>
+<li>SMC $=(0+7)/(2+1+0+7)=0.7$</li>
+<li>$J=0/(2+1+0)=0$ → 희소 데이터에서 SMC는 거의 모든 쌍을 유사하다고 판정</li>
+</ul>
+<h3>A9. 코사인 (Cosine)</h3>
+<ul>
+<li>$\cos(\mathbf{x},\mathbf{y})=\frac{\mathbf{x}\cdot\mathbf{y}}{\lVert\mathbf{x}\rVert\,\lVert\mathbf{y}\rVert}$, 범위 $[-1,1]$, 음이 아닌 데이터면 $[0,1]$</li>
+<li>특징: 벡터 길이 무시, 각도만 비교, 0-0 일치 무시 → 문서·단어 빈도 벡터(희소, 비대칭)에 표준</li>
+<li>슬라이드 예: d1=(3,2,0,5,0,0,0,2,0,0), d2=(1,0,0,0,0,0,0,1,0,2)</li>
+<li>$d1\cdot d2=3\cdot1+2\cdot1=5$, $\lVert d1\rVert=\sqrt{9+4+25+4}=\sqrt{42}=6.481$, $\lVert d2\rVert=\sqrt{1+1+4}=\sqrt6=2.449$</li>
+<li>$\cos=5/(6.481\times2.449)=0.3150$ (슬라이드 원문의 2.245는 오타, $\sqrt6=2.449$)</li>
+</ul>
+<h3>A10. 확장 Jaccard (Tanimoto)</h3>
+<ul>
+<li>$EJ(\mathbf{x},\mathbf{y})=\frac{\mathbf{x}\cdot\mathbf{y}}{\lVert\mathbf{x}\rVert^2+\lVert\mathbf{y}\rVert^2-\mathbf{x}\cdot\mathbf{y}}$: 연속·빈도 속성용 Jaccard, 이진이면 Jaccard와 동일</li>
+<li>위 d1,d2 적용: $5/(42+6-5)=5/43=0.116$</li>
+</ul>
+<h3>A11. 피어슨 상관 (Pearson Correlation)</h3>
+<ul>
+<li>$\text{corr}(\mathbf{x},\mathbf{y})=\frac{s_{xy}}{s_x s_y}$, $s_{xy}=\frac{1}{n-1}\sum_k(x_k-\bar x)(y_k-\bar y)$ = 각 벡터 표준화 후 내적$/(n-1)$</li>
+<li>범위 $[-1,1]$: 1 완전 양의 선형, −1 완전 음의 선형, 0 선형관계 없음</li>
+<li>비선형 관계 못 잡음: $x=(-3,-2,-1,0,1,2,3)$, $y=x^2=(9,4,1,0,1,4,9)$ → corr=0 (완전한 함수관계인데도)</li>
+<li>완전 상관 예: $x=(-3,6,0,3,-6)$, $y=(1,-2,0,-1,2)$ → $y=-x/3$ → corr=−1</li>
+</ul>
+<h3>A12. 척도 비교 (불변성)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>스케일 $y\to ay$</th>
+<th>평행이동 $y\to y+b$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>코사인</td>
+<td>불변</td>
+<td>변함</td>
+</tr>
+<tr>
+<td>상관</td>
+<td>불변</td>
+<td>불변</td>
+</tr>
+<tr>
+<td>유클리드</td>
+<td>변함</td>
+<td>변함</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>예: x=(1,2,4,3,0,0,0), y=(1,2,3,4,0,0,0) → cos 0.9667, corr 0.9364, $L_2$ 1.4142 / $2y$: 0.9667, 0.9364, 5.8310 / $y+5$: 0.8259, 0.9364, 13.3041</li>
+<li>상관 = 평균 중심화한 벡터의 코사인, 데이터 평균 0이면 코사인과 같음</li>
+</ul>
+<h3>A13. 혼합 속성 결합 (Heterogeneous)</h3>
+<ul>
+<li>속성 $k$별 유사도 $s_k\in[0,1]$ 계산, 지시변수 $\delta_k=0$(비대칭 속성이면서 둘 다 0, 또는 결측), 아니면 1</li>
+<li>$\text{sim}(\mathbf{x},\mathbf{y})=\frac{\sum_k\delta_k s_k}{\sum_k\delta_k}$</li>
+<li>가중치(weights) $w_k$, $\sum w_k=1$: $\text{sim}=\frac{\sum_k w_k\delta_k s_k}{\sum_k\delta_k}$, 거리형 $d=\left(\sum_k w_k\lvert x_k-y_k\rvert^r\right)^{1/r}$</li>
+</ul>
+<h3>A14. 척도 선택 요령</h3>
+<ul>
+<li>연속·밀집 데이터, 척도 동일 → 유클리드($L_2$), 척도 상이 → 표준화 후 유클리드, 상관된 속성 → 마할라노비스</li>
+<li>격자형 이동·이상치 완화 → $L_1$, 최대 편차만 중요 → $L_\infty$</li>
+<li>희소 비대칭 이진 → Jaccard / 대칭 이진 → SMC</li>
+<li>문서·빈도 벡터(크기 무관) → 코사인, 빈도 크기도 반영 → Tanimoto</li>
+<li>시계열 등 모양(패턴)만 비교, 평균·스케일 차이 무시 → 상관</li>
+<li>속성 유형 혼재 → 속성별 유사도 후 가중 결합</li>
+</ul>
+<h3>시험 직전 체크</h3>
+<ul>
+<li>SMC는 0-0 일치 포함, Jaccard는 분모에서 $M_{00}$ 제외 → 희소 데이터에서 SMC 과대</li>
+<li>Minkowski의 $r$은 차원 수 $n$이 아님, $L_\infty$는 합이 아닌 최대 차이</li>
+<li>코사인은 평행이동에 변함, 상관은 스케일·평행이동 모두 불변, 유클리드는 둘 다 변함</li>
+<li>corr=0은 선형관계 없음일 뿐 독립 아님 ($y=x^2$ 예)</li>
+<li>마할라노비스 슬라이드 값(5, 4)은 제곱근 없는 형태, $\Sigma^{-1}$ 사용</li>
+</ul></section><section><h1 class="part c">연관규칙분석</h1><h2>C. 연관규칙분석 (Association Analysis) — Tan 2판 5장</h2>
+<h3>C1. 기본 개념·데이터</h3>
+<p><strong>Table 5.1 장바구니 거래 (market basket transactions)</strong></p>
+<table>
+<thead>
+<tr>
+<th>TID</th>
+<th>Items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>{Bread, Milk}</td>
+</tr>
+<tr>
+<td>2</td>
+<td>{Bread, Diapers, Beer, Eggs}</td>
+</tr>
+<tr>
+<td>3</td>
+<td>{Milk, Diapers, Beer, Cola}</td>
+</tr>
+<tr>
+<td>4</td>
+<td>{Bread, Milk, Diapers, Beer}</td>
+</tr>
+<tr>
+<td>5</td>
+<td>{Bread, Milk, Diapers, Cola}</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>항목집합(itemset): 항목 모음, k개면 k-itemset. 거래 폭(transaction width) = 거래 내 항목 수</li>
+<li>지지도 개수(support count) $\sigma(X)=|\{t_i \mid X\subseteq t_i\}|$, 지지도(support) $s(X)=\sigma(X)/N$</li>
+<li>빈발 항목집합(frequent itemset): $s(X)\ge minsup$</li>
+<li>연관규칙(association rule) $X\to Y$, $X\cap Y=\emptyset$ (X: 전건 antecedent, Y: 후건 consequent)</li>
+<li>$s(X\to Y)=\frac{\sigma(X\cup Y)}{N}$ (규칙 적용 빈도), $c(X\to Y)=\frac{\sigma(X\cup Y)}{\sigma(X)}$ (신뢰성, $\approx P(Y|X)$)</li>
+<li><strong>예 5.1 {Milk, Diapers}→{Beer}</strong>: $\sigma$(Milk,Diapers,Beer)=2 (TID 3,4) → $s=2/5=0.4$. $\sigma$(Milk,Diapers)=3 (TID 3,4,5) → $c=2/3=0.67$. 참고 lift $=0.67/s(\text{Beer})=0.67/0.6\approx1.11$</li>
+<li>목표: $s\ge minsup$, $c\ge minconf$ 규칙 전부 탐색. 연관 ≠ 인과(causality)</li>
+</ul>
+<h3>C2. Brute-force 복잡도·2단계 전략</h3>
+<ul>
+<li>가능한 규칙 수 $R=3^d-2^{d+1}+1$. Table 5.1($d=6$): $3^6-2^7+1=602$개, minsup 20%·minconf 50%면 80% 이상 폐기 → 낭비</li>
+<li>가능한 항목집합 $2^d$ (공집합 제외 $2^d-1$). 후보 전수 대조 $O(NMw)$, $M=2^d$, $w$=최대 거래 폭</li>
+<li><strong>2단계</strong>: ① 빈발 항목집합 생성(frequent itemset generation, 비용 대부분) → ② 규칙 생성(rule generation, 고신뢰 규칙 추출)</li>
+<li>같은 항목집합의 규칙은 support 동일 → 두 조건 분리 가능</li>
+</ul>
+<h3>C3. Apriori 원리</h3>
+<ul>
+<li><strong>정리 5.1</strong>: 빈발 항목집합의 모든 부분집합도 빈발. 대우: 비빈발 집합의 모든 상위집합(superset)도 비빈발 → 격자(lattice)에서 서브그래프 통째로 가지치기(support-based pruning)</li>
+<li><strong>anti-monotone 성질</strong>: $\forall X\subseteq Y:\ s(X)\ge s(Y)$ (집합 커지면 support 증가 불가)</li>
+</ul>
+<h3>C4. Apriori 알고리즘 (Alg. 5.1)</h3>
+<ol>
+<li>$k=1$, $F_1=\{i \mid \sigma(\{i\})\ge N\cdot minsup\}$</li>
+<li>반복: $k{+}{+}$ → $C_k$=candidate-gen($F_{k-1}$) → candidate-prune → 거래마다 subset($C_k,t$)로 포함 후보 $\sigma{+}1$ → $F_k=\{c\mid\sigma(c)\ge N\cdot minsup\}$</li>
+<li>$F_k=\emptyset$이면 종료, 결과 $\bigcup F_k$. 수준별(level-wise) 탐색, 최대 $k_{max}+1$회 스캔</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>후보 생성 방법</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Brute-force</td>
+<td>k-항목집합 $\binom{d}{k}$개 모두 후보, 가지치기 비용 과다</td>
+</tr>
+<tr>
+<td>$F_{k-1}\times F_1$</td>
+<td>빈발 (k-1)-집합에 빈발 1-항목 추가. 완전하나 중복·불필요 후보 발생, 사전순(lexicographic) 정렬로 중복 방지</td>
+</tr>
+<tr>
+<td>$F_{k-1}\times F_{k-1}$ (Apriori 채택)</td>
+<td>사전순 정렬 후 <strong>앞 k-2개 항목 동일</strong>한 두 (k-1)-집합 병합. 예: {Bread,Diapers}+{Bread,Milk}→{Bread,Diapers,Milk}</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>후보 가지치기(candidate pruning): 후보의 (k-1)-부분집합 중 하나라도 비빈발이면 제거</li>
+<li>support counting: hash tree에 후보 분산, 거래 부분집합을 해시해 같은 버킷 후보와만 비교</li>
+</ul>
+<p><strong>교재 예 (Table 5.1, minsup 60% = count 3)</strong></p>
+<ul>
+<li>1-항목: Bread 4, Milk 4, Diapers 4, Beer 3 빈발 / Cola 2, Eggs 1 제거</li>
+<li>2-항목 후보 $\binom{4}{2}=6$: {Beer,Bread}=2, {Beer,Milk}=2 제거, 나머지 4개 빈발(각 3)</li>
+<li>3-항목: 가지치기 없으면 $\binom{6}{3}=20$, Apriori로 {Bread,Diapers,Milk} 1개만 남으나 σ=2로 비빈발</li>
+<li>후보 총수: brute-force $\binom61+\binom62+\binom63=6+15+20=41$ vs Apriori $\binom61+\binom42+1=6+6+1=13$ → <strong>68% 감소</strong></li>
+</ul>
+<h3>C5. 계산 복잡도 영향 요인</h3>
+<table>
+<thead>
+<tr>
+<th>요인</th>
+<th>영향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>minsup 낮춤</td>
+<td>빈발 집합 증가, 최대 크기 증가 → 후보·스캔 횟수 증가</td>
+</tr>
+<tr>
+<td>항목 수(dimensionality) $d$</td>
+<td>support count 저장 공간 증가, 빈발 항목 많으면 후보 폭증</td>
+</tr>
+<tr>
+<td>거래 수 $N$</td>
+<td>반복 스캔이라 실행시간 증가</td>
+</tr>
+<tr>
+<td>평균 거래 폭</td>
+<td>최대 빈발 크기 증가, 거래당 부분집합 증가 → hash tree 탐색 증가</td>
+</tr>
+</tbody>
+</table>
+<h3>C6. 규칙 생성</h3>
+<ul>
+<li>빈발 k-집합 $Y$ 하나에서 최대 $2^k-2$개 규칙 ($X\to Y-X$). support는 이미 충족, confidence 계산에 추가 스캔 불필요 (부분집합 σ 이미 계산)</li>
+<li>confidence는 일반적으로 anti-monotone 아님. 단 <strong>같은 항목집합 내에서 성립 (정리 5.2)</strong>: $\tilde X\subset X$면 $c(\tilde X\to Y-\tilde X)=\sigma(Y)/\sigma(\tilde X)\le\sigma(Y)/\sigma(X)=c(X\to Y-X)$</li>
+<li>후건 항목 늘수록 c 감소. 예: $\{bcd\}\to\{a\}$ 저신뢰면 후건에 a 포함 규칙($\{cd\}\to\{ab\}$ 등) 모두 제거</li>
+<li>Apriori 규칙 생성(Alg. 5.2/5.3 ap-genrules): 후건 1개짜리 고신뢰 규칙부터 시작, 후건 병합으로 다음 수준 후보 생성(예: $\{acd\}\to\{b\}$, $\{abd\}\to\{c\}$ → $\{ad\}\to\{bc\}$)</li>
+</ul>
+<h3>C7. 압축 표현 (Compact Representation)</h3>
+<ul>
+<li><strong>최대 빈발(maximal frequent)</strong>: 빈발이면서 직속 상위집합(immediate superset) 모두 비빈발. 가장 압축적이나 부분집합의 support 정보 상실</li>
+<li><strong>닫힌(closed)</strong>: 직속 상위집합 중 support 같은 것이 하나도 없음. <strong>closed frequent</strong> = closed + $s\ge minsup$. support 정보 손실 없이 모든 빈발 집합의 σ 복원 가능</li>
+<li>관계: <strong>maximal frequent ⊆ closed frequent ⊆ frequent</strong> (maximal은 상위집합이 비빈발이라 support 같을 수 없으므로 항상 closed)</li>
+</ul>
+<h3>C8. FP-Growth</h3>
+<ul>
+<li>생성-검사(generate-and-test) 미사용. 데이터를 <strong>FP-tree</strong>로 압축, 트리에서 빈발 항목집합 직접 추출 → <strong>후보 생성 없음</strong></li>
+<li><strong>구성 단계</strong>
+  1. 1차 스캔: 항목별 support count, 비빈발 항목 제거
+  2. 각 거래 내 항목을 <strong>support 내림차순</strong> 정렬
+  3. 2차 스캔: 거래를 null 루트에서 시작하는 경로로 삽입. <strong>공유 접두사(prefix)는 기존 노드 재사용, count +1</strong> → 압축
+  4. 같은 항목 노드끼리 포인터(node-link) 연결, 헤더 테이블(header table)에서 항목별 첫 노드 접근</li>
+<li><strong>교재 예 (Fig. 5.24, 10건, minsup count 2)</strong>: {a,b} {b,c,d} {a,c,d,e} {a,d,e} {a,b,c} {a,b,c,d} {a} {a,b,c} {a,b,d} {b,c,e}. 빈도 a 8 &gt; b 7 &gt; c 6 &gt; d 5 &gt; e 3. 완성 트리 루트 자식 a:8, b:2</li>
+<li>오름차순 정렬이면 루트 분기 2→5로 트리 비대(Fig. 5.25)</li>
+<li><strong>빈발 집합 생성 (접미사 기반 분할정복, suffix-based divide-and-conquer)</strong>: e→d→c→b→a 순(bottom-up)
+  1. node-link로 e 포함 경로 수집 = 접두 경로(prefix paths) = <strong>조건부 패턴 베이스(conditional pattern base)</strong>
+  2. e count 합 3 ≥ 2 → {e} 빈발
+  3. <strong>조건부 FP-tree</strong> 구성: 경로 count를 e 포함 거래 수로 갱신(예 null→b:2→c:2→e:1의 b,c를 1로), e 노드 제거, 비빈발 항목 제거(b: 1회)
+  4. 조건부 트리에서 de, ce, ae 하위문제 재귀. 결과: {d,e}=2, {a,d,e}, {c,e}, {a,e}</li>
+<li>하위문제 서로소(disjoint) → 중복 없음</li>
+<li><strong>장점</strong>: 데이터 스캔 2회, 후보 생성 없음, 일부 데이터에서 Apriori보다 수 자릿수(orders of magnitude) 빠름</li>
+<li><strong>단점</strong>: 성능이 압축률(compaction factor)에 의존. 공유 접두사 적으면 포인터·카운터 탓에 원본보다 큼, 메모리 적재 필요. 조건부 트리가 무성(bushy)하면 하위문제 폭증으로 급감</li>
+</ul>
+<h3>C9. 평가 척도 (Interestingness Measures)</h3>
+<p><strong>2×2 분할표(contingency table, Table 5.6)</strong>: $f_{11}$=A·B 둘 다, $f_{10}$=A만, $f_{01}$=B만, $f_{00}$=둘 다 없음. $f_{1+}=\sigma(A)$, $f_{+1}=\sigma(B)$, 합계 $N$</p>
+<ul>
+<li><strong>support–confidence 한계</strong>: support는 저빈도 유용 패턴 제거, confidence는 후건 support $s(Y)$ 무시</li>
+<li><strong>Tea→Coffee (Table 5.7, 1000명)</strong>: Tea∧Coffee 150, Tea∧¬Coffee 50 (Tea 200), ¬Tea∧Coffee 650, ¬Tea∧¬Coffee 150. Coffee 합 800</li>
+<li>$s=0.15$, $c=150/200=0.75$로 높아 보임. 그러나 $P(\text{Coffee})=0.8&gt;0.75$ → 차 마시면 커피 확률 오히려 감소, 오해 유발 규칙</li>
+<li>대조 Tea→Honey: $c=0.5$로 기각되나 $P(\text{Honey})=0.12$ → 12%→50% 상승, 잘못된 기각</li>
+<li>해법: 독립 기준선 $s(A)s(B)$와 비교</li>
+</ul>
+<p>척도별 식 · 범위·해석 · [Tea-Coffee / Tea-Honey 값]</p>
+<ul>
+<li><strong>lift = interest factor $I$</strong>: &gt;1 양, =1 독립, &lt;1 음 · <strong>[$0.15/(0.2\times0.8)=0.9375$ / 4.1667]</strong><ul>
+<li>$\frac{c(A\to B)}{s(B)}$ $=\frac{s(A,B)}{s(A)s(B)}$ $=\frac{Nf_{11}}{f_{1+}f_{+1}}$</li>
+</ul>
+</li>
+<li><strong>PS (Piatetsky-Shapiro)</strong>: 0 독립, ± 방향<ul>
+<li>$s(A,B)-s(A)s(B)$</li>
+</ul>
+</li>
+<li><strong>φ 계수(상관)</strong>: $[-1,1]$, PS 정규화판 · <strong>[−0.0625 / 0.5847]</strong><ul>
+<li>$\frac{f_{11}f_{00}-f_{01}f_{10}}{\sqrt{f_{1+}f_{+1}f_{0+}f_{+0}}}$ $=\frac{s(A,B)-s(A)s(B)}{\sqrt{s(A)(1-s(A))s(B)(1-s(B))}}$</li>
+</ul>
+</li>
+<li>
+<p><strong>IS = cosine</strong>: $[0,1]$, I와 support의 기하평균, 같은 I면 고support 선호 · <strong>[0.375 / 0.6455]</strong></p>
+<ul>
+<li>$\sqrt{I\cdot s(A,B)}$ $=\frac{s(A,B)}{\sqrt{s(A)s(B)}}$ $=\frac{f_{11}}{\sqrt{f_{1+}f_{+1}}}$</li>
+</ul>
+</li>
+<li>
+<p><strong>null-invariance (null addition 불변)</strong>: $f_{00}$(둘 다 없는 거래)만 늘려도 값 불변. IS 불변, lift·PS·odds ratio·φ는 변함. 예 Table 5.14: $f_{00}$ 100→1100이면 ($f_{11}=700,f_{10}=f_{01}=100$) IS 0.875 유지, lift 1.094→2.188(교재 본문 0.972→1.944는 계산과 불일치), odds ratio 7→77. 희소 장바구니 데이터에 null-invariant 척도 적합</p>
+</li>
+<li><strong>대칭(symmetric)</strong>: $M(A,B)=M(B,A)$ (lift, φ, IS). <strong>비대칭(asymmetric)</strong>: 순서 의존 (confidence). 규칙에는 비대칭 척도가 자연스러움</li>
+<li><strong>Simpson's paradox</strong>: 숨은 교란변수(confounding variable) 탓에 층화(stratification)하면 관계가 사라지거나 역전. 예: HDTV→운동기구 c 55% vs 45%, 고객층으로 나누면 역전</li>
+</ul>
+<h3>시험 직전 체크</h3>
+<ul>
+<li>$s=\sigma(X\cup Y)/N$, $c=\sigma(X\cup Y)/\sigma(X)$, lift $=c/s(Y)$. {Milk,Diapers}→{Beer}: 0.4, 0.67</li>
+<li>Apriori: 부분집합 빈발 원리(anti-monotone)로 가지치기, $F_{k-1}\times F_{k-1}$ 앞 k-2개 동일 병합, 41→13 (68%↓), 항목 늘면 $2^d$로 후보 폭증 + 반복 스캔</li>
+<li>FP-Growth: 2회 스캔, 내림차순 정렬로 공유 접두사 압축, 조건부 패턴 베이스→조건부 FP-tree 재귀, 후보 생성 없음. 약점은 메모리·낮은 압축률</li>
+<li>maximal ⊆ closed ⊆ frequent. Tea→Coffee: c 0.75 &lt; P(Coffee) 0.8, lift 0.9375</li>
+</ul></section><section><h1 class="part b">분류 · 결정트리 · kNN</h1><h2>B1. 결정 트리 구축 (Hunt's algorithm)</h2>
+<ul>
+<li>루트에 전체 훈련 데이터 → 노드에 클래스 2개 이상이면 분할 기준(splitting criterion)으로 속성 테스트 선택 → 결과별 자식 생성 → 재귀. 전부 같은 클래스면 확장 중단, 리프 = 다수 클래스(majority class)</li>
+<li>예외: 빈 자식 → 부모의 다수 클래스로 리프 / 속성값 동일·클래스 상이 → 확장 불가, 다수 클래스로 리프</li>
+<li>탐욕적(greedy)·하향식(top-down) 재귀 분할. 설계 쟁점 2개 = 분할 기준 + 정지 기준(stopping criterion)</li>
+<li>기본 정지: 모든 인스턴스 동일 클래스 or 동일 속성값. 조기 종료(early termination) = 그 전에 멈춤 → B4</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>속성 유형</th>
+<th>분할 방식</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>이진(binary)</td>
+<td>2갈래</td>
+</tr>
+<tr>
+<td>명목(nominal)</td>
+<td>다중 분할(multiway, 값 개수만큼) or 이진 분할(값 그룹화, $k$값 → $2^{k-1}-1$가지)</td>
+</tr>
+<tr>
+<td>서열(ordinal)</td>
+<td>다중 or 이진. 이진 그룹화 시 순서 보존 필수</td>
+</tr>
+<tr>
+<td>연속(continuous)</td>
+<td>$A\le\tau$ 이진 비교 or 구간 이산화(다중). 정렬 후 인접값 중점을 후보 분할점으로 사용</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>연속 속성 최적 $\tau$: 단순 탐색 $O(N^2)$ → 정렬 $O(N\log N)$ 후 분포 갱신 $O(1)$씩 → 전체 $O(N\log N)$. 클래스가 바뀌는 인접 쌍 사이만 후보로 두면 더 감소</li>
+<li>교재 예(Annual Income): $\tau=55K$ → $0\times0+1\times0.420=0.420$, $\tau=65K$ → 0.400, 최적 $\tau=97.5K$ (Gini 0.300)</li>
+</ul>
+<h2>B2. 불순도 척도 (impurity)</h2>
+<p>$p_i(t)$ = 노드 $t$에서 클래스 $i$ 비율, $c$ = 클래스 수</p>
+<ul>
+<li>Entropy $=-\sum_{i=0}^{c-1}p_i(t)\log_2 p_i(t)$  ($0\log_2 0=0$)</li>
+<li>Gini $=1-\sum_i p_i(t)^2$</li>
+<li>Classification error $=1-\max_i p_i(t)$</li>
+<li>단일 클래스면 0, 균등 분포면 최대. <strong>2클래스 최대: Gini 0.5 / Entropy 1 / Error 0.5</strong> ($p=0.5$). $c$클래스 최대: Gini $1-1/c$, Entropy $\log_2 c$</li>
+<li>세 척도는 순서가 일관됨. 척도 선택보다 가지치기 전략이 최종 트리에 더 큰 영향(교재 9번 특징)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>노드 (C0, C1)</th>
+<th>Gini</th>
+<th>Entropy</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N1 (0, 6)</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>N2 (1, 5)</td>
+<td>0.278</td>
+<td>0.650</td>
+<td>0.167</td>
+</tr>
+<tr>
+<td>N3 (3, 3)</td>
+<td>0.5</td>
+<td>1</td>
+<td>0.5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>이득(gain)</strong>: $\Delta=I(\text{parent})-I(\text{children})$, $I(\text{children})=\sum_j \frac{N(v_j)}{N}I(v_j)$. 최대 이득 = 자식 가중 불순도 최소. Entropy 기반이면 정보 이득(information gain) $\Delta_{info}$</p>
+<p>교재 대출 데이터(Yes 3, No 7, $N=10$):</p>
+<ul>
+<li>Entropy: 부모 $0.881$. Home Owner: yes(0/3)=0, no(3/7)=0.985 → $\frac{3}{10}\cdot0+\frac{7}{10}\cdot0.985=0.690$, $\Delta=0.191$. Marital Status: Single(2/5)=0.971, Married(0/3)=0, Divorced(1/2)=1 → 0.686, $\Delta=0.195$ → Marital Status 선택</li>
+<li>Gini(이진 분할): 부모 $1-0.3^2-0.7^2=0.420$. Home Owner: N1=0, N2=0.490 → $(3/10)\cdot0+(7/10)\cdot0.490=0.343$, gain $0.420-0.343=0.077$</li>
+<li>Marital 이진 분할 3가지: {Married} vs {Single,Divorced} = 0.343 / {Single} vs {Married,Divorced} = 0.400 / {Divorced} vs {Single,Married} = 0.400 → Home Owner와 {Married} 분할이 최선(0.343)</li>
+</ul>
+<p><strong>이득 비율(gain ratio, C4.5)</strong>: 불순도 척도는 값 종류 많은 속성(다중 분할)을 선호하는 편향 보유. 예: Customer ID → 자식 전부 순수(불순도 0)지만 새 데이터에 일반화 불가, 과적합 위험</p>
+<ul>
+<li>$\text{Gain ratio}=\frac{\Delta_{info}}{\text{Split Info}}$, $\text{Split Info}=-\sum_{i=1}^{k}\frac{N(v_i)}{N}\log_2\frac{N(v_i)}{N}$</li>
+<li>균등 $k$분할이면 Split Info $=\log_2 k$ → 분할 수 많을수록 커져 gain ratio 감소. 대안: CART처럼 이진 분할만 사용</li>
+<li>교재 예 3.4 (20건, 10:10, 부모 Entropy 1): Gender → 자식 0.971, GR $=0.029/1=0.029$ / Car Type(4·8·8) → 자식 0.380, GR $=0.620/1.52=0.41$ / Customer ID(20분할) → 자식 0, GR $=1/4.32=0.23$ ⇒ 정보 이득 최대는 Customer ID지만 gain ratio 최대는 <strong>Car Type</strong></li>
+</ul>
+<h2>B3. 결정 트리 특징</h2>
+<ul>
+<li>비모수(nonparametric): 분포 가정 불필요, 범주·연속 모두 변환 없이 처리, 다중 클래스 직접 처리</li>
+<li>작은 트리는 해석 쉬움. 예측 최악 $O(w)$ ($w$=최대 깊이)로 빠름. 최적 트리 탐색은 어려워 탐욕적 휴리스틱 사용</li>
+<li>이산 함수의 보편 표현(universal representation)</li>
+<li>결측값 처리: C4.5 확률적 분할(probabilistic split), CART 대리 분할(surrogate split)</li>
+<li>상호작용 속성(XOR 등): 탐욕적 선택이라 놓치기 쉬움 → 트리 복잡화</li>
+<li>불필요 속성(irrelevant): 이득이 작아 거의 선택 안 됨 → 소수면 강건. 다수면 우연히 선택될 위험</li>
+<li>중복 속성(redundant): 하나만 선택되고 나머지는 미사용 → 영향 적음</li>
+<li>직선형 분할(rectilinear): 결정 경계가 축에 평행 → 대각선 경계 표현에 약함(사선 분할 oblique tree로 보완)</li>
+<li>데이터 단편화(data fragmentation): 깊어질수록 노드당 인스턴스 감소 → 통계적 근거 부족. 노드 인스턴스 수 임계값 미만이면 분할 금지로 대응</li>
+</ul>
+<h2>B4. 과적합과 가지치기 ★최우선</h2>
+<p><strong>과소적합(underfitting)</strong>: 트리가 너무 단순 → 훈련·테스트 오차 둘 다 큼
+<strong>과적합(overfitting)</strong>: 훈련 오차는 계속 0까지 감소, 테스트(일반화) 오차는 어느 크기 이후 다시 증가 → 두 오차 간격 확대. 훈련 오차가 일반화 오차를 과소 추정</p>
+<ul>
+<li>교재 예 3.5: 2차원 데이터, 10% 훈련 → 리프 1~8까지 두 오차 함께 감소, 이후 150까지 훈련 오차만 계속 감소</li>
+<li>모델 복잡도(model complexity) = 추정할 파라미터 수 ≈ 내부 노드 테스트 조건 수(리프 수)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>과적합 원인</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>훈련 데이터 부족(limited training size)</td>
+<td>유한 표본이 전체 패턴을 대표하지 못함. 훈련 2배(20%) → 오차 간격 축소 (예 3.6)</td>
+</tr>
+<tr>
+<td>높은 모델 복잡도(high model complexity)</td>
+<td>조합 수 많을수록 우연히 좋은 조합 선택 → 다중 비교 문제(multiple comparison)</td>
+</tr>
+<tr>
+<td>노이즈(noise)</td>
+<td>잡음 인스턴스까지 맞추는 경계 학습 (예 3.5의 균등분포 + 400개)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>다중 비교 예: 무작위 예측자가 10일 중 9일 이상 적중 확률 $\frac{\binom{10}{9}+\binom{10}{10}}{2^{10}}=0.0107$, 분석가 200명 중 1명 이상 적중 확률 $1-(1-0.0107)^{200}=0.8847$ → 속성 100개 무관 속성 추가 시 테스트 오차 개선 없음(예 3.7)</li>
+</ul>
+<h3>일반화 오차 추정 (모델 선택, 3.5)</h3>
+<ol>
+<li><strong>검증셋(validation set)</strong>: D.train → D.tr(2/3) + D.val(1/3). $err_{val}$ 최소 모델 선택. 분할 크기에 민감(D.tr 작으면 모델 부실, D.val 작으면 추정 불안정). 예 3.8: $err_{val}(T_L)=6/16=0.375$, $err_{val}(T_R)=4/16=0.25$ → $T_R$ 선택</li>
+<li><strong>모델 복잡도 반영</strong>: 오컴의 면도날(Occam's razor, 간결성 원리) — 오차 같으면 단순 모델. $gen.error(m)=train.error(m)+\alpha\times complexity(M)$, $\alpha$는 검증셋으로 선택 (AIC·BIC·SRM과 같은 계열)</li>
+<li><strong>비관적 오차 추정(pessimistic error estimate)</strong>: 트리 복잡도 = $k/N_{train}$ ($k$=리프 수)
+   - $err_{gen}(T)=err(T)+\Omega\times\frac{k}{N_{train}}$ (= 1판 형태 $e'(T)=\frac{e(T)+\Omega\cdot k}{N}$, $e(T)$=훈련 오분류 수)
+   - $\Omega$ = 리프 1개 추가 비용(훈련 오류 1개 대비 상대 비용). 낙관적 추정(optimistic, resubstitution) = 훈련 오차 그대로 사용
+   - <strong>예 3.9</strong> ($N=24$): $T_L$ 리프 7·오류 4, $T_R$ 리프 4·오류 6. 훈련 오차 $T_L$ 0.167 &lt; $T_R$ 0.25<ul>
+<li>$\Omega=0.5$: $T_L=(4+0.5\cdot7)/24=7.5/24=0.3125$, $T_R=(6+0.5\cdot4)/24=8/24=0.3333$ → <strong>$T_L$ 선택</strong></li>
+<li>$\Omega=1$: $T_L=11/24=0.458$, $T_R=10/24=0.417$ → <strong>$T_R$ 선택</strong></li>
+<li>$\Omega=0.5$의 뜻: 훈련 인스턴스 1개라도 더 맞히면 노드를 두 자식으로 항상 확장. $\Omega$는 검증셋으로 결정</li>
+<li>1판 표준 예: 리프 30, 오류 10, $N=1000$ → 훈련 1%, 비관적 $(10+30\times0.5)/1000=2.5\%$</li>
+<li>1판 표준 예(subtree replacement): 부모 Yes20/No10 → $(10+0.5)/30=10.5/30$. 4분할(8/4, 3/4, 4/1, 5/1) → 오류 9, $(9+4\times0.5)/30=11/30$ → 분할 후가 더 큼 → <strong>가지치기(PRUNE)</strong></li>
+</ul>
+</li>
+<li><strong>최소 기술 길이(MDL)</strong>: $Cost(model,data)=Cost(data|model)+\alpha\times Cost(model)$ (오분류 인코딩 비트 + 모델 인코딩 비트). 총 길이 작은 모델 선택</li>
+<li><strong>통계적 상한(statistical bounds)</strong>: 리프 오류를 이항분포 → 정규근사 상한 $e_{upper}(N,e,\alpha)$. 예 3.10($\alpha=25\%$): 분할 전 $e_{upper}(7,2/7)=0.503$ → $7\times0.503=3.521$ 오류. 분할 후 $e_{upper}(4,1/4)=0.537$, $e_{upper}(3,1/3)=0.650$ → $4\times0.537+3\times0.650=4.098&gt;3.521$ → <strong>분할 안 함</strong></li>
+</ol>
+<h3>사전 vs 사후 가지치기 (3.5.4)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>사전 가지치기(prepruning, early stopping rule)</th>
+<th>사후 가지치기(post-pruning)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>방식</td>
+<td>완전 성장 전에 중단. 일반화 오차 추정치 개선이 임계값 미만이면 확장 중지</td>
+<td>최대로 키운 뒤 상향식(bottom-up) 절단. 일반화 오차가 줄면 대체, 더 이상 개선 없으면 종료</td>
+</tr>
+<tr>
+<td>조건/연산</td>
+<td>인스턴스 수 &lt; 임계값, 클래스 분포가 속성과 독립($\chi^2$ 검정), 불순도 개선 없음(슬라이드), 비관적 오차·검증 오차·통계 상한 개선 미만</td>
+<td>subtree replacement: 서브트리 → 다수 클래스 리프. subtree raising: 서브트리 → 가장 많이 쓰인 가지로 끌어올림</td>
+</tr>
+<tr>
+<td>장점</td>
+<td>과적합 서브트리 생성 계산 절약</td>
+<td>전체 트리 보고 판단 → 대체로 더 좋은 결과</td>
+</tr>
+<tr>
+<td>단점</td>
+<td>지금 이득 없어도 다음 분할에서 좋아질 수 있는데 놓침(탐욕적 특성, 조기 종료)</td>
+<td>다 키운 뒤 잘라낸 부분의 계산 낭비</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>교재 웹 로봇 예(그림 3.32): depth=1 서브트리 → raising, depth&gt;1 &amp; MultiAgent=0 → replacement(클래스 0 리프)</li>
+<li>C4.5rules(슬라이드): 규칙에서 조건 1개씩 뺀 $r'$와 비관적 오차 비교 → 낮으면 prune</li>
+</ul>
+<h2>B5. 모델 평가 (3.2, 3.6)</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>예측 +</th>
+<th>예측 −</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>실제 +</td>
+<td>$f_{11}$ (TP)</td>
+<td>$f_{10}$ (FN)</td>
+</tr>
+<tr>
+<td>실제 −</td>
+<td>$f_{01}$ (FP)</td>
+<td>$f_{00}$ (TN)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Accuracy $=\frac{f_{11}+f_{00}}{f_{11}+f_{10}+f_{01}+f_{00}}$, Error rate $=\frac{f_{10}+f_{01}}{\text{전체}}=1-$Accuracy</li>
+<li>홀드아웃(holdout): D → D.train/D.test(예 2/3·1/3). 훈련 작으면 편향, 테스트 작으면 신뢰도 낮음, 분할에 따라 분산 큼. 반복 → 무작위 부표집(random subsampling)</li>
+<li>k-겹 교차검증(k-fold CV): $k$등분, 각 fold 한 번씩 테스트, $err_{test}=\sum_i err_{sum}(i)/N$. 각 인스턴스 테스트 1회·훈련 $k-1$회. $k$ 작으면 일반화 오차 과대 추정, 실무 $k=5\sim10$. 층화 교차검증(stratified CV)으로 클래스 비율 유지</li>
+<li>LOOCV(leave-one-out): $k=N$. 훈련 데이터 최대 활용, 대신 $N$번 학습으로 계산 비용 큼, 특수 상황에서 오도 가능</li>
+</ul>
+<h2>B6. kNN 분류 (k-nearest neighbor)</h2>
+<ul>
+<li>필요 요소: 저장된 훈련 레코드, 거리 척도, $k$</li>
+<li>단계: ① 테스트 레코드와 모든 훈련 레코드 거리 계산(유클리드 $d(p,q)=\sqrt{\sum_i(p_i-q_i)^2}$) ② 가장 가까운 $k$개 선택 ③ 다수결 투표(majority vote)로 클래스 결정</li>
+<li>거리 가중 투표: $w=1/d^2$ → 가까운 이웃 영향 확대, $k$ 선택 민감도 완화</li>
+<li>$k$ 선택: 너무 작으면 노이즈에 민감 / 너무 크면 다른 클래스 점까지 이웃에 포함. 2클래스는 홀수 $k$로 동점 방지</li>
+<li>속성 스케일링(scaling): 범위 큰 속성이 거리 지배(키 1.5–1.8m vs 몸무게 90–300lb vs 소득 $10K–$1M) → 정규화 필수</li>
+<li>차원의 저주(curse of dimensionality): 고차원에서 거리 차이 희미 → 직관에 반하는 결과. 슬라이드 예: <code>111…10</code> vs <code>011…11</code>, <code>100…00</code> vs <code>000…01</code> 둘 다 $d=1.4142$ → 단위 길이 정규화로 해결</li>
+<li>게으른 학습기(lazy learner): 명시적 모델 없음(결정 트리·규칙 기반 = eager learner와 대비) → 학습 비용 거의 0, 예측 비용 큼(매번 전체 거리 계산)</li>
+<li>1-NN 결정 경계 = 보로노이 다이어그램(Voronoi diagram). 임의 모양 결정 경계 가능(유연), 국소 정보 기반이라 $k$ 작을 때 노이즈 취약</li>
+<li>인스턴스 기반(instance-based) 분류기. 극단 = 암기 학습기(rote-learner, 정확히 일치할 때만 분류). PEBLS: 명목 속성 MVDM 거리, $k=1$</li>
+</ul>
+<p><strong>손계산 예</strong>: 훈련 A(1,1)+, B(2,1)+, E(2,3.5)−, C(4,4)−, D(5,4)−, 질의 q(2,2)</p>
+<table>
+<thead>
+<tr>
+<th>점</th>
+<th>$d^2$</th>
+<th>$d$</th>
+<th>$w=1/d^2$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B +</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>A +</td>
+<td>2</td>
+<td>1.414</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>E −</td>
+<td>2.25</td>
+<td>1.5</td>
+<td>0.444</td>
+</tr>
+<tr>
+<td>C −</td>
+<td>8</td>
+<td>2.828</td>
+<td>0.125</td>
+</tr>
+<tr>
+<td>D −</td>
+<td>13</td>
+<td>3.606</td>
+<td>0.077</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>$k=1$: B → <strong>+</strong> / $k=3$: B,A,E → 2:1 → <strong>+</strong> / $k=5$ 다수결: 2:3 → <strong>−</strong></li>
+<li>$k=5$ 가중: $+=1+0.5=1.5$, $-=0.444+0.125+0.077=0.646$ → <strong>+</strong> (가중 투표가 $k$ 과대 효과 보정)</li>
+</ul>
+<h2>시험 직전 체크</h2>
+<ul>
+<li>2클래스 최대 불순도 Gini 0.5 / Entropy 1 / Error 0.5. 이득 = 부모 − 자식 가중평균, gain ratio = 이득 / Split Info(다중 분할 편향 보정)</li>
+<li>비관적 오차 $err(T)+\Omega k/N$: 예 3.9 $\Omega=0.5$ → $T_L$(0.3125&lt;0.3333), $\Omega=1$ → $T_R$(0.417&lt;0.458). 분할 후 추정 오차가 크면 가지치기</li>
+<li>사전 = 조기 정지(계산 절약, 조기 종료 위험) / 사후 = 다 키운 뒤 replacement·raising(결과 우수, 계산 낭비)</li>
+<li>과적합: 훈련 오차↓·테스트 오차↑, 원인 = 데이터 부족·복잡도·다중 비교·노이즈</li>
+<li>kNN: $k$ 작으면 노이즈 민감, 크면 타 클래스 혼입, $w=1/d^2$, 스케일링 필수, lazy, 1-NN = Voronoi</li>
+</ul></section><section><h1 class="part d">군집분석</h1><h2>D. 군집분석 (Cluster Analysis, 7장)</h2>
+<h3>D1. 군집 유형 (Types of Clusterings)</h3>
+<ul>
+<li><strong>분할(partitional)</strong>: 겹치지 않는 부분집합으로 나눔 / <strong>계층(hierarchical)</strong>: 중첩된 군집의 트리(덴드로그램)</li>
+<li><strong>배타(exclusive)</strong>: 한 점은 한 군집만 / <strong>중첩(overlapping)</strong>: 여러 군집 동시 소속 / <strong>퍼지(fuzzy)</strong>: 소속 가중치 0~1, 합 1</li>
+<li><strong>완전(complete)</strong>: 모든 점 할당 / <strong>부분(partial)</strong>: 노이즈·이상치는 미할당</li>
+</ul>
+<h3>D2. 군집 종류 (Types of Clusters)</h3>
+<ul>
+<li><strong>Well-separated</strong>: 군집 내 모든 점이 군집 밖 어느 점보다 서로 가까움</li>
+<li><strong>Prototype(center)-based</strong>: 자기 군집 원형(centroid/medoid)에 더 가까움 → 구형 군집</li>
+<li><strong>Graph-based(contiguity)</strong>: 연결된 성분, 이웃끼리 연결 → 사슬 모양 가능</li>
+<li><strong>Density-based</strong>: 저밀도 영역으로 분리된 고밀도 영역 → 불규칙 모양·노이즈 처리</li>
+<li><strong>Shared-property(conceptual)</strong>: 공통 성질 공유 군집</li>
+</ul>
+<h3>D3. K-means ★최우선</h3>
+<p><strong>기본 알고리즘 (Algorithm 7.1)</strong></p>
+<ol>
+<li>초기 중심(centroid) K개 선택</li>
+<li>각 점을 가장 가까운 중심에 할당 → K개 군집 형성</li>
+<li>각 군집의 중심을 재계산</li>
+<li>2~3을 반복</li>
+<li>중심 변화 없을 때(또는 변화 소수) 종료</li>
+</ol>
+<p><strong>근접도·중심·목적함수 (Table 7.2)</strong></p>
+<table>
+<thead>
+<tr>
+<th>근접도 함수</th>
+<th>중심</th>
+<th>목적함수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>맨해튼 (L1)</td>
+<td>중앙값(median)</td>
+<td>점–중심 L1 거리 합 최소화</td>
+</tr>
+<tr>
+<td>제곱 유클리드 ($L_2^2$)</td>
+<td>평균(mean)</td>
+<td>점–중심 제곱 L2 거리 합 최소화 (SSE)</td>
+</tr>
+<tr>
+<td>코사인 (cosine)</td>
+<td>평균(mean)</td>
+<td>점–중심 코사인 유사도 합 <strong>최대화</strong></td>
+</tr>
+<tr>
+<td>브레그만 발산 (Bregman divergence)</td>
+<td>평균(mean)</td>
+<td>점–중심 브레그만 발산 합 최소화</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>문서 데이터 → 코사인, 유클리드 데이터 → 유클리드 주로 사용</li>
+<li><strong>SSE (Sum of Squared Error)</strong>: $SSE=\sum_{i=1}^{K}\sum_{x\in C_i} dist(c_i,x)^2$, 중심 $c_i=\frac{1}{m_i}\sum_{x\in C_i}x$</li>
+<li><strong>평균이 SSE 최소화하는 이유</strong>: $\frac{\partial}{\partial c_k}\sum_{x\in C_k}(c_k-x)^2=\sum 2(c_k-x)=0 \Rightarrow c_k=\frac{1}{m_k}\sum x$ (L1 합 최소 → 중앙값)</li>
+<li><strong>수렴</strong>: 할당·갱신 단계 모두 SSE 비증가 → 반드시 수렴, 단 <strong>국소 최적(local minimum)</strong>만 보장, 전역 최적 보장 없음</li>
+<li>대부분 수렴은 초기 몇 번 반복에서 발생 → "중심 변화 1% 미만" 같은 약한 종료 조건 사용</li>
+</ul>
+<p><strong>초기 중심 선택 (Choosing Initial Centroids)</strong></p>
+<ul>
+<li>무작위 초기화 → 결과 불안정, 나쁜 국소 최적 위험</li>
+<li><strong>여러 번 무작위 실행 후 SSE 최소 결과 선택</strong> → K 크면 효과 적음 (모든 군집에 중심 하나씩 들어갈 확률 낮음)</li>
+<li><strong>계층 군집으로 초기화</strong>: 표본 추출 → 계층 군집 → K개 군집 중심 사용 (표본 작고 K 작을 때)</li>
+<li><strong>최원점 방식</strong>: 첫 중심 무작위, 이후 기존 중심에서 가장 먼 점 선택 → 이상치 선택 위험</li>
+<li><strong>K-means++ (Algorithm 7.2)</strong>: 첫 중심 무작위 → 각 점의 최근접 중심 거리 $d(x)$ 계산 → 다음 중심을 확률 $\propto d(x)^2$ 로 선택 → K개까지 반복. SSE 측면 최적해 대비 $O(\log k)$ 근사 보장, 이상치 영향 완화</li>
+<li><strong>Bisecting K-means</strong>로 초기화도 가능</li>
+</ul>
+<p><strong>보완 이슈</strong></p>
+<ul>
+<li><strong>빈 군집 (empty cluster)</strong>: SSE에 가장 크게 기여하는 점 또는 SSE 가장 큰 군집에서 점을 뽑아 대체 중심으로 지정</li>
+<li><strong>이상치 (outlier)</strong>: 평균 기반 → 중심을 끌어당김, SSE 증가 → 사전에 이상치 제거 또는 후처리로 작은 군집 제거</li>
+<li><strong>후처리 (postprocessing)로 SSE 감소</strong></li>
+<li>군집 수 증가: SSE 큰 군집 <strong>분할(split)</strong>, 모든 중심에서 먼 점으로 <strong>새 중심 도입</strong></li>
+<li>군집 수 감소: 중심 <strong>분산(disperse)</strong> → 그 군집 점 재할당, SSE 증가 최소인 두 군집 <strong>병합(merge)</strong></li>
+<li><strong>점진적 업데이트 (incremental update)</strong>: 점 하나 할당할 때마다 중심 갱신 → 빈 군집 없음, 가중치 조정 가능, 단 <strong>순서 의존성</strong> 발생·계산 비용 약간 증가</li>
+</ul>
+<p><strong>Bisecting K-means (Algorithm 7.3)</strong></p>
+<ol>
+<li>전체를 하나의 군집으로 시작</li>
+<li>분할할 군집 선택 (가장 큰 군집 또는 SSE 가장 큰 군집)</li>
+<li>그 군집을 2-means로 여러 번 시험 분할 → SSE 최소 분할 채택</li>
+<li>군집 수 K 될 때까지 반복
+- 초기화 문제에 덜 민감, 계층 구조 결과도 산출 → 최종 중심으로 기본 K-means 한 번 더 돌려 정제 가능</li>
+</ol>
+<p><strong>한계 (Limitations)</strong></p>
+<ul>
+<li>군집 <strong>크기·밀도가 다르거나 비구형(non-globular)</strong>이면 자연 군집 탐지 실패</li>
+<li><strong>이상치에 민감</strong></li>
+<li>평균 정의 가능한 데이터에만 적용 (아니면 K-medoid)</li>
+<li>대안: K를 크게 잡아 잘게 나눈 뒤 병합</li>
+</ul>
+<p><strong>복잡도</strong>: 시간 $O(I\cdot K\cdot m\cdot n)$ ($I$ 반복, $K$ 군집, $m$ 점, $n$ 속성) → $m$에 선형, 공간 $O((m+K)n)$</p>
+<p><strong>손계산 예 (1차원, K=2)</strong>: 점 {1, 2, 4, 7, 9, 10}, 초기 중심 $c_1=1, c_2=4$</p>
+<ul>
+<li><strong>반복 1</strong>: 할당 C1={1,2}, C2={4,7,9,10} → 중심 $c_1=1.5$, $c_2=30/4=7.5$</li>
+<li>SSE = (0.25+0.25) + (12.25+0.25+2.25+6.25) = 0.5 + 21 = <strong>21.5</strong></li>
+<li><strong>반복 2</strong>: 4 → |4−1.5|=2.5 &lt; |4−7.5|=3.5 이므로 C1로 이동. C1={1,2,4}, C2={7,9,10} → $c_1=7/3\approx2.33$, $c_2=26/3\approx8.67$</li>
+<li>SSE = (1.78+0.11+2.78) + (2.78+0.11+1.78) = 4.67 + 4.67 = <strong>9.33</strong> (=28/3)</li>
+<li><strong>반복 3</strong>: 할당 변화 없음 (4: 1.67 vs 4.67, 7: 4.67 vs 1.67) → <strong>수렴</strong>, SSE 21.5 → 9.33 감소 확인</li>
+</ul>
+<h3>D4. 계층 군집 (Agglomerative Hierarchical Clustering)</h3>
+<p><strong>기본 알고리즘 (Algorithm 7.4)</strong>: 근접도 행렬 계산 → 반복 {가장 가까운 두 군집 병합 → 근접도 행렬 갱신} → 군집 하나 남으면 종료</p>
+<ul>
+<li>결과를 <strong>덴드로그램(dendrogram)</strong>으로 표시, 병합 높이 = 병합 시점 군집 간 거리</li>
+<li>병합 결정은 되돌릴 수 없음(국소 판단), 전역 목적함수 없음</li>
+<li><strong>복잡도</strong>: 공간 $O(m^2)$, 시간 $O(m^3)$ (힙 등 사용 시 $O(m^2\log m)$)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>근접도 정의</th>
+<th>식</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MIN (single link)</strong></td>
+<td>$\min_{x\in A,y\in B} d(x,y)$</td>
+<td>비구형·길쭉한 군집 잘 잡음, 노이즈·이상치 민감, <strong>chaining</strong> 현상</td>
+</tr>
+<tr>
+<td><strong>MAX (complete link, CLIQUE)</strong></td>
+<td>$\max_{x\in A,y\in B} d(x,y)$</td>
+<td>노이즈에 덜 민감, <strong>큰 군집 쪼갬</strong>, 구형 군집 편향</td>
+</tr>
+<tr>
+<td><strong>Group average</strong></td>
+<td>$\frac{\sum_{x\in A}\sum_{y\in B} d(x,y)}{m_A\cdot m_B}$</td>
+<td>MIN·MAX 절충, 노이즈 덜 민감, 구형 편향</td>
+</tr>
+<tr>
+<td><strong>Ward</strong></td>
+<td>병합 시 SSE <strong>증가량</strong></td>
+<td>K-means의 계층 버전, 구형 편향, K-means 초기화에 활용</td>
+</tr>
+<tr>
+<td><strong>Centroid</strong></td>
+<td>두 군집 중심 간 거리</td>
+<td><strong>역전(inversion)</strong> 가능: 나중 병합 거리가 더 작을 수 있음</td>
+</tr>
+</tbody>
+</table>
+<p><strong>교재 6점 예 (Table 7.4 거리행렬)</strong></p>
+<ul>
+<li>핵심 거리: d(3,6)=0.11, d(2,5)=0.14, d(3,4)=0.15, d(2,3)=0.15, d(6,4)=0.22, d(1,3)=0.22</li>
+<li><strong>Single</strong>: {3,6} 0.11 → {2,5} 0.14 → dist({3,6},{2,5}) = min(0.15,0.25,0.28,0.39) = <strong>0.15</strong>, {4}도 0.15로 합류 → 마지막 {1} 0.22</li>
+<li><strong>Complete</strong>: {3,6} 0.11 → {2,5} 0.14 → {3,6}+{4}: max(0.15,0.22)=<strong>0.22</strong> ({2,5}와는 max=0.39, {1}과는 0.23이라 {4} 선택) → {2,5}+{1} 0.34 → 전체 0.39</li>
+<li><strong>Group average</strong>: dist({3,6,4},{1}) = (0.22+0.37+0.23)/(3×1) = 0.28, dist({2,5},{1}) = (0.24+0.34)/(2×1) = 0.29, dist({3,6,4},{2,5}) = (0.15+0.28+0.25+0.39+0.20+0.29)/(3×2) = <strong>0.26</strong> → 4단계에 {3,6,4}와 {2,5} 병합</li>
+</ul>
+<h3>D5. DBSCAN (밀도 기반)</h3>
+<ul>
+<li>밀도 = 반경 <strong>Eps</strong> 안 점의 수 (자기 자신 포함)</li>
+<li><strong>핵심점(core point)</strong>: Eps 이내에 점 <strong>MinPts개 이상</strong></li>
+<li><strong>경계점(border point)</strong>: 핵심점 아님, 단 어떤 핵심점의 Eps 이웃 안에 위치</li>
+<li><strong>노이즈점(noise point)</strong>: 핵심점도 경계점도 아님</li>
+<li><strong>알고리즘 (Algorithm 7.5)</strong>: ① 모든 점을 core/border/noise로 표시 ② 노이즈 제거 ③ Eps 이내 핵심점끼리 간선 연결 ④ 연결된 핵심점 묶음 → 각각 하나의 군집 ⑤ 경계점을 연관 핵심점의 군집에 할당</li>
+<li><strong>장점</strong>: 군집 수 미리 지정 불필요, 임의 모양·크기 군집 탐지, 노이즈에 강건</li>
+<li><strong>단점</strong>: <strong>밀도가 다양한 군집</strong>에 약함, 고차원 데이터에서 밀도 정의 곤란, 근접도 계산 비용</li>
+<li><strong>복잡도</strong>: 시간 최악 $O(m^2)$ (저차원+kd-tree 시 $O(m\log m)$), 공간 $O(m)$</li>
+<li><strong>Eps 정하기 (k-dist 그래프)</strong>: 각 점의 k번째 최근접 이웃 거리(k-dist)를 오름차순 정렬해 그림 → 급격히 꺾이는 지점 값을 Eps로, k를 MinPts로 (교재 기본 MinPts=4)</li>
+</ul>
+<h3>D6. 군집 평가 (Cluster Validity)</h3>
+<p><strong>비지도 지표 (unsupervised, internal)</strong></p>
+<ul>
+<li><strong>응집도(cohesion)</strong> = $SSE=\sum_i\sum_{x\in C_i}dist(c_i,x)^2$ (작을수록 좋음)</li>
+<li><strong>분리도(separation)</strong> = $SSB=\sum_i m_i\,dist(c_i,c)^2$ ($c$ = 전체 평균, 클수록 좋음)</li>
+<li><strong>$TSS=SSE+SSB$</strong> (TSS 일정 → SSE 최소화 ⇔ SSB 최대화)</li>
+<li><strong>실루엣 계수 (silhouette coefficient)</strong>: 점 $i$에 대해</li>
+<li>$a_i$ = 같은 군집 다른 점들과의 평균 거리</li>
+<li>$b_i$ = 다른 군집 각각과의 평균 거리 중 최솟값</li>
+<li>$s_i=\frac{b_i-a_i}{\max(a_i,b_i)}$, 범위 $[-1,1]$, 1에 가까울수록 좋음, 음수 = 잘못 할당 의심 ($a_i&gt;b_i$)</li>
+<li>군집·전체 실루엣 = 점들의 평균</li>
+<li><strong>근접도 행렬 상관</strong>: 실제 근접도 행렬 vs 이상적 유사도 행렬(같은 군집 1, 다르면 0) 간 상관 → 높을수록 좋음, 정렬된 유사도 행렬 시각화도 활용</li>
+<li><strong>CPCC (cophenetic correlation)</strong>: 계층 군집 평가, 덴드로그램 병합 거리와 원래 거리의 상관</li>
+</ul>
+<p><strong>지도 지표 (supervised, external)</strong></p>
+<ul>
+<li><strong>엔트로피(entropy)</strong>: 각 군집 안 클래스 분포의 엔트로피, 낮을수록 좋음</li>
+<li><strong>순도(purity)</strong>: 군집별 최다 클래스 비율 가중합, 높을수록 좋음</li>
+<li>기타: precision, recall, F-measure, Rand 통계량, Jaccard 계수</li>
+</ul>
+<p><strong>군집 수 정하기</strong>: K별 SSE 그래프에서 <strong>꺾이는 점(knee/elbow)</strong> 선택, 평균 실루엣 계수의 봉우리도 참고</p>
+<h3>시험 직전 체크</h3>
+<ul>
+<li>K-means 5단계 + "평균 = SSE 최소, 중앙값 = L1 최소" + 국소 최적만 보장</li>
+<li>초기화 해법: 여러 번 실행, K-means++($\propto d^2$), 계층 군집 표본, Bisecting</li>
+<li>한계: 크기·밀도 차이, 비구형, 이상치 / 복잡도 $O(IKmn)$ vs 계층 $O(m^2)$ 공간·$O(m^3)$ 시간</li>
+<li>MIN = chaining·비구형 OK, MAX = 큰 군집 쪼갬, DBSCAN = 밀도 다양하면 실패</li>
+<li>실루엣 $s=(b-a)/\max(a,b)\in[-1,1]$, $TSS=SSE+SSB$</li>
+</ul></section></main></body></html>

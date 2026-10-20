@@ -1,7 +1,7 @@
 ---
 title: 파이썬을 활용한 기초통계 분석 실습 매뉴얼 (1차시)
 section: lecture
-topics: [stats]
+topics: [stats-basic]
 kind: site
 url: "https://kwonsuhyeon.github.io/-statistics/"
 date: 2026-09-20

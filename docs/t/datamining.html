@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>데이터마이닝 · 호호의 지식 지도</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="topic" data-base="../" data-papers="http://127.0.0.1:4711" data-stale="60">
+<div class="ink">
+<header class="top">
+  <div class="wrap top-row">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>호호의 지식 지도</a>
+    <div class="search"><input id="q" type="search" placeholder="주제·자료 검색" autocomplete="off" aria-label="주제·자료 검색"><div id="results" class="results" hidden></div></div>
+  </div>
+</header>
+<section class="page-head" style="--c:var(--topic-6)">
+  <div class="wrap">
+    <nav class="crumb" aria-label="경로"><a href="../index.html">지도</a> <span>/</span> <a href="../t/stats.html">통계</a> <span>/</span> <b>데이터마이닝</b></nav>
+    <h1><span class="dot" aria-hidden="true"></span>데이터마이닝</h1>
+    <div class="def"><p>대량의 데이터에서 유용한 패턴을 찾는 방법. 객체 사이의 거리·유사도, 함께 나타나는 항목을 찾는 연관규칙, 레코드를 클래스로 나누는 분류, 비슷한 레코드를 묶는 군집으로 나뉜다. 고성능데이터마이닝 수업(2026-2)과 Tan 외 <em>Introduction to Data Mining</em> 2판(2·3·5·7장)을 기준으로 정리한다.</p></div>
+    <p class="tally mono"><span>공부 3</span><span>강의 0</span><span>최근 수정 <span class="upd" data-date="2026-10-20">2026.10.20</span></span></p>
+  </div>
+</section>
+</div>
+<main class="wrap">
+
+<article class="topic-page" style="--c:var(--topic-6)">
+  
+  <div class="topic-body">
+    <section class="part summary"><p class="eyebrow">지금까지 정리한 것</p><ul><li><strong>거리·유사도</strong>: 민코프스키 거리(맨해튼 L1, 유클리드 L2, 상한 L∞), 이진 벡터의 SMC와 Jaccard, 코사인 유사도, 상관계수, 표준화</li><li><strong>연관규칙 평가</strong>: 지지도 s(X→Y) = σ(X∪Y)/N, 신뢰도 c = σ(X∪Y)/σ(X), 향상도 = c/P(Y)(1보다 작으면 음의 연관)</li><li><strong>Apriori</strong>: 빈발 항목집합의 부분집합도 빈발(지지도의 반단조성)하다는 원리로 후보를 가지치기. 표 5.1 예에서 후보 41개 → 13개</li><li><strong>FP-Growth</strong>: FP-tree로 거래를 압축하고 후보 생성 없이 조건부 패턴 베이스를 재귀로 마이닝</li><li><strong>결정트리</strong>: 지니·엔트로피·분류 오차, 정보 이득과 이득비, 연속 속성 분할점</li><li><strong>가지치기</strong>: 비관적 오차 추정 e'(T) = (e(T) + Ω·k)/N, 사전 가지치기(노드의 레코드 수 임계값 등)와 사후 가지치기(subtree replacement·raising)</li><li><strong>K-means</strong>: 초기 중심 → 가장 가까운 중심에 배정 → 평균으로 중심 갱신 반복, SSE, 초기화 문제와 K-means++</li><li><strong>kNN</strong>: 게으른 학습, 거리·k·다수결, 거리 가중 투표, 정규화가 필요한 이유</li></ul></section>
+    <aside class="part todo"><p class="eyebrow">이어서 정리할 것</p><ul class="tasks"><li class="task"><label><input type="checkbox" data-key="datamining:0" disabled> <span>시험(2026-10-21) 뒤 실제 출제 경향 기록</span></label></li><li class="task"><label><input type="checkbox" data-key="datamining:1" disabled> <span>2장 전처리(집계·샘플링·차원 축소·이산화) 입문 해설 추가</span></label></li><li class="task"><label><input type="checkbox" data-key="datamining:2" disabled> <span>군집 평가(실루엣 계수)와 계층적 군집, DBSCAN 정리</span></label></li></ul>
+      </aside>
+  </div>
+  
+  <section class="block"><div class="block-head"><p class="eyebrow">자료</p><h2>이 주제로 만든 것 <span class="mono">3</span></h2></div><div class="sec-block"><h3>공부 <span class="mono">3</span></h3><div class="items"><article class="item linked" data-section="study" data-date="2026-10-20">
+  <p class="eyebrow">사이트 · 공부 · 고성능데이터마이닝 (2026-2)</p>
+  <h3><a class="stretch" href="../i/dm-cheatsheet.html">데이터마이닝 시험 압축노트 (A4 앞뒤)</a></h3>
+  <p class="desc">오픈북 시험용 A4 앞뒤 2쪽 4단 압축노트. 전처리·유사도, 분류(결정트리·가지치기·kNN), 연관분석(Apriori·FP-Growth·평가 척도), 군집(K-means). 인쇄용 PDF는 같은 폴더의 cheatsheet.pdf</p>
+  <div class="item-foot"><div class="chips"><a class="chip sm" href="../t/datamining.html" style="--c:var(--topic-6)">데이터마이닝</a></div><time class="mono date" datetime="2026-10-20">2026.10.20</time><a class="open" href="../assets/dm-cheatsheet/index.html" target="_blank" rel="noopener" aria-label="데이터마이닝 시험 압축노트 (A4 앞뒤) 새 탭에서 열기">열기 ↗</a></div>
+</article>
+<article class="item linked" data-section="study" data-date="2026-10-20">
+  <p class="eyebrow">사이트 · 공부 · 고성능데이터마이닝 (2026-2)</p>
+  <h3><a class="stretch" href="../i/dm-detail.html">데이터마이닝 상세 학습노트 (교재 2·3·5·7장)</a></h3>
+  <p class="desc">Tan 외 Introduction to Data Mining 2판 2·3·5·7장을 한국어로 자세히 풀어 쓴 장별 학습노트. 장마다 약 3만 자, 교재 수치 오류 표시 포함</p>
+  <div class="item-foot"><div class="chips"><a class="chip sm" href="../t/datamining.html" style="--c:var(--topic-6)">데이터마이닝</a></div><time class="mono date" datetime="2026-10-20">2026.10.20</time><a class="open" href="../assets/dm-detail/index.html" target="_blank" rel="noopener" aria-label="데이터마이닝 상세 학습노트 (교재 2·3·5·7장) 새 탭에서 열기">열기 ↗</a></div>
+</article>
+<article class="item linked" data-section="study" data-date="2026-10-20">
+  <p class="eyebrow">사이트 · 공부 · 고성능데이터마이닝 (2026-2)</p>
+  <h3><a class="stretch" href="../i/dm-lessons.html">데이터마이닝 입문 해설 8강 (강의 음성 포함)</a></h3>
+  <p class="desc">교수님이 짚은 시험 주제를 강의 하나씩 처음 배우는 사람 눈높이로 정리. 교재 예제를 먼저 손으로 계산하고 정의와 식으로 연결, 헷갈리는 점과 직접 풀어 보기 문제 포함. 강의마다 Gemini 음성 8~10분(전체 75분)</p>
+  <div class="item-foot"><div class="chips"><a class="chip sm" href="../t/datamining.html" style="--c:var(--topic-6)">데이터마이닝</a></div><time class="mono date" datetime="2026-10-20">2026.10.20</time><a class="open" href="../assets/dm-lessons/index.html" target="_blank" rel="noopener" aria-label="데이터마이닝 입문 해설 8강 (강의 음성 포함) 새 탭에서 열기">열기 ↗</a></div>
+</article></div></div></section>
+</article>
+</main>
+<footer class="foot"><div class="wrap">공부·연구·강의 자료를 주제별로 모아 둔 곳 · 공개 자료는 <a href="https://buildwork.kr/resources" target="_blank" rel="noopener">buildwork.kr</a></div></footer>
+<script src="../app.js"></script>
+</body>
+</html>
