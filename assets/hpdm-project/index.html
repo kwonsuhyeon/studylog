@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고성능 데이터마이닝 프로젝트 노트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --bg:#f9f9f7; --card:#ffffff; --text:#1f1f1f; --muted:#6b6b66; --line:#e7e5df;
+  --blue:#2a78d6; --blue-soft:#eaf2fc; --orange:#eb6834; --orange-soft:#fdf0ea;
+  --green:#2f9e5b; --green-soft:#e9f6ee; --red:#d64545;
+  --code-bg:#f3f2ee; --top-btn:#111111;
+  --radius:14px; --sidebar-w:270px; --page-max:1400px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard",-apple-system,"Malgun Gothic",sans-serif;line-height:1.75;font-size:16px;word-break:keep-all}
+.layout{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr);gap:28px;max-width:var(--page-max);margin:0 auto;padding:32px 24px 80px}
+nav.toc{position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;font-size:14px}
+nav.toc .toc-title{font-weight:700;margin-bottom:10px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 6px;border-radius:6px}
+nav.toc a:hover{background:var(--blue-soft);color:var(--blue)}
+nav.toc a.sub{padding-left:20px;font-size:13px}
+nav.toc .grp{margin-top:12px;font-size:12px;font-weight:700;color:var(--orange);letter-spacing:.02em}
+main{min-width:0}
+header.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 36px;margin-bottom:24px}
+header.hero h1{margin:0 0 8px;font-size:30px}
+header.hero p{margin:4px 0;color:var(--muted)}
+section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 36px;margin-bottom:24px;counter-increment:sec}
+main{counter-reset:sec}
+section>h2{display:flex;align-items:center;gap:12px;margin:0 0 18px;font-size:24px}
+section>h2::before{content:counter(sec);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;flex:none}
+h3{font-size:19px;margin:30px 0 10px;padding-top:6px;border-top:1px dashed var(--line)}
+h3:first-of-type{border-top:none}
+h4{font-size:16px;margin:20px 0 8px;color:var(--blue)}
+p{margin:8px 0}
+.core{background:var(--blue-soft);border-left:4px solid var(--blue);padding:14px 18px;border-radius:8px;margin:14px 0;font-weight:500}
+.warn{background:var(--orange-soft);border-left:4px solid var(--orange);padding:14px 18px;border-radius:8px;margin:14px 0}
+.ok{background:var(--green-soft);border-left:4px solid var(--green);padding:14px 18px;border-radius:8px;margin:14px 0}
+.step{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px;margin-right:6px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;vertical-align:middle;text-align:left}
+th{background:#f4f3ef;font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+.hl{color:var(--orange);font-weight:700}
+.bl{color:var(--blue);font-weight:700}
+code{background:var(--code-bg);padding:1px 6px;border-radius:5px;font-size:.92em;font-family:Consolas,"D2Coding",monospace}
+pre{background:#1e1e1e;color:#e6e6e6;padding:16px 18px;border-radius:10px;overflow:auto;font-size:14px;line-height:1.6}
+pre code{background:none;padding:0;color:inherit}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:#fff}
+.card h4{margin-top:0}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--blue-soft);color:var(--blue);margin-right:4px}
+.tag.o{background:var(--orange-soft);color:var(--orange)}
+.tag.g{background:var(--green-soft);color:var(--green)}
+.figure{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:10px;background:#fcfcfa;overflow-x:auto}
+.figure .cap{font-size:13px;color:var(--muted);margin-top:6px;text-align:center}
+.quiz{border:2px solid var(--blue-soft);border-radius:12px;padding:16px 20px;margin:18px 0;background:#fbfdff}
+.quiz .q{font-weight:700;margin-bottom:8px}
+.quiz label{display:block;padding:6px 10px;border-radius:8px;cursor:pointer}
+.quiz label:hover{background:var(--blue-soft)}
+.quiz button{margin-top:8px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:inherit;font-weight:600;cursor:pointer}
+.quiz .fb{display:none;margin-top:10px;padding:10px 14px;border-radius:8px}
+.quiz .fb.right{display:block;background:var(--green-soft)}
+.quiz .fb.wrong{display:block;background:var(--orange-soft)}
+.check-list{list-style:none;padding-left:0}
+.check-list li{padding:5px 0}
+.check-list input{transform:scale(1.15);margin-right:8px;accent-color:var(--blue)}
+td input[type=checkbox]{transform:scale(1.2);accent-color:var(--blue)}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0}
+#toTop{position:fixed;right:28px;bottom:28px;width:46px;height:46px;border-radius:50%;background:var(--top-btn);color:#fff;border:none;font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#toTop.show{opacity:1;pointer-events:auto}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;padding:16px}
+  nav.toc{position:static;max-height:none}
+  .grid2{grid-template-columns:1fr}
+  section{padding:22px 18px}
+}
+@media print{nav.toc,#toTop{display:none}.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <a href="#overview">1. 두 주제 한눈에 보기</a>
+  <a href="#topic1">2. 주제 1 · 코드 임베딩 out-of-core 벡터 검색</a>
+  <a href="#topic2">3. 주제 2 · 학습 로그 빈발 패턴 마이닝</a>
+  <div class="grp">개념 노트 · 공통</div>
+  <a href="#gpu-basics">4. GPU와 CUDA 기초</a>
+  <a class="sub" href="#c-thread">thread·block·grid</a>
+  <a class="sub" href="#c-transfer">CPU↔GPU 데이터 전송</a>
+  <a class="sub" href="#c-overlap">전송·연산 overlap</a>
+  <a class="sub" href="#c-imbalance">부하 불균형</a>
+  <a class="sub" href="#c-speedup">속도 향상과 COST</a>
+  <div class="grp">개념 노트 · 주제 1</div>
+  <a href="#vector">5. 벡터 검색</a>
+  <a class="sub" href="#c-sim">임베딩과 거리</a>
+  <a class="sub" href="#c-recall">KNN, ANN, recall</a>
+  <a class="sub" href="#c-ivf">IVF 인덱스</a>
+  <a class="sub" href="#c-gemm">거리 계산 = 행렬곱</a>
+  <a class="sub" href="#c-rummy">RUMMY 기법 다시 보기</a>
+  <div class="grp">개념 노트 · 주제 2</div>
+  <a href="#fim">6. 빈발 패턴 마이닝</a>
+  <a class="sub" href="#c-support">support와 신뢰도</a>
+  <a class="sub" href="#c-apriori">Apriori</a>
+  <a class="sub" href="#c-bitmap">비트맵과 popcount</a>
+  <a class="sub" href="#c-algos">Apriori·Eclat·FP-Growth</a>
+  <a class="sub" href="#c-ednet">EdNet → 트랜잭션</a>
+  <div class="grp">자료</div>
+  <a href="#papers">7. 읽을 논문</a>
+  <a href="#datasets">8. 데이터셋</a>
+  <a href="#plan">9. 일정과 할 일</a>
+</nav>
+<main>
+<header class="hero">
+  <h1>고성능 데이터마이닝 프로젝트 노트</h1>
+  <p>제안 발표용 주제 2개 정리, 필요한 개념, 읽을 논문과 데이터셋</p>
+  <p>작성 2026-10-29 · 대상: 제안 발표(5분, 11월 첫째 주)</p>
+</header>
+
+<section id="overview">
+<h2>두 주제 한눈에 보기</h2>
+<p>수업 프로젝트 조건은 "본인 연구와 관련된 데이터 분석 방법을 GPU/CPU/분산 시스템으로 병렬화해 설계하고 구현"하는 것입니다. 제안 발표에서는 연구 주제와 배경, 대상 분석 방법, 병렬화 전략, 구현 계획을 보여줘야 합니다.</p>
+<p>주제를 두 개 준비하는 이유는 한쪽이 반려되어도 다른 쪽을 바로 진행하기 위해서입니다. 그래서 두 주제는 알고리즘과 병렬화 방식이 겹치지 않게 골랐습니다.</p>
+
+<table>
+<tr><th style="width:16%">구분</th><th>주제 1 · 코드 임베딩 out-of-core 벡터 검색</th><th>주제 2 · 학습 로그 빈발 패턴 마이닝</th></tr>
+<tr><td><b>한 줄 요약</b></td><td>GPU 메모리보다 큰 프로그래밍 제출 코드 임베딩에서 유사 풀이를 빠르게 검색</td><td>대규모 학습 로그에서 함께 틀리는 개념 조합을 GPU·분산 환경으로 빠르게 탐색</td></tr>
+<tr><td><b>연구 연결</b></td><td>RAG 기반 문항 생성의 검색 단계, 유사 풀이·피드백 재사용</td><td>오개념 묶음 탐지, 선수 개념 추정, 문항 추천 근거</td></tr>
+<tr><td><b>대상 알고리즘</b></td><td>IVF 기반 근사 최근접 이웃 검색(ANN)</td><td>Apriori·Eclat 계열 빈발 항목집합 마이닝</td></tr>
+<tr><td><b>병렬화 축</b></td><td>CPU↔GPU 전송과 연산의 overlap, 중복 전송 제거, 다중 GPU</td><td>비트맵 support 계산 GPU 커널, CPU 멀티코어·Spark 분산과 비교</td></tr>
+<tr><td><b>데이터</b></td><td>IBM CodeNet(제출 1,391만 건) + SIFT1B·DEEP1B 부분집합, 응용 사례로 CSEDM</td><td>EdNet(상호작용 1.3억 건) → 규모 확장 시 MOOCCubeX(행동 로그 2.96억 건)</td></tr>
+<tr><td><b>근거 논문</b></td><td>RUMMY(NSDI 2024), Faiss GPU(IEEE TBD 2021), SPANN(NeurIPS 2021)</td><td>GMiner(Inf. Sci. 2018), PFP(RecSys 2008), Fang et al.(DaMoN 2009)</td></tr>
+<tr><td><b>교수님 관심과의 접점</b></td><td>GPU 메모리 초과 처리(out-of-core), 전송·연산 overlap</td><td>GPU 기반 패턴 마이닝(교수님 GMiner 계열)</td></tr>
+<tr><td><b>예상 질문</b></td><td>논문 재현과 무엇이 다른지</td><td>GMiner와 무엇이 다른지</td></tr>
+</table>
+
+<div class="core">두 주제 공통 전략: Python(CuPy)으로 전체를 먼저 구현하고, 프로파일링으로 찾은 병목 연산 1~2개만 CUDA 커널(<code>cupy.RawKernel</code>)로 교체합니다. 단계마다 측정 결과가 나오도록 계획해서 일정이 밀려도 중간 단계까지의 결과로 최종 발표를 할 수 있게 합니다.</div>
+
+<h3>5분 발표 구성안</h3>
+<p>주제당 2분 30초, 슬라이드 3장씩입니다.</p>
+<table>
+<tr><th class="c" style="width:8%">장</th><th style="width:22%">내용</th><th>주제 1에서 보여줄 것</th><th>주제 2에서 보여줄 것</th></tr>
+<tr><td class="c">1</td><td>배경과 문제</td><td>코드 임베딩 규모(약 43~57GB) vs A6000 메모리 48GB</td><td>EdNet 문항 쌍 8,670만 개 × 학생 78만 명의 support 계산량</td></tr>
+<tr><td class="c">2</td><td>알고리즘과 병렬화 전략</td><td>IVF 검색 흐름 + 전송·연산 overlap 타임라인 그림</td><td>비트맵 AND + popcount 그림 + CPU/Spark/GPU 비교 구조</td></tr>
+<tr><td class="c">3</td><td>구현 계획과 평가</td><td>단계별 구현 4단계, 지표: QPS·recall@10·GPU 활용률</td><td>단계별 구현 4단계, 지표: 실행 시간·속도 향상·COST</td></tr>
+</table>
+</section>
+
+<section id="topic1">
+<h2>주제 1 · 코드 임베딩 out-of-core 벡터 검색</h2>
+<p><span class="tag">GPU</span><span class="tag">out-of-core</span><span class="tag o">RUMMY 계열</span></p>
+
+<h3>배경과 문제</h3>
+<p>프로그래밍 수업에서 학생 코드와 비슷한 기존 풀이를 찾을 수 있으면 쓸 데가 많습니다. 이미 작성된 피드백을 재사용할 수 있고, 표절 의심 사례도 걸러낼 수 있습니다. 문항 생성 RAG의 검색 단계도 같은 구조입니다. 코드를 임베딩 모델로 벡터로 바꾸고, 질의 코드와 가까운 벡터를 찾는 <b>벡터 검색</b> 문제가 됩니다.</p>
+<p>규모가 커지면 GPU 메모리가 모자랍니다. IBM CodeNet의 제출 코드 13,916,868건을 임베딩하면 크기는 다음과 같습니다.</p>
+<table>
+<tr><th>임베딩 설정</th><th class="num">계산</th><th class="num">크기</th><th>A6000(48GB) 1장 기준</th></tr>
+<tr><td>768차원 · FP32</td><td class="num">13,916,868 × 768 × 4B</td><td class="num">약 42.8GB</td><td>메모리 대부분 차지, 검색 작업 공간 부족</td></tr>
+<tr><td>1024차원 · FP32</td><td class="num">13,916,868 × 1024 × 4B</td><td class="num">약 57.0GB</td><td>메모리 초과</td></tr>
+<tr><td>SIFT1B (128차원 · uint8)</td><td class="num">10억 × 128 × 1B</td><td class="num">약 128GB</td><td>메모리 2.7배 초과</td></tr>
+</table>
+<p>데이터를 CPU 메모리(host memory)에 두고 필요한 부분만 GPU로 보내면서 검색하는 방식을 <b>out-of-core 처리</b>라고 합니다. 이때 병목은 GPU 연산이 아니라 CPU→GPU 전송입니다. 이 문제를 다룬 논문이 RUMMY(NSDI 2024)입니다.</p>
+
+<h3>시스템 구조</h3>
+<div class="figure">
+<svg viewBox="0 0 980 230" width="100%" style="max-width:980px;font-family:Pretendard,sans-serif;font-size:14px">
+  <rect x="10" y="30" width="260" height="170" rx="12" fill="#fdf0ea" stroke="#eb6834"/>
+  <text x="140" y="55" text-anchor="middle" font-weight="700">CPU 메모리 (host)</text>
+  <rect x="30" y="70" width="70" height="34" rx="6" fill="#fff" stroke="#eb6834"/><text x="65" y="92" text-anchor="middle">C1</text>
+  <rect x="110" y="70" width="70" height="34" rx="6" fill="#fff" stroke="#eb6834"/><text x="145" y="92" text-anchor="middle">C2</text>
+  <rect x="190" y="70" width="70" height="34" rx="6" fill="#fff" stroke="#eb6834"/><text x="225" y="92" text-anchor="middle">C3</text>
+  <rect x="30" y="114" width="70" height="34" rx="6" fill="#fff" stroke="#eb6834"/><text x="65" y="136" text-anchor="middle">C4</text>
+  <rect x="110" y="114" width="70" height="34" rx="6" fill="#fff" stroke="#eb6834"/><text x="145" y="136" text-anchor="middle">…</text>
+  <text x="140" y="180" text-anchor="middle" fill="#6b6b66" font-size="13">IVF cluster 단위로 저장</text>
+  <line x1="275" y1="115" x2="405" y2="115" stroke="#1f1f1f" stroke-width="2" marker-end="url(#ar)"/>
+  <text x="340" y="105" text-anchor="middle" font-weight="700">PCIe 4.0</text>
+  <text x="340" y="138" text-anchor="middle" fill="#6b6b66" font-size="13">병목 구간</text>
+  <rect x="410" y="30" width="330" height="170" rx="12" fill="#eaf2fc" stroke="#2a78d6"/>
+  <text x="575" y="55" text-anchor="middle" font-weight="700">GPU 메모리 (A6000 48GB)</text>
+  <rect x="430" y="75" width="120" height="44" rx="6" fill="#fff" stroke="#2a78d6"/><text x="490" y="102" text-anchor="middle">버퍼 A (전송 중)</text>
+  <rect x="430" y="130" width="120" height="44" rx="6" fill="#fff" stroke="#2a78d6"/><text x="490" y="157" text-anchor="middle">버퍼 B (연산 중)</text>
+  <rect x="580" y="75" width="140" height="99" rx="6" fill="#fff" stroke="#2a78d6"/><text x="650" y="115" text-anchor="middle">거리 계산</text><text x="650" y="138" text-anchor="middle">+ top-k 선택</text>
+  <line x1="745" y1="115" x2="835" y2="115" stroke="#1f1f1f" stroke-width="2" marker-end="url(#ar)"/>
+  <rect x="840" y="80" width="130" height="70" rx="10" fill="#e9f6ee" stroke="#2f9e5b"/><text x="905" y="110" text-anchor="middle" font-weight="700">결과 병합</text><text x="905" y="132" text-anchor="middle" font-size="13">query별 top-k</text>
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1f1f1f"/></marker></defs>
+</svg>
+<div class="cap">버퍼 2개를 번갈아 쓰면 한쪽에 다음 cluster를 전송하는 동안 다른 쪽에서 계산할 수 있음</div>
+</div>
+
+<h3>병렬화 전략과 구현 단계</h3>
+<table>
+<tr><th class="c" style="width:7%">단계</th><th style="width:24%">내용</th><th>구현 방법</th><th style="width:26%">확인할 결과</th></tr>
+<tr><td class="c">0</td><td>임베딩 생성</td><td>코드 임베딩 모델을 GPU 16장에 나눠 배치 추론</td><td>임베딩 생성 처리량(건/초)</td></tr>
+<tr><td class="c">1</td><td>기준선(baseline) 구현</td><td>CuPy로 IVF 검색 구현, cluster를 하나씩 전송 → 계산 순차 실행</td><td>전송 시간과 연산 시간 비율</td></tr>
+<tr><td class="c">2</td><td>중복 전송 제거</td><td>배치 안 query들이 고른 cluster를 모아 cluster당 1회만 전송</td><td>전송량 감소율</td></tr>
+<tr><td class="c">3</td><td>전송·연산 overlap</td><td>CUDA stream 2개와 pinned memory로 double buffering</td><td>순차 대비 속도 향상</td></tr>
+<tr><td class="c">4</td><td>CUDA 커널과 부하 균형</td><td>거리 계산 후 top-k 선택을 커널 하나로 합치기, 큰 cluster 분할</td><td>GPU 활용률, 커널 시간</td></tr>
+<tr><td class="c">5</td><td>(확장) 다중 GPU</td><td>cluster를 GPU 여러 장에 나눠 담고 결과 병합</td><td>GPU 수에 따른 확장성</td></tr>
+</table>
+
+<h3>비교 대상과 평가</h3>
+<div class="grid2">
+<div class="card">
+<h4>비교 대상</h4>
+<ul>
+<li>Faiss CPU (IVF) · Faiss GPU (데이터가 GPU에 들어가는 크기에서)</li>
+<li>CUDA Unified Memory로 자동 전송하는 방식</li>
+<li>본인 구현의 단계별 버전(1 → 2 → 3 → 4)</li>
+</ul>
+</div>
+<div class="card">
+<h4>평가 지표와 실험 변수</h4>
+<ul>
+<li>지표: 초당 질의 수(QPS), recall@10, 전송량, GPU 활용률</li>
+<li>변수: GPU 메모리 예산(8/16/24GB), nprobe, 배치 크기, 임베딩 차원</li>
+</ul>
+</div>
+</div>
+<p>GPU 메모리 예산을 변수로 두면 데이터가 GPU에 다 들어가는 경우부터 대부분 CPU에 있는 경우까지 한 실험에서 비교할 수 있습니다.</p>
+
+<h3>논문 재현과 다른 점</h3>
+<ul>
+<li>데이터: 일반 벤치마크 대신 교육 맥락의 제출 코드 임베딩 사용</li>
+<li>분석: 기법을 하나씩 켜고 끄는 단계별 분석(ablation)으로 어떤 기법이 얼마나 기여하는지 측정</li>
+<li>응용: CSEDM 학생 코드에 대한 유사 풀이 검색 사례</li>
+</ul>
+
+<h3>위험 요소와 대응</h3>
+<table>
+<tr><th style="width:36%">위험</th><th>대응</th></tr>
+<tr><td>CodeNet 전체 임베딩에 시간이 오래 걸림</td><td>Python·C++ 등 일부 언어만 먼저 사용, 성능 실험은 SIFT·DEEP으로 병행</td></tr>
+<tr><td>GPU 서버의 CPU 메모리가 SIFT1B(128GB)보다 작을 수 있음</td><td>첫 주에 서버 사양 확인 후 2억~5억 개 부분집합으로 조정</td></tr>
+<tr><td>CUDA 커널 작성이 일정 안에 안 끝남</td><td>3단계까지는 CuPy만으로 가능하므로, 커널은 4단계의 선택 과제로 둠</td></tr>
+</table>
+</section>
+
+<section id="topic2">
+<h2>주제 2 · 학습 로그 빈발 패턴 마이닝</h2>
+<p><span class="tag">GPU</span><span class="tag">CPU 멀티코어</span><span class="tag">분산(Spark)</span><span class="tag o">GMiner 계열</span></p>
+
+<h3>배경과 문제</h3>
+<p>학습자가 어떤 개념을 함께 틀리는지 알면 오개념 묶음을 찾을 수 있고, 한 개념을 틀린 학생에게 어떤 개념을 먼저 복습시킬지도 정할 수 있습니다. "학생마다 틀린 개념의 집합"에서 자주 같이 나오는 조합을 찾는 작업이 <b>빈발 항목집합 마이닝</b>(frequent itemset mining)입니다.</p>
+<p>EdNet에서는 계산량이 빠르게 커집니다.</p>
+<table>
+<tr><th>분석 단위</th><th class="num">항목 수</th><th class="num">2개 조합 후보</th><th class="num">3개 조합 후보</th></tr>
+<tr><td>스킬 태그</td><td class="num">293</td><td class="num">42,778</td><td class="num">4,149,466</td></tr>
+<tr><td>문항</td><td class="num">13,169</td><td class="num">86,704,696</td><td class="num">(가지치기 없이는 계산 불가)</td></tr>
+</table>
+<p>후보 하나의 support를 세려면 학생 784,309명을 모두 확인해야 합니다. 비트맵으로 바꾸면 학생 32명을 한 번의 비트 연산으로 처리하지만, 그래도 후보 하나에 약 24,510번의 연산이 필요합니다. 문항 2개 조합만 해도 약 2.1조 번입니다. 이 연산은 서로 독립적이어서 GPU로 나누기 좋습니다.</p>
+
+<h3>병렬화 전략과 구현 단계</h3>
+<table>
+<tr><th class="c" style="width:7%">단계</th><th style="width:24%">내용</th><th>구현 방법</th><th style="width:26%">확인할 결과</th></tr>
+<tr><td class="c">0</td><td>전처리</td><td>EdNet KT1 로그 + 문항 정답표 결합 → 학생별 오답 태그 집합</td><td>트랜잭션 수, 평균 길이</td></tr>
+<tr><td class="c">1</td><td>CPU 기준선</td><td>단일 코어 Apriori(mlxtend), 멀티코어 버전(Python multiprocessing 또는 C++ OpenMP)</td><td>코어 수별 실행 시간</td></tr>
+<tr><td class="c">2</td><td>분산 기준선</td><td>Spark MLlib FP-Growth(PFP 방식)를 노드 5대에서 실행</td><td>노드 수별 실행 시간</td></tr>
+<tr><td class="c">3</td><td>GPU 구현</td><td>비트맵을 GPU에 올리고 CuPy로 AND + popcount → support 계산 CUDA 커널로 교체</td><td>CPU·Spark 대비 속도 향상</td></tr>
+<tr><td class="c">4</td><td>(확장) 다중 GPU · 대규모</td><td>후보를 GPU 여러 장에 분배, MOOCCubeX처럼 비트맵이 GPU 메모리를 넘으면 트랜잭션 블록 단위로 나눠 전송</td><td>GPU 수와 데이터 크기에 따른 확장성</td></tr>
+</table>
+
+<h3>비교 대상과 평가</h3>
+<div class="grid2">
+<div class="card">
+<h4>비교 대상</h4>
+<ul>
+<li>CPU 단일 코어 · CPU 멀티코어</li>
+<li>Spark MLlib FP-Growth (분산)</li>
+<li>GPU 1장 · GPU 여러 장</li>
+</ul>
+<p>모든 방식이 같은 입력에서 같은 결과(빈발 항목집합 목록)를 내는지 먼저 확인합니다.</p>
+</div>
+<div class="card">
+<h4>평가 지표와 실험 변수</h4>
+<ul>
+<li>지표: 실행 시간, 속도 향상(speedup), COST, GPU 활용률</li>
+<li>변수: 최소 support(minsup), 분석 단위(태그/문항), 트랜잭션 단위(학생/세션), 데이터 크기</li>
+</ul>
+</div>
+</div>
+
+<h3>GMiner와 다른 점</h3>
+<ul>
+<li>대상: 일반 벤치마크가 아닌 학습 로그. 트랜잭션 구성 방식(학생 단위, 세션 단위)이 성능에 미치는 영향 분석</li>
+<li>비교 범위: GPU 단독이 아니라 CPU 멀티코어, Spark 분산, GPU를 같은 데이터와 같은 클러스터에서 비교</li>
+<li>해석: 찾은 패턴을 교육적으로 해석(함께 틀리는 개념 조합)</li>
+</ul>
+<div class="warn">교수님이 GMiner 저자이므로 "GMiner보다 빠르다"를 목표로 내세우지 않는 편이 안전합니다. 기여는 "학습 로그 도메인에서의 병렬화 방식별 비교·분석"으로 좁혀서 제시합니다.</div>
+
+<h3>위험 요소와 대응</h3>
+<table>
+<tr><th style="width:36%">위험</th><th>대응</th></tr>
+<tr><td>EdNet 다운로드 링크(bit.ly)가 끊김</td><td>Kaggle의 Riiid Answer Correctness Prediction 데이터(약 1억 행) 사용</td></tr>
+<tr><td>스킬 태그 단위는 데이터가 작아 GPU 효과가 작게 나옴</td><td>문항 단위, 세션 단위로 키워서 실험, 작은 규모 결과도 "GPU가 불리한 구간"으로 같이 보고</td></tr>
+<tr><td>minsup을 낮추면 후보가 폭발</td><td>minsup별 후보 수를 먼저 측정해 실험 범위 결정</td></tr>
+</table>
+</section>
+
+<section id="gpu-basics">
+<h2>GPU와 CUDA 기초</h2>
+<p>두 주제 모두 GPU에서 돌아가므로 여기서는 공통으로 필요한 개념 다섯 가지를 정리합니다. CUDA를 처음 접한다고 보고, 개념마다 작은 숫자 예제를 직접 계산하며 설명합니다.</p>
+
+<!-- ───────── C1 ───────── -->
+<h3 id="c-thread">4-1. thread · block · grid: GPU는 일을 어떻게 나누는가</h3>
+<p>핵심은 간단합니다. <b>같은 계산을 수천 개의 thread에 하나씩 맡기고, 각 thread는 자기 번호를 보고 어떤 데이터를 맡을지 정합니다.</b></p>
+<p>CPU와 비교하면 차이가 분명합니다.</p>
+<table>
+<tr><th style="width:20%">구분</th><th>CPU</th><th>GPU</th></tr>
+<tr><td>코어 수</td><td>수십 개 (복잡한 일을 잘하는 코어)</td><td>수천 개 (단순한 일을 동시에 하는 코어)</td></tr>
+<tr><td>잘하는 일</td><td>분기가 많은 일, 순서가 중요한 일</td><td>같은 계산을 대량의 데이터에 반복하는 일</td></tr>
+<tr><td>메모리</td><td>CPU 메모리(host memory), 수백 GB 가능</td><td>GPU 메모리(device memory), A6000은 48GB</td></tr>
+<tr><td>예</td><td>파일 읽기, 전처리, 전체 흐름 제어</td><td>거리 계산, 비트 연산, 행렬곱</td></tr>
+</table>
+
+<h4>용어 정리</h4>
+<table>
+<tr><th style="width:22%">용어</th><th>의미</th></tr>
+<tr><td>kernel</td><td>GPU에서 실행되는 함수. 한 번 호출하면 thread 수천 개가 같은 함수를 동시에 실행</td></tr>
+<tr><td>thread</td><td>kernel을 실행하는 가장 작은 단위. 데이터 원소 하나를 맡는 경우가 많음</td></tr>
+<tr><td>block (thread block)</td><td>thread 묶음(보통 128~1024개). 한 block은 SM 하나에서 실행</td></tr>
+<tr><td>grid</td><td>kernel 한 번 호출에 쓰이는 block 전체</td></tr>
+<tr><td>SM (Streaming Multiprocessor)</td><td>GPU 안의 실제 처리 장치. A6000에는 84개</td></tr>
+<tr><td>warp</td><td>32개 thread 묶음. 같은 warp의 thread는 같은 명령을 동시에 실행</td></tr>
+</table>
+
+<h4>실제로 계산해 봅시다</h4>
+<p>길이 10인 배열 두 개를 더하는 kernel을 생각해 보겠습니다. block 하나에는 thread를 4개씩 넣습니다.</p>
+<p><span class="step">STEP 1</span> 필요한 block 수를 계산합니다. 원소 10개를 4개씩 나누면 2.5이므로 올림해서 <b>3개</b>입니다.</p>
+\[ \text{blocks}=\left\lceil \frac{n}{\text{blockDim}} \right\rceil=\left\lceil \frac{10}{4} \right\rceil=3 \]
+<p><span class="step">STEP 2</span> 각 thread가 맡을 원소 번호(전역 인덱스)를 계산합니다.</p>
+\[ i = \text{blockIdx} \times \text{blockDim} + \text{threadIdx} \]
+<table>
+<tr><th class="c">blockIdx</th><th class="c">threadIdx = 0</th><th class="c">threadIdx = 1</th><th class="c">threadIdx = 2</th><th class="c">threadIdx = 3</th></tr>
+<tr><td class="c">0</td><td class="c">0</td><td class="c">1</td><td class="c">2</td><td class="c">3</td></tr>
+<tr><td class="c">1</td><td class="c">4</td><td class="c">5</td><td class="c">6</td><td class="c">7</td></tr>
+<tr><td class="c">2</td><td class="c">8</td><td class="c">9</td><td class="c hl">10 (일 없음)</td><td class="c hl">11 (일 없음)</td></tr>
+</table>
+<p><span class="step">STEP 3</span> thread는 12개인데 원소는 10개뿐입니다. 그래서 kernel 안에 <code>if (i &lt; n)</code> 검사를 넣어 10번, 11번 thread는 아무것도 하지 않게 합니다.</p>
+<p>CuPy로 쓰면 다음과 같습니다. 따옴표 안의 C 코드가 CUDA kernel이고, 나머지는 평범한 Python입니다.</p>
+<pre><code>import cupy as cp
+
+add = cp.RawKernel(r'''
+extern "C" __global__
+void add(const float* a, const float* b, float* c, int n) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;   // STEP 2
+    if (i &lt; n) c[i] = a[i] + b[i];                    // STEP 3
+}
+''', 'add')
+
+n = 10
+a = cp.arange(n, dtype=cp.float32)
+b = cp.ones(n, dtype=cp.float32)
+c = cp.empty_like(a)
+threads = 4
+blocks = (n + threads - 1) // threads   # STEP 1 → 3
+add((blocks,), (threads,), (a, b, c, cp.int32(n)))
+print(c)   # [ 1.  2.  3. ... 10.]</code></pre>
+<div class="core">CUDA 프로그래밍의 기본은 "thread 하나가 할 일을 쓰고, thread 번호로 데이터 위치를 계산한다"입니다. 주제 1의 거리 계산, 주제 2의 비트 연산 kernel도 이 구조를 그대로 씁니다.</div>
+
+<div class="quiz" data-answer="b">
+<div class="q">문제. 원소가 1,000개이고 block당 thread를 256개로 정했습니다. block 수와 일이 없는 thread 수, 그리고 block 2번의 thread 5번이 맡는 원소 번호는?</div>
+<label><input type="radio" name="q1" value="a"> block 3개, 일 없는 thread 232개, 원소 517번</label>
+<label><input type="radio" name="q1" value="b"> block 4개, 일 없는 thread 24개, 원소 517번</label>
+<label><input type="radio" name="q1" value="c"> block 4개, 일 없는 thread 24개, 원소 261번</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="⌈1000/256⌉ = 4개 block, thread는 4×256 = 1,024개이므로 1,024 − 1,000 = 24개가 일이 없습니다. 원소 번호는 2×256 + 5 = 517입니다."></div>
+</div>
+
+<!-- ───────── C2 ───────── -->
+<h3 id="c-transfer">4-2. CPU↔GPU 데이터 전송: 왜 병목이 되는가</h3>
+<p>GPU는 자기 메모리에 있는 데이터만 계산할 수 있습니다. CPU 메모리에 있는 데이터는 먼저 <b>PCIe</b>라는 통로로 GPU 메모리에 복사해야 합니다. 그런데 이 통로가 GPU 내부 메모리보다 훨씬 느립니다.</p>
+<table>
+<tr><th>경로</th><th class="num">대역폭(초당 전송량)</th><th>비고</th></tr>
+<tr><td>GPU 내부 메모리 (A6000 GDDR6)</td><td class="num">768 GB/s</td><td>GPU 사양값</td></tr>
+<tr><td>CPU → GPU (PCIe 4.0 x16)</td><td class="num">이론 약 32 GB/s</td><td>실측은 보통 이보다 낮음. 서버에서 직접 측정 필요</td></tr>
+</table>
+
+<h4>실제로 계산해 봅시다</h4>
+<p>주제 1의 임베딩 57GB를 한 번 훑는 데 걸리는 시간을 비교해 보겠습니다. PCIe 실측 속도는 25GB/s로 가정합니다.</p>
+<p><span class="step">STEP 1</span> GPU 메모리 안에 이미 있다면: \( 57 \div 768 \approx 0.074 \)초</p>
+<p><span class="step">STEP 2</span> CPU 메모리에서 보내야 한다면: \( 57 \div 25 \approx 2.28 \)초</p>
+<p><span class="step">STEP 3</span> 비교하면 약 <b class="hl">30배</b> 차이입니다. GPU가 계산을 아무리 빨리 해도 데이터가 도착하지 않으면 기다려야 합니다.</p>
+
+<h4>pinned memory</h4>
+<p>CPU 메모리는 기본적으로 일반 메모리(pageable memory)입니다. 운영체제가 필요하면 디스크로 내보낼 수 있는 메모리라서 GPU로 바로 보낼 수 없고, 중간에 한 번 더 복사가 일어납니다. 디스크로 내보내지 않도록 고정한 메모리는 <b>pinned memory</b>(page-locked memory)라고 합니다. 전송이 더 빠르고 다음 절에서 다룰 비동기 전송에 꼭 필요합니다.</p>
+<table>
+<tr><th style="width:22%">구분</th><th>pageable memory</th><th>pinned memory</th></tr>
+<tr><td>전송 경로</td><td>임시 pinned 버퍼로 복사 후 GPU로 전송 (2단계)</td><td>GPU가 바로 가져감 (1단계)</td></tr>
+<tr><td>전송 속도</td><td>느림</td><td>빠름</td></tr>
+<tr><td>전송 중 CPU·GPU 동시 작업</td><td>제한적</td><td>가능 (비동기 전송)</td></tr>
+<tr><td>주의점</td><td>없음</td><td>너무 많이 잡으면 시스템 전체 메모리가 부족해짐</td></tr>
+</table>
+
+<div class="quiz" data-answer="a">
+<div class="q">문제. 데이터 24GB를 PCIe로 보내면 2초가 걸리고, GPU 계산은 0.5초가 걸립니다. 전체 시간을 가장 크게 줄이는 방법은?</div>
+<label><input type="radio" name="q2" value="a"> 보내는 데이터 양을 줄이거나, 전송하는 동안 계산을 같이 진행한다</label>
+<label><input type="radio" name="q2" value="b"> 계산 kernel을 최적화해서 0.5초를 0.1초로 줄인다</label>
+<label><input type="radio" name="q2" value="c"> block당 thread 수를 늘린다</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="전체 2.5초 중 2초가 전송입니다. kernel을 0.1초로 줄여도 2.1초에 그칩니다. 전송량을 줄이거나(주제 1의 중복 전송 제거) 전송과 계산을 겹치는 쪽이 효과가 큽니다."></div>
+</div>
+
+<!-- ───────── C3 ───────── -->
+<h3 id="c-overlap">4-3. 전송·연산 overlap: 기다리는 시간 숨기기</h3>
+<p>방법은 이렇습니다. <b>데이터를 여러 조각(chunk)으로 나눈 뒤, 한 조각을 계산하는 동안 다음 조각을 전송합니다.</b> 세탁기와 건조기를 동시에 돌리는 것과 같은 원리입니다. 이런 실행 방식을 pipelining이라고 합니다.</p>
+<p>GPU에는 전송을 담당하는 장치(copy engine)와 계산을 담당하는 SM이 따로 있어서 두 일을 동시에 할 수 있습니다. 두 작업을 겹쳐 시키려면 <b>CUDA stream</b>을 씁니다. stream은 GPU에 보내는 작업 대기열입니다. 같은 stream 안의 작업은 순서대로 실행되지만 서로 다른 stream의 작업은 동시에 실행될 수 있습니다.</p>
+
+<h4>실제로 계산해 봅시다</h4>
+<p>데이터를 4조각으로 나눈다고 하겠습니다. 조각 하나의 전송 시간 \(t\)는 2ms, 계산 시간 \(c\)는 3ms입니다.</p>
+<p><span class="step">STEP 1</span> 순차 실행: 전송 → 계산 → 전송 → 계산을 반복하므로 \( 4 \times (2+3) = 20 \)ms</p>
+<p><span class="step">STEP 2</span> overlap 실행: 첫 조각 전송(2ms)이 끝나면 계산을 시작하고, 동시에 다음 조각을 전송합니다.</p>
+<div class="figure">
+<svg viewBox="0 0 700 210" width="100%" style="max-width:760px;font-family:Pretendard,sans-serif;font-size:13px">
+  <text x="0" y="22" font-weight="700">순차 실행 (20ms)</text>
+  <g transform="translate(90,32)">
+    <rect x="0" y="0" width="60" height="26" fill="#eb6834"/><text x="30" y="17" fill="#fff" text-anchor="middle">T1</text>
+    <rect x="60" y="0" width="90" height="26" fill="#2a78d6"/><text x="105" y="17" fill="#fff" text-anchor="middle">C1</text>
+    <rect x="150" y="0" width="60" height="26" fill="#eb6834"/><text x="180" y="17" fill="#fff" text-anchor="middle">T2</text>
+    <rect x="210" y="0" width="90" height="26" fill="#2a78d6"/><text x="255" y="17" fill="#fff" text-anchor="middle">C2</text>
+    <rect x="300" y="0" width="60" height="26" fill="#eb6834"/><text x="330" y="17" fill="#fff" text-anchor="middle">T3</text>
+    <rect x="360" y="0" width="90" height="26" fill="#2a78d6"/><text x="405" y="17" fill="#fff" text-anchor="middle">C3</text>
+    <rect x="450" y="0" width="60" height="26" fill="#eb6834"/><text x="480" y="17" fill="#fff" text-anchor="middle">T4</text>
+    <rect x="510" y="0" width="90" height="26" fill="#2a78d6"/><text x="555" y="17" fill="#fff" text-anchor="middle">C4</text>
+  </g>
+  <text x="0" y="98" font-weight="700">overlap (14ms)</text>
+  <text x="0" y="124" fill="#6b6b66">전송 stream</text>
+  <g transform="translate(90,108)">
+    <rect x="0" y="0" width="60" height="26" fill="#eb6834"/><text x="30" y="17" fill="#fff" text-anchor="middle">T1</text>
+    <rect x="60" y="0" width="60" height="26" fill="#eb6834"/><text x="90" y="17" fill="#fff" text-anchor="middle">T2</text>
+    <rect x="150" y="0" width="60" height="26" fill="#eb6834"/><text x="180" y="17" fill="#fff" text-anchor="middle">T3</text>
+    <rect x="240" y="0" width="60" height="26" fill="#eb6834"/><text x="270" y="17" fill="#fff" text-anchor="middle">T4</text>
+  </g>
+  <text x="0" y="156" fill="#6b6b66">연산 stream</text>
+  <g transform="translate(90,140)">
+    <rect x="60" y="0" width="90" height="26" fill="#2a78d6"/><text x="105" y="17" fill="#fff" text-anchor="middle">C1</text>
+    <rect x="150" y="0" width="90" height="26" fill="#2a78d6"/><text x="195" y="17" fill="#fff" text-anchor="middle">C2</text>
+    <rect x="240" y="0" width="90" height="26" fill="#2a78d6"/><text x="285" y="17" fill="#fff" text-anchor="middle">C3</text>
+    <rect x="330" y="0" width="90" height="26" fill="#2a78d6"/><text x="375" y="17" fill="#fff" text-anchor="middle">C4</text>
+  </g>
+  <g transform="translate(90,185)" fill="#6b6b66">
+    <line x1="0" y1="0" x2="600" y2="0" stroke="#bbb"/>
+    <text x="0" y="16" text-anchor="middle">0</text><text x="150" y="16" text-anchor="middle">5</text><text x="300" y="16" text-anchor="middle">10</text><text x="420" y="16" text-anchor="middle">14</text><text x="600" y="16" text-anchor="middle">20ms</text>
+  </g>
+</svg>
+<div class="cap">주황 = 전송(T), 파랑 = 계산(C). 버퍼가 2개라 T3은 C1이 끝나 버퍼가 비는 5ms에 시작</div>
+</div>
+<p><span class="step">STEP 3</span> 일반식으로 정리하면 다음과 같습니다.</p>
+\[ T_{\text{순차}} = n(t+c), \qquad T_{\text{overlap}} \approx t + (n-1)\max(t,c) + c \]
+<table>
+<tr><th class="c" style="width:16%">기호</th><th>의미</th><th class="num">예제 값</th></tr>
+<tr><td class="c">\(n\)</td><td>조각 수</td><td class="num">4</td></tr>
+<tr><td class="c">\(t\)</td><td>조각 하나의 전송 시간</td><td class="num">2ms</td></tr>
+<tr><td class="c">\(c\)</td><td>조각 하나의 계산 시간</td><td class="num">3ms</td></tr>
+<tr><td class="c">\(\max(t,c)\)</td><td>둘 중 느린 쪽. 이 쪽이 전체 속도를 결정</td><td class="num">3ms</td></tr>
+</table>
+<p>예제에 넣으면 \( 2 + 3 \times 3 + 3 = 14 \)ms이고, 순차 실행보다 \( 20/14 \approx 1.43 \)배 빠릅니다.</p>
+<div class="core">overlap은 전송과 계산 중 <b>짧은 쪽을 가려 주는 기법</b>입니다. 줄어드는 시간에는 한계가 있어서 전송이 계산보다 훨씬 길면 아무리 겹쳐도 전체 시간은 전송 시간과 비슷해집니다. RUMMY가 overlap과 함께 전송량 자체를 줄이는 기법(중복 전송 제거)을 쓰는 이유입니다.</div>
+
+<h4>CuPy로 쓰면 이런 모양입니다</h4>
+<p>버퍼 2개를 번갈아 쓰는 double buffering 구조입니다. 실제 실행 전 검증이 필요한 개념 스케치입니다.</p>
+<pre><code>copy_s = cp.cuda.Stream(non_blocking=True)   # 전송 담당
+comp_s = cp.cuda.Stream(non_blocking=True)   # 계산 담당
+bufs  = [cp.empty((max_rows, d), cp.float32) for _ in range(2)]
+ready = [cp.cuda.Event(), cp.cuda.Event()]   # "전송 끝" 표시
+freed = [cp.cuda.Event(), cp.cuda.Event()]   # "계산 끝, 버퍼 비었음" 표시
+
+for i, rows in enumerate(chunks):            # rows: pinned memory에 있는 조각
+    k = i % 2                                # 버퍼 0, 1 번갈아 사용
+    copy_s.wait_event(freed[k])              # 이 버퍼를 쓰던 계산이 끝날 때까지 대기
+    bufs[k][:len(rows)].set(rows, stream=copy_s)
+    ready[k].record(copy_s)
+    comp_s.wait_event(ready[k])              # 전송이 끝나야 계산 시작
+    with comp_s:
+        search(queries, bufs[k][:len(rows)])
+    freed[k].record(comp_s)</code></pre>
+
+<div class="quiz" data-answer="c">
+<div class="q">문제. 조각 5개, 전송 4ms, 계산 1ms일 때 순차 실행 시간과 overlap 실행 시간은?</div>
+<label><input type="radio" name="q3" value="a"> 25ms → 9ms</label>
+<label><input type="radio" name="q3" value="b"> 25ms → 25ms</label>
+<label><input type="radio" name="q3" value="c"> 25ms → 21ms</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="순차는 5×(4+1) = 25ms입니다. overlap은 4 + 4×max(4,1) + 1 = 21ms입니다. 전송이 훨씬 길어서 겹쳐도 계산 시간 1ms씩만 숨겨집니다. 이런 경우에는 전송량을 줄여야 합니다."></div>
+</div>
+
+<!-- ───────── C4 ───────── -->
+<h3 id="c-imbalance">4-4. 부하 불균형: 가장 늦게 끝나는 SM이 전체 시간을 정한다</h3>
+<p>GPU는 block들을 여러 SM에 나눠 실행합니다. 일을 다 끝낸 SM이 있어도, 가장 많은 일을 받은 SM이 끝나야 kernel 전체가 끝납니다. 일이 고르게 나뉘지 않은 상태를 <b>부하 불균형</b>(load imbalance)이라고 합니다.</p>
+
+<h4>실제로 계산해 봅시다</h4>
+<p>SM 4개에 IVF cluster 4개를 하나씩 맡깁니다. cluster 크기는 벡터 100, 20, 20, 20개이고, 벡터 하나를 처리하는 데는 1단위 시간이 걸린다고 봅니다.</p>
+<p><span class="step">STEP 1</span> 전체 시간 = 가장 큰 일 = <b>100</b></p>
+<p><span class="step">STEP 2</span> 실제 한 일의 총량은 \(100+20+20+20=160\)입니다. SM 4개가 100만큼 시간을 썼으니 활용률은 다음과 같습니다.</p>
+\[ \text{활용률} = \frac{\text{총 작업량}}{\text{SM 수} \times \text{전체 시간}} = \frac{160}{4 \times 100} = 40\% \]
+<p><span class="step">STEP 3</span> 큰 cluster를 40, 40, 20으로 쪼개면 일은 40, 40, 20, 20, 20, 20의 6개가 됩니다. SM 4개에 40 / 40 / 20+20 / 20+20으로 나누면 전체 시간은 <b>40</b>, 활용률은 \(160/(4\times40)=100\%\)가 됩니다.</p>
+<table>
+<tr><th>방식</th><th class="num">전체 시간</th><th class="num">활용률</th></tr>
+<tr><td>cluster를 그대로 배정</td><td class="num">100</td><td class="num">40%</td></tr>
+<tr><td>큰 cluster를 쪼개서 배정</td><td class="num">40</td><td class="num">100%</td></tr>
+</table>
+<p>RUMMY의 cluster balancing이 바로 이 방법입니다. 크기가 제각각인 cluster를 비슷한 크기로 쪼갭니다. 주제 2에서도 학생마다 오답 수가 다르기 때문에 같은 문제가 생깁니다.</p>
+
+<div class="quiz" data-answer="a">
+<div class="q">문제. SM 4개에 작업 크기 60, 20, 10, 10을 하나씩 배정하면 활용률은?</div>
+<label><input type="radio" name="q4" value="a"> 약 41.7%</label>
+<label><input type="radio" name="q4" value="b"> 25%</label>
+<label><input type="radio" name="q4" value="c"> 100%</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="총 작업량 100, 전체 시간 60이므로 100 / (4×60) ≈ 41.7%입니다."></div>
+</div>
+
+<!-- ───────── C5 ───────── -->
+<h3 id="c-speedup">4-5. 속도 향상, Amdahl의 법칙, COST: 성능을 어떻게 평가하는가</h3>
+<p>최종 발표의 "성능 분석 및 평가"에서 쓰는 지표입니다.</p>
+<table>
+<tr><th style="width:22%">지표</th><th>정의</th><th>예</th></tr>
+<tr><td>속도 향상(speedup)</td><td>\( S = T_{\text{기준}} / T_{\text{병렬}} \)</td><td>100초 → 10초면 10배</td></tr>
+<tr><td>병렬 효율(efficiency)</td><td>\( E = S / p \) (\(p\)는 프로세서 수)</td><td>GPU 16장으로 10배면 62.5%</td></tr>
+<tr><td>강한 확장성(strong scaling)</td><td>데이터 크기는 고정, 프로세서만 늘림</td><td>같은 데이터에 GPU 1→2→4→8장</td></tr>
+<tr><td>약한 확장성(weak scaling)</td><td>프로세서당 데이터 크기를 고정하고 같이 늘림</td><td>GPU 1장에 1억 건, 4장에 4억 건</td></tr>
+</table>
+
+<h4>Amdahl의 법칙</h4>
+<p>프로그램에 병렬화할 수 없는 부분이 있으면 프로세서를 아무리 늘려도 속도 향상에 상한이 생깁니다.</p>
+\[ S(p) = \frac{1}{f + \dfrac{1-f}{p}} \]
+<p>\(f\)는 병렬화할 수 없는 부분의 비율입니다. 전처리 같은 직렬 부분이 10%(\(f=0.1\))이고 GPU를 16장 쓰면 다음과 같습니다.</p>
+\[ S(16) = \frac{1}{0.1 + 0.9/16} = \frac{1}{0.15625} = 6.4 \]
+<p>GPU를 16장 써도 6.4배가 한계이고, 무한히 늘려도 \(1/f = 10\)배를 넘지 못합니다.</p>
+
+<h4>COST</h4>
+<p>McSherry 등의 논문 "Scalability! But at what COST?"(HotOS 2015)가 제안한 지표입니다. 이 논문은 관련논문 목록 I장에 들어 있습니다. <b>COST는 병렬 시스템이 잘 짠 단일 thread 프로그램보다 빨라지는 데 필요한 코어 수</b>입니다. 분산 시스템은 코어를 늘릴수록 빨라지는 그래프를 보여주기 쉬운데, 출발점 자체가 느리면 의미가 없다는 문제 제기입니다.</p>
+<table>
+<tr><th>구성</th><th class="num">실행 시간</th></tr>
+<tr><td>잘 짠 단일 thread 프로그램</td><td class="num">50초</td></tr>
+<tr><td>Spark, 16코어</td><td class="num">80초</td></tr>
+<tr><td>Spark, 64코어</td><td class="num">40초</td></tr>
+</table>
+<p>이 경우 Spark는 64코어가 되어서야 단일 thread보다 빨라지므로 COST는 약 64입니다. 주제 2에서 Spark와 GPU를 비교할 때 이 기준을 같이 쓰면 평가가 공정해집니다.</p>
+
+<div class="quiz" data-answer="b">
+<div class="q">문제. 직렬 부분이 20%인 프로그램을 GPU 4장으로 병렬화할 때 이론상 최대 속도 향상은?</div>
+<label><input type="radio" name="q5" value="a"> 4배</label>
+<label><input type="radio" name="q5" value="b"> 2.5배</label>
+<label><input type="radio" name="q5" value="c"> 5배</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="1 / (0.2 + 0.8/4) = 1 / 0.4 = 2.5배입니다. 5배는 GPU를 무한히 늘렸을 때의 상한(1/0.2)입니다."></div>
+</div>
+</section>
+
+<section id="vector">
+<h2>벡터 검색 (주제 1 개념)</h2>
+<p>주제 1을 이해하는 데 필요한 개념은 ① 임베딩과 거리 → ② KNN과 ANN, recall → ③ IVF 인덱스 → ④ 거리 계산을 행렬곱으로 바꾸기 → ⑤ RUMMY 기법입니다. 앞 개념이 뒤 개념의 바탕이 되므로 순서대로 읽는 것을 권합니다.</p>
+
+<!-- ───────── C6 ───────── -->
+<h3 id="c-sim">5-1. 임베딩과 거리: "비슷하다"를 숫자로 바꾸기</h3>
+<p>핵심은 간단합니다. <b>임베딩 모델이 코드나 문장을 숫자 벡터로 바꾸면, 비슷한 대상끼리 벡터 공간에서 가까이 놓입니다.</b> 그래서 "비슷한 코드 찾기"가 "가까운 벡터 찾기"로 바뀝니다.</p>
+<p>가까움을 잴 때는 주로 세 가지 방법을 씁니다.</p>
+<table>
+<tr><th style="width:20%">척도</th><th style="width:34%">식</th><th>의미</th></tr>
+<tr><td>유클리드 거리(L2)</td><td>\( \lVert q-x \rVert = \sqrt{\sum_i (q_i-x_i)^2} \)</td><td>작을수록 비슷함</td></tr>
+<tr><td>내적(inner product)</td><td>\( q \cdot x = \sum_i q_i x_i \)</td><td>클수록 비슷함</td></tr>
+<tr><td>코사인 유사도</td><td>\( \dfrac{q\cdot x}{\lVert q\rVert \lVert x\rVert} \)</td><td>방향이 같을수록 1에 가까움</td></tr>
+</table>
+
+<h4>실제로 계산해 봅시다</h4>
+<p>질의 벡터 \(q=(1,2)\)와 후보 \(a=(2,2)\), \(b=(4,0)\)이 있습니다.</p>
+<table>
+<tr><th>척도</th><th>q와 a</th><th>q와 b</th><th>더 비슷한 쪽</th></tr>
+<tr><td>L2 거리</td><td>\( \sqrt{(1-2)^2+(2-2)^2}=1 \)</td><td>\( \sqrt{(1-4)^2+(2-0)^2}=\sqrt{13}\approx3.61 \)</td><td class="bl">a</td></tr>
+<tr><td>내적</td><td>\( 1\cdot2+2\cdot2=6 \)</td><td>\( 1\cdot4+2\cdot0=4 \)</td><td class="bl">a</td></tr>
+<tr><td>코사인</td><td>\( 6/(\sqrt5\sqrt8)\approx0.949 \)</td><td>\( 4/(\sqrt5\cdot4)\approx0.447 \)</td><td class="bl">a</td></tr>
+</table>
+<p>세 척도 모두 a가 더 가깝다고 판단합니다. 벡터 길이를 1로 맞춘(정규화한) 임베딩이라면 세 척도의 순위가 항상 같아집니다. 그래서 실무에서는 임베딩을 정규화한 뒤 내적으로 검색하는 경우가 많습니다.</p>
+
+<div class="quiz" data-answer="a">
+<div class="q">문제. \(q=(3,4)\), \(x=(0,0)\)일 때 L2 거리는?</div>
+<label><input type="radio" name="q6" value="a"> 5</label>
+<label><input type="radio" name="q6" value="b"> 7</label>
+<label><input type="radio" name="q6" value="c"> 25</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="√(3² + 4²) = √25 = 5입니다. 25는 제곱근을 씌우기 전 값(제곱 거리)입니다. 순위만 필요할 때는 제곱근을 생략한 제곱 거리를 그대로 쓰기도 합니다."></div>
+</div>
+
+<!-- ───────── C7 ───────── -->
+<h3 id="c-recall">5-2. KNN과 ANN, recall: 정확도를 조금 내주고 속도를 얻기</h3>
+<table>
+<tr><th style="width:20%">구분</th><th>KNN (정확한 최근접 이웃)</th><th>ANN (근사 최근접 이웃)</th></tr>
+<tr><td>방법</td><td>모든 벡터와 거리를 계산</td><td>인덱스를 써서 일부 벡터와만 계산</td></tr>
+<tr><td>정확도</td><td>항상 정답</td><td>가끔 놓침</td></tr>
+<tr><td>속도</td><td>데이터에 비례해 느려짐</td><td>훨씬 빠름</td></tr>
+<tr><td>대표 방식</td><td>brute-force</td><td>IVF, 그래프 인덱스(HNSW, DiskANN)</td></tr>
+</table>
+<p>ANN이 얼마나 정답을 찾았는지는 <b>recall@k</b>로 잽니다. 진짜 상위 k개 중 ANN이 찾아낸 비율입니다.</p>
+\[ \text{recall@}k = \frac{|\text{ANN 결과 상위 }k \cap \text{정답 상위 }k|}{k} \]
+<p>예를 들어 정답 상위 3개가 {A, B, C}인데 ANN이 {A, C, F}를 돌려줬다면 겹치는 것은 A와 C, 2개이므로 recall@3 = 2/3 ≈ 0.67입니다.</p>
+<p>성능 그래프는 보통 가로축에 recall, 세로축에 초당 질의 수(QPS)를 두고 그립니다. 같은 recall에서 QPS가 높을수록 좋은 시스템입니다.</p>
+
+<div class="quiz" data-answer="b">
+<div class="q">문제. 정답 상위 5개가 {1,2,3,4,5}이고 ANN 결과가 {1,3,5,7,9}입니다. recall@5는?</div>
+<label><input type="radio" name="q7" value="a"> 0.4</label>
+<label><input type="radio" name="q7" value="b"> 0.6</label>
+<label><input type="radio" name="q7" value="c"> 1.0</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="겹치는 것은 1, 3, 5 세 개이므로 3/5 = 0.6입니다."></div>
+</div>
+
+<!-- ───────── C8 ───────── -->
+<h3 id="c-ivf">5-3. IVF 인덱스: 가까운 동네만 뒤지기</h3>
+<p>IVF(Inverted File Index)는 가장 널리 쓰이는 ANN 인덱스입니다. 핵심은 <b>미리 k-means로 데이터를 여러 cluster로 나눠 두고, 검색할 때는 질의와 가까운 cluster 몇 개만 뒤지는 것</b>입니다.</p>
+<table>
+<tr><th style="width:20%">단계</th><th>하는 일</th><th>관련 파라미터</th></tr>
+<tr><td>오프라인 (색인)</td><td>k-means로 cluster 중심점(centroid) 계산, 각 벡터를 가장 가까운 cluster에 저장</td><td><code>nlist</code> = cluster 수</td></tr>
+<tr><td>온라인 ① cluster 선택</td><td>질의와 centroid 사이 거리를 계산해 가까운 cluster 고르기</td><td><code>nprobe</code> = 뒤질 cluster 수</td></tr>
+<tr><td>온라인 ② 세부 검색</td><td>고른 cluster 안의 벡터와 거리를 모두 계산</td><td></td></tr>
+<tr><td>온라인 ③ top-k</td><td>가장 가까운 k개 선택</td><td><code>k</code></td></tr>
+</table>
+
+<h4>실제로 계산해 봅시다</h4>
+<p>이해하기 쉽도록 1차원 데이터 7개를 예로 들겠습니다: 0, 1, 2, 9, 12, 13, 14</p>
+<p><span class="step">STEP 1</span> k-means(K=2)를 돌리면 두 cluster가 나옵니다.</p>
+<table>
+<tr><th>cluster</th><th>소속 데이터</th><th class="num">centroid(평균)</th></tr>
+<tr><td>C1</td><td>0, 1, 2</td><td class="num">1</td></tr>
+<tr><td>C2</td><td>9, 12, 13, 14</td><td class="num">12</td></tr>
+</table>
+<p>9는 centroid 1까지 8, centroid 12까지 3이므로 C2에 들어갑니다.</p>
+<div class="figure">
+<svg viewBox="0 0 720 120" width="100%" style="max-width:760px;font-family:Pretendard,sans-serif;font-size:13px">
+  <line x1="30" y1="60" x2="700" y2="60" stroke="#999"/>
+  <g fill="#eb6834"><circle cx="40" cy="60" r="7"/><circle cx="85" cy="60" r="7"/><circle cx="130" cy="60" r="7"/></g>
+  <g fill="#2a78d6"><circle cx="445" cy="60" r="7"/><circle cx="580" cy="60" r="7"/><circle cx="625" cy="60" r="7"/><circle cx="670" cy="60" r="7"/></g>
+  <g fill="#6b6b66" text-anchor="middle"><text x="40" y="88">0</text><text x="85" y="88">1</text><text x="130" y="88">2</text><text x="445" y="88">9</text><text x="580" y="88">12</text><text x="625" y="88">13</text><text x="670" y="88">14</text></g>
+  <text x="85" y="35" text-anchor="middle" fill="#eb6834" font-weight="700">C1 (centroid 1)</text>
+  <text x="580" y="35" text-anchor="middle" fill="#2a78d6" font-weight="700">C2 (centroid 12)</text>
+  <polygon points="301,48 309,60 301,72 293,60" fill="#1f1f1f"/><text x="301" y="100" text-anchor="middle" font-weight="700">질의 q = 5.8</text>
+</svg>
+</div>
+<p><span class="step">STEP 2</span> 질의 \(q=5.8\)이 들어왔습니다. centroid까지 거리는 C1이 4.8, C2가 6.2이므로 nprobe=1이면 <b>C1만</b> 뒤집니다.</p>
+<p><span class="step">STEP 3</span> C1 안에서 가장 가까운 것은 2(거리 3.8)입니다. 그런데 전체에서 진짜 가장 가까운 것은 9(거리 3.2)입니다. <span class="hl">IVF가 정답을 놓쳤습니다.</span> 9가 cluster 경계 근처에 있었기 때문입니다.</p>
+<p><span class="step">STEP 4</span> nprobe=2로 늘려 두 cluster를 다 뒤지면 9를 찾습니다. 대신 계산량이 늘어납니다.</p>
+<table>
+<tr><th>방식</th><th class="num">거리 계산 횟수</th><th>찾은 답</th></tr>
+<tr><td>brute-force</td><td class="num">7</td><td>9 (정답)</td></tr>
+<tr><td>IVF, nprobe=1</td><td class="num">2 (centroid) + 3 = 5</td><td>2 (오답)</td></tr>
+<tr><td>IVF, nprobe=2</td><td class="num">2 + 7 = 9</td><td>9 (정답)</td></tr>
+</table>
+<p>예제가 작아서 nprobe=2는 오히려 brute-force보다 많지만, 실제 규모에서는 차이가 큽니다. 벡터 1억 개를 nlist=10,000으로 나누면 cluster당 평균 1만 개입니다. nprobe=10이면 centroid 1만 개 + 벡터 10만 개, 합쳐서 11만 번만 계산하면 됩니다. brute-force의 약 1/900입니다.</p>
+<div class="core">nprobe는 "속도 ↔ 정확도" 손잡이입니다. 늘리면 recall이 오르고 QPS가 떨어집니다. out-of-core에서는 nprobe가 곧 <b>전송해야 할 cluster 수</b>이기도 해서 전송 시간에 바로 영향을 줍니다.</div>
+
+<div class="quiz" data-answer="c">
+<div class="q">문제. 위 예제에서 질의가 \(q=8\)이라면 nprobe=1일 때 결과는?</div>
+<label><input type="radio" name="q8" value="a"> C1을 뒤져 2를 반환 (오답)</label>
+<label><input type="radio" name="q8" value="b"> C1을 뒤져 9를 반환 (정답)</label>
+<label><input type="radio" name="q8" value="c"> C2를 뒤져 9를 반환 (정답)</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="centroid까지 거리는 C1이 7, C2가 4이므로 C2를 뒤집니다. C2 안에서 가장 가까운 것은 9(거리 1)이고, 전체 정답도 9입니다."></div>
+</div>
+
+<!-- ───────── C9 ───────── -->
+<h3 id="c-gemm">5-4. 거리 계산 = 행렬곱: GPU가 가장 잘하는 계산으로 바꾸기</h3>
+<p>질의 m개와 벡터 n개 사이의 거리를 모두 구하려면 m×n번 계산해야 합니다. 이 계산은 아래 식으로 풀어 쓰면 대부분이 <b>행렬곱</b>이 됩니다.</p>
+\[ \lVert q-x \rVert^2 = \lVert q \rVert^2 - 2\,q\cdot x + \lVert x \rVert^2 \]
+<p>\(\lVert q\rVert^2\)와 \(\lVert x\rVert^2\)는 벡터마다 한 번만 계산해 두면 됩니다. 남는 \(q\cdot x\)를 질의 전체, 벡터 전체에 대해 모으면 행렬곱 \(QX^\top\)입니다. 행렬곱은 cuBLAS와 Tensor Core 덕분에 GPU에서 가장 빠르게 돌아가는 연산입니다.</p>
+<h4>실제로 계산해 봅시다</h4>
+<p>\(q=(1,2)\), \(x=(2,2)\)로 확인합니다.</p>
+<p><span class="step">STEP 1</span> \(\lVert q\rVert^2 = 1+4 = 5\), \(\lVert x\rVert^2 = 4+4 = 8\)</p>
+<p><span class="step">STEP 2</span> \(q\cdot x = 2+4 = 6\)</p>
+<p><span class="step">STEP 3</span> \(5 - 2\times6 + 8 = 1\). 직접 계산한 제곱 거리 \((1-2)^2+(2-2)^2=1\)과 같습니다.</p>
+<pre><code>import cupy as cp
+# Q: (m, d) 질의,  X: (n, d) cluster 안의 벡터
+qn = (Q * Q).sum(axis=1, keepdims=True)     # (m, 1)
+xn = (X * X).sum(axis=1)                    # (n,)
+D  = qn - 2 * Q @ X.T + xn                  # (m, n) 제곱 거리, 핵심은 Q @ X.T
+topk = cp.argpartition(D, k, axis=1)[:, :k] # 질의별 가까운 k개 (정렬 전)</code></pre>
+<p>Faiss GPU 논문(Johnson 등, 관련논문 목록 IV-a)은 이 방식에 GPU용 top-k 선택(k-selection) 알고리즘을 더한 구조입니다. 주제 1의 4단계에서 직접 짤 CUDA 커널 후보도 이 top-k 선택 부분입니다.</p>
+
+<div class="quiz" data-answer="b">
+<div class="q">문제. \(\lVert q\rVert^2=10\), \(\lVert x\rVert^2=6\), \(q\cdot x=7\)일 때 제곱 거리는?</div>
+<label><input type="radio" name="q9" value="a"> 9</label>
+<label><input type="radio" name="q9" value="b"> 2</label>
+<label><input type="radio" name="q9" value="c"> 23</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="10 − 2×7 + 6 = 2입니다."></div>
+</div>
+
+<!-- ───────── C10 ───────── -->
+<h3 id="c-rummy">5-5. RUMMY 기법 다시 보기: 위 개념들이 어디에 쓰였나</h3>
+<p>논문 발표 때 다룬 RUMMY의 기법을 앞에서 배운 개념과 연결해 보겠습니다.</p>
+<table>
+<tr><th style="width:24%">RUMMY 기법</th><th style="width:30%">해결하는 문제</th><th>관련 개념</th><th style="width:18%">주제 1 구현 단계</th></tr>
+<tr><td>cluster-based retrofitting</td><td>여러 query가 같은 cluster를 고르면 중복 전송</td><td>4-2 전송 병목</td><td class="c">2단계</td></tr>
+<tr><td>reordering · grouping</td><td>전송과 계산이 잘 겹치지 않음</td><td>4-3 overlap</td><td class="c">3단계</td></tr>
+<tr><td>cluster balancing · dynamic kernel padding</td><td>cluster 크기 차이로 SM이 놀게 됨</td><td>4-4 부하 불균형</td><td class="c">4단계(일부)</td></tr>
+<tr><td>GPU 메모리 직접 관리 · pinned memory</td><td>Unified Memory의 page fault</td><td>4-2 pinned memory</td><td class="c">3단계</td></tr>
+</table>
+
+<h4>중복 전송 제거를 계산해 봅시다</h4>
+<p>질의 3개가 각각 cluster 2개씩을 골랐습니다(nprobe=2).</p>
+<table>
+<tr><th>질의</th><th>고른 cluster</th></tr>
+<tr><td>Q1</td><td>C1, C2</td></tr>
+<tr><td>Q2</td><td>C2, C3</td></tr>
+<tr><td>Q3</td><td>C1, C3</td></tr>
+</table>
+<p><span class="step">STEP 1</span> 질의마다 따로 처리하면 cluster를 6번 전송합니다.</p>
+<p><span class="step">STEP 2</span> cluster 기준으로 다시 묶으면 C1 → {Q1, Q3}, C2 → {Q1, Q2}, C3 → {Q2, Q3}입니다. cluster마다 한 번 보내고 해당 질의들을 한꺼번에 계산하므로 <b>3번</b>이면 됩니다.</p>
+<p><span class="step">STEP 3</span> cluster 하나가 1GB, PCIe가 25GB/s라면 전송 시간은 240ms에서 120ms로 줄어듭니다.</p>
+<p>여기에 이전 배치에서 GPU에 남아 있는 cluster를 먼저 계산하도록 순서를 바꾸면(reordering), 전송 없이 바로 계산을 시작하면서 그동안 다음 cluster를 보낼 수 있습니다.</p>
+
+<div class="quiz" data-answer="a">
+<div class="q">문제. 질의 4개가 고른 cluster가 Q1 {C1,C2}, Q2 {C1,C2}, Q3 {C1,C3}, Q4 {C2,C3}입니다. cluster 기준으로 묶으면 전송은 몇 번?</div>
+<label><input type="radio" name="q10" value="a"> 3번</label>
+<label><input type="radio" name="q10" value="b"> 4번</label>
+<label><input type="radio" name="q10" value="c"> 8번</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="등장하는 cluster는 C1, C2, C3 세 개뿐이므로 3번입니다. 질의별로 처리하면 8번입니다."></div>
+</div>
+</section>
+
+<section id="fim">
+<h2>빈발 패턴 마이닝 (주제 2 개념)</h2>
+<p>주제 2에서 이해할 개념은 ① support와 신뢰도 → ② Apriori 알고리즘 → ③ 비트맵과 popcount → ④ 알고리즘 세 가지 비교 → ⑤ EdNet 로그를 트랜잭션으로 바꾸기입니다. 데이터마이닝 수업의 연관 규칙(association rule mining) 단원과 같은 내용이며 예제는 EdNet(토익 학습 앱 로그)을 흉내 낸 작은 데이터로 만들었습니다.</p>
+
+<!-- ───────── C11 ───────── -->
+<h3 id="c-support">6-1. support와 신뢰도: "자주 같이 나온다"를 세는 방법</h3>
+<p>핵심은 간단합니다. <b>각 학생이 틀린 개념들을 장바구니처럼 보고, 여러 장바구니에 같이 들어 있는 개념 조합을 찾습니다.</b> 마트 장바구니 분석과 같은 구조입니다.</p>
+<table>
+<tr><th style="width:22%">용어</th><th>의미</th><th>이 노트의 예</th></tr>
+<tr><td>항목(item)</td><td>분석 대상 하나</td><td>스킬 태그 하나 (예: 시제)</td></tr>
+<tr><td>트랜잭션(transaction)</td><td>항목들의 집합 하나</td><td>학생 한 명이 틀린 태그 집합</td></tr>
+<tr><td>항목집합(itemset)</td><td>항목 조합</td><td>{시제, 수일치}</td></tr>
+<tr><td>support</td><td>그 조합을 포함한 트랜잭션 수(또는 비율)</td><td>{시제, 수일치}를 둘 다 틀린 학생 수</td></tr>
+<tr><td>최소 support(minsup)</td><td>"자주 나온다"고 인정할 기준</td><td>학생 2명 이상</td></tr>
+<tr><td>빈발 항목집합</td><td>support ≥ minsup인 조합</td><td></td></tr>
+</table>
+
+<h4>실제 데이터로 세어 봅시다</h4>
+<p>학생 5명이 틀린 스킬 태그입니다.</p>
+<table>
+<tr><th class="c" style="width:12%">학생</th><th>틀린 태그</th></tr>
+<tr><td class="c">T1</td><td>시제, 수일치, 전치사</td></tr>
+<tr><td class="c">T2</td><td>시제, 수일치</td></tr>
+<tr><td class="c">T3</td><td>수일치, 관계사</td></tr>
+<tr><td class="c">T4</td><td>시제, 수일치, 관계사</td></tr>
+<tr><td class="c">T5</td><td>시제, 전치사</td></tr>
+</table>
+<p>태그 하나씩 support를 세면 시제 4명(T1, T2, T4, T5), 수일치 4명(T1~T4), 전치사 2명(T1, T5), 관계사 2명(T3, T4)입니다.</p>
+<p>{시제, 수일치}를 둘 다 틀린 학생은 T1, T2, T4이므로 support는 3입니다.</p>
+
+<h4>신뢰도(confidence)</h4>
+<p>"X를 틀린 학생은 Y도 틀린다"는 규칙이 얼마나 믿을 만한지는 신뢰도로 잽니다.</p>
+\[ \text{conf}(X \Rightarrow Y) = \frac{\text{support}(X \cup Y)}{\text{support}(X)} \]
+<table>
+<tr><th>규칙</th><th>계산</th><th class="num">신뢰도</th><th>해석</th></tr>
+<tr><td>전치사 ⇒ 시제</td><td>support{시제, 전치사} / support{전치사} = 2/2</td><td class="num">100%</td><td>전치사를 틀린 학생은 모두 시제도 틀림</td></tr>
+<tr><td>시제 ⇒ 수일치</td><td>support{시제, 수일치} / support{시제} = 3/4</td><td class="num">75%</td><td>시제를 틀린 학생의 3/4이 수일치도 틀림</td></tr>
+</table>
+<p>교육 맥락에서는 이런 규칙을 "전치사 문항을 틀린 학생에게 시제 복습을 같이 추천" 같은 근거로 쓸 수 있습니다. 다만 데이터가 5명뿐이라 이 예제의 100%는 우연일 가능성이 큽니다. 그래서 실제 분석에서는 minsup을 충분히 높게 둡니다.</p>
+
+<div class="quiz" data-answer="b">
+<div class="q">문제. 위 데이터에서 규칙 "관계사 ⇒ 수일치"의 신뢰도는?</div>
+<label><input type="radio" name="q11" value="a"> 50%</label>
+<label><input type="radio" name="q11" value="b"> 100%</label>
+<label><input type="radio" name="q11" value="c"> 40%</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="관계사를 틀린 학생은 T3, T4 두 명이고, 둘 다 수일치도 틀렸으므로 2/2 = 100%입니다."></div>
+</div>
+
+<!-- ───────── C12 ───────── -->
+<h3 id="c-apriori">6-2. Apriori: 후보를 줄여 가며 찾기</h3>
+<p>태그가 293개면 가능한 조합은 \(2^{293}\)개라서 전부 셀 수 없습니다. Apriori(Agrawal &amp; Srikant, 1994)는 다음 성질 하나로 후보를 줄입니다.</p>
+<div class="core">Apriori 성질: 어떤 조합이 빈발하지 않으면, 그 조합을 포함하는 더 큰 조합도 빈발할 수 없다. <br>예: {시제, 관계사}를 같이 틀린 학생이 1명뿐이면, {시제, 관계사, 수일치}를 셋 다 틀린 학생도 1명 이하입니다.</div>
+<p>알고리즘은 크기 1부터 한 단계씩 올라갑니다.</p>
+<ol>
+<li>크기 1 항목집합의 support를 세고, minsup 이상만 남긴다 (L1)</li>
+<li>L1끼리 합쳐 크기 2 후보를 만든다 (C2)</li>
+<li>후보의 support를 세고 minsup 이상만 남긴다 (L2)</li>
+<li>크기를 하나씩 늘리며 반복. 후보 중 일부 부분집합이 빈발하지 않으면 세기 전에 버린다(가지치기)</li>
+<li>새 후보가 없으면 종료</li>
+</ol>
+
+<h4>앞의 데이터로 끝까지 돌려 봅시다 (minsup = 2)</h4>
+<p><span class="step">STEP 1</span> L1: 시제(4), 수일치(4), 전치사(2), 관계사(2) → 네 개 모두 통과</p>
+<p><span class="step">STEP 2</span> C2: 4개 중 2개를 고르는 6가지 조합의 support를 셉니다.</p>
+<table>
+<tr><th>후보</th><th>포함한 학생</th><th class="num">support</th><th class="c">통과</th></tr>
+<tr><td>{시제, 수일치}</td><td>T1, T2, T4</td><td class="num">3</td><td class="c">○</td></tr>
+<tr><td>{시제, 전치사}</td><td>T1, T5</td><td class="num">2</td><td class="c">○</td></tr>
+<tr><td>{시제, 관계사}</td><td>T4</td><td class="num">1</td><td class="c">×</td></tr>
+<tr><td>{수일치, 전치사}</td><td>T1</td><td class="num">1</td><td class="c">×</td></tr>
+<tr><td>{수일치, 관계사}</td><td>T3, T4</td><td class="num">2</td><td class="c">○</td></tr>
+<tr><td>{전치사, 관계사}</td><td>없음</td><td class="num">0</td><td class="c">×</td></tr>
+</table>
+<p><span class="step">STEP 3</span> L2 = {시제, 수일치}, {시제, 전치사}, {수일치, 관계사}</p>
+<p><span class="step">STEP 4</span> 크기 3 후보를 만들어 봅니다. L2에서 첫 항목이 같은 쌍을 합치면 {시제, 수일치, 전치사}가 나옵니다. 그런데 부분집합 {수일치, 전치사}가 L2에 없으므로 <b>support를 세지 않고 버립니다</b>. 실제로 세어 보면 T1 한 명뿐이라 버린 판단이 맞습니다.</p>
+<p><span class="step">STEP 5</span> 남은 후보가 없으므로 종료합니다. 빈발 항목집합은 크기 1짜리 4개와 크기 2짜리 3개입니다.</p>
+<div class="warn">병렬화 관점에서 보면 STEP 2처럼 "후보 수천~수억 개의 support를 세는 단계"가 시간 대부분을 차지합니다. 후보끼리는 서로 독립적이어서 후보 하나를 GPU thread 하나(또는 block 하나)에 맡길 수 있습니다. 주제 2에서 GPU로 옮길 부분이 바로 여기입니다.</div>
+
+<div class="quiz" data-answer="c">
+<div class="q">문제. 위 예제에서 minsup을 3으로 올리면 빈발 항목집합은 모두 몇 개?</div>
+<label><input type="radio" name="q12" value="a"> 7개</label>
+<label><input type="radio" name="q12" value="b"> 2개</label>
+<label><input type="radio" name="q12" value="c"> 3개</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="크기 1에서 시제(4), 수일치(4)만 통과합니다. 크기 2 후보는 {시제, 수일치} 하나이고 support 3으로 통과합니다. 합쳐서 3개입니다."></div>
+</div>
+
+<!-- ───────── C13 ───────── -->
+<h3 id="c-bitmap">6-3. 비트맵과 popcount: support 세기를 비트 연산으로 바꾸기</h3>
+<p>데이터를 저장하는 방식은 두 가지입니다.</p>
+<table>
+<tr><th style="width:20%">방식</th><th>모양</th><th>support 계산</th></tr>
+<tr><td>수평 표현</td><td>학생별로 틀린 태그 목록 (앞의 표)</td><td>학생을 하나씩 보며 후보를 다 포함하는지 확인</td></tr>
+<tr><td>수직 표현 (비트맵)</td><td>태그별로 "학생마다 틀렸으면 1, 아니면 0"인 비트열</td><td>비트열끼리 AND 후 1의 개수 세기</td></tr>
+</table>
+
+<h4>실제로 계산해 봅시다</h4>
+<p><span class="step">STEP 1</span> 앞의 데이터를 비트맵으로 바꿉니다. 비트 순서는 T1, T2, T3, T4, T5입니다.</p>
+<table>
+<tr><th>태그</th><th class="c">T1</th><th class="c">T2</th><th class="c">T3</th><th class="c">T4</th><th class="c">T5</th><th>비트열</th></tr>
+<tr><td>시제</td><td class="c">1</td><td class="c">1</td><td class="c">0</td><td class="c">1</td><td class="c">1</td><td><code>11011</code></td></tr>
+<tr><td>수일치</td><td class="c">1</td><td class="c">1</td><td class="c">1</td><td class="c">1</td><td class="c">0</td><td><code>11110</code></td></tr>
+<tr><td>전치사</td><td class="c">1</td><td class="c">0</td><td class="c">0</td><td class="c">0</td><td class="c">1</td><td><code>10001</code></td></tr>
+<tr><td>관계사</td><td class="c">0</td><td class="c">0</td><td class="c">1</td><td class="c">1</td><td class="c">0</td><td><code>00110</code></td></tr>
+</table>
+<p><span class="step">STEP 2</span> {시제, 수일치}의 support: 두 비트열을 AND하면 둘 다 틀린 학생만 1로 남습니다.</p>
+\[ \texttt{11011}\ \text{AND}\ \texttt{11110} = \texttt{11010} \]
+<p><span class="step">STEP 3</span> 1의 개수를 세는 연산을 <b>popcount</b>라고 합니다. \(\text{popcount}(\texttt{11010}) = 3\)이므로 support는 3입니다. 앞에서 학생을 하나씩 보며 센 결과와 같습니다.</p>
+
+<h4>왜 GPU에 잘 맞는가</h4>
+<ul>
+<li>컴퓨터는 비트 32개(또는 64개)를 한 번에 AND하므로 학생 32명을 연산 한 번으로 처리</li>
+<li>popcount는 CPU와 GPU 모두 명령어 하나로 지원 (CUDA는 <code>__popc</code>)</li>
+<li>후보마다 같은 계산을 반복하므로 4-1절의 "thread 하나 = 후보 하나(또는 비트열 한 구간)" 구조와 맞음</li>
+<li>FP-Growth처럼 포인터를 따라가는 트리 구조가 없어서 메모리 접근이 규칙적임</li>
+</ul>
+<p>EdNet 규모로 계산하면 학생 784,309명의 비트열 하나는 약 98KB(32비트 단어 24,510개)입니다. 태그 293개 전체는 약 29MB라 GPU에 넉넉히 들어갑니다. 계산량을 키우는 것은 데이터 크기가 아니라 <b>후보 수</b>입니다(주제 2 표 참고).</p>
+<pre><code>import cupy as cp
+# bm: (항목 수, 단어 수) uint32 비트맵,  cand: (후보 수, 2) 항목 번호 쌍
+a = bm[cand[:, 0]]                          # (후보 수, 단어 수)
+b = bm[cand[:, 1]]
+# CuPy에는 popcount 함수가 없어서 ElementwiseKernel로 CUDA의 __popc를 호출
+popc = cp.ElementwiseKernel('uint32 x', 'uint32 y', 'y = __popc(x)', 'popc')
+support = popc(a &amp; b).sum(axis=1)          # 후보별 support</code></pre>
+<p>위 코드는 후보 쌍 전체를 한꺼번에 메모리에 펼치므로 후보가 많으면 메모리가 부족합니다. 후보를 나눠서 처리하거나 AND와 popcount와 합계를 한 kernel 안에서 끝내는 것이 주제 2의 CUDA 커널 작성 단계입니다.</p>
+
+<div class="quiz" data-answer="a">
+<div class="q">문제. 비트열로 {시제, 전치사}의 support를 구하면?</div>
+<label><input type="radio" name="q13" value="a"> 11011 AND 10001 = 10001 → 2</label>
+<label><input type="radio" name="q13" value="b"> 11011 AND 10001 = 11011 → 4</label>
+<label><input type="radio" name="q13" value="c"> 11011 OR 10001 = 11011 → 4</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="AND 결과 10001에서 1은 T1과 T5 두 개이므로 support 2입니다. OR은 둘 중 하나라도 틀린 학생 수가 되므로 support가 아닙니다."></div>
+</div>
+
+<!-- ───────── C14 ───────── -->
+<h3 id="c-algos">6-4. Apriori · Eclat · FP-Growth: 무엇을 병렬화할 것인가</h3>
+<p>빈발 항목집합 마이닝의 대표 알고리즘 세 가지입니다. 결과는 모두 같고, 찾아가는 방식만 다릅니다.</p>
+<table>
+<tr><th style="width:14%">알고리즘</th><th>탐색 방식</th><th>데이터 표현</th><th>GPU 적합성</th><th>병렬화 논문 (관련논문 목록)</th></tr>
+<tr><td>Apriori</td><td>크기별로 한 단계씩 (너비 우선)</td><td>수평 또는 비트맵</td><td>좋음. 단계마다 후보 수가 많아 병렬화할 일이 충분함</td><td>Fang 등(DaMoN 2009), YAFIM(Spark)</td></tr>
+<tr><td>Eclat (Zaki, 2000)</td><td>한 갈래씩 깊게 (깊이 우선)</td><td>수직 (tid 목록 또는 비트맵)</td><td>좋음. 교집합 연산이 비트 AND</td><td>Zhang 등(J. Supercomputing 2013)</td></tr>
+<tr><td>FP-Growth (Han 등, 2000)</td><td>FP-tree라는 압축 트리에서 재귀 탐색</td><td>트리</td><td>나쁨. 포인터를 따라가는 불규칙 접근</td><td>PFP(분산, Spark MLlib에 구현됨)</td></tr>
+</table>
+<p>그래서 주제 2는 GPU 쪽은 비트맵 기반(Apriori·Eclat 계열), 분산 쪽은 Spark MLlib의 FP-Growth(PFP 방식)로 비교합니다. 알고리즘은 다르지만 출력은 같으므로 같은 입력에서 걸린 시간을 비교하는 것이 공정합니다.</p>
+
+<h4>GMiner는 무엇을 했나</h4>
+<p>교수님의 GMiner(Information Sciences 2018)는 비트맵 기반 GPU 빈발 항목집합 마이닝 방법입니다. 대규모 데이터에서도 GPU를 효율적으로 쓰도록 트랜잭션 비트맵을 블록으로 나눠 GPU로 보내며 support를 계산합니다. 탐색 전략으로 TFL(Traversal From the Last)과 HIL(Hopping from Intermediate Level)을 제안했는데, 정확한 동작은 제안 발표 전에 논문 원문으로 확인해야 합니다. 후속 연구 GMiner++(ESWA 2024)는 중복 계산을 줄였고 SGMiner(IEEE Access 2022)는 데이터가 GPU 메모리를 넘을 때 SSD를 활용했습니다.</p>
+<div class="warn">교수님 본인 논문이므로 GMiner 부분은 발표 전에 반드시 원문을 읽고, 본인이 이해한 범위만 슬라이드에 넣습니다. 수업 자료의 "명확하게 이해하지 못한 내용은 기호 하나라도 포함하지 말 것"에 해당하는 부분입니다.</div>
+
+<!-- ───────── C15 ───────── -->
+<h3 id="c-ednet">6-5. EdNet 로그를 트랜잭션으로 바꾸기</h3>
+<p>EdNet KT1은 학생 한 명당 CSV 파일 하나이고, 한 줄이 문제 풀이 한 번입니다. 정답 여부와 태그는 별도 파일(Contents의 <code>questions.csv</code>)과 합쳐서 구합니다.</p>
+<table>
+<tr><th style="width:24%">파일</th><th>주요 열</th></tr>
+<tr><td>KT1 <code>u&lt;학생번호&gt;.csv</code></td><td><code>timestamp</code>, <code>solving_id</code>, <code>question_id</code>, <code>user_answer</code>, <code>elapsed_time</code></td></tr>
+<tr><td>Contents <code>questions.csv</code></td><td><code>question_id</code>, <code>bundle_id</code>, <code>correct_answer</code>, <code>part</code>, <code>tags</code>(세미콜론으로 구분)</td></tr>
+</table>
+<p><span class="step">STEP 1</span> 풀이 기록에 문항 정보를 붙입니다 (<code>question_id</code> 기준 join).</p>
+<p><span class="step">STEP 2</span> <code>user_answer ≠ correct_answer</code>인 행만 남깁니다 (오답).</p>
+<p><span class="step">STEP 3</span> <code>tags</code>를 쪼개서 학생별(또는 학생·날짜별)로 틀린 태그 집합을 만듭니다. 이것이 트랜잭션입니다.</p>
+<p><span class="step">STEP 4</span> 태그별 비트맵을 만들어 GPU로 보냅니다.</p>
+<table>
+<tr><th>트랜잭션 단위</th><th>트랜잭션 수</th><th>특징</th></tr>
+<tr><td>학생 1명 = 1개</td><td>784,309</td><td>학생 전체 기간의 오답 경향. 오래 쓴 학생은 거의 모든 태그를 포함</td></tr>
+<tr><td>학생 1명의 하루 = 1개</td><td>수백만 이상 (전처리 후 확인)</td><td>같은 시기에 함께 틀린 개념. 데이터가 커져 GPU 효과가 커짐</td></tr>
+</table>
+<p>트랜잭션 단위를 실험 변수로 두면 "교육적으로 의미 있는 단위"와 "병렬화 효과" 두 가지를 같이 논의할 수 있습니다.</p>
+
+<div class="quiz" data-answer="b">
+<div class="q">문제. 어떤 학생이 문항 q1(태그 1;5)과 q2(태그 5;7)를 틀리고 q3(태그 2)를 맞혔습니다. 이 학생의 트랜잭션은?</div>
+<label><input type="radio" name="q14" value="a"> {1, 2, 5, 7}</label>
+<label><input type="radio" name="q14" value="b"> {1, 5, 7}</label>
+<label><input type="radio" name="q14" value="c"> {1, 5, 5, 7}</label>
+<button type="button">정답 확인</button>
+<div class="fb" data-explain="맞힌 q3의 태그 2는 빠지고, 틀린 문항들의 태그를 합집합으로 모읍니다. 집합이므로 5는 한 번만 들어갑니다."></div>
+</div>
+</section>
+
+<section id="papers">
+<h2>읽을 논문</h2>
+<p>관련논문 목록(관련논문.xlsx)에 있는 논문을 우선으로 골랐습니다. 목록에 없는 논문은 알고리즘 원전이나 데이터셋 논문처럼 꼭 필요한 것만 넣었습니다. 체크 상태는 브라우저에 저장되어 다시 열어도 남아 있습니다.</p>
+<p>우선순위 기준: <span class="tag o">필수</span> 제안 발표 전에 읽기 · <span class="tag">권장</span> 구현을 시작할 때 읽기 · <span class="tag g">참고</span> 필요할 때 해당 부분만 읽기</p>
+
+<h3>주제 1 · 벡터 검색</h3>
+<table>
+<tr><th class="c" style="width:6%">읽음</th><th class="c" style="width:8%">순위</th><th style="width:32%">논문</th><th style="width:15%">게재</th><th>읽는 이유</th><th class="c" style="width:10%">목록</th></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-rummy"></td><td class="c"><span class="tag o">필수</span></td><td>Fast Vector Query Processing for Large Datasets Beyond GPU Memory with Reordered Pipelining (RUMMY)</td><td>NSDI 2024</td><td>주제 1의 출발점. 이미 발표한 논문이라 구현 관점(어느 부분을 CuPy로 만들 수 있나)으로 다시 읽기</td><td class="c">IV-b</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-faiss"></td><td class="c"><span class="tag o">필수</span></td><td>Billion-scale Similarity Search with GPUs (Faiss)</td><td>IEEE TBD 2021</td><td>GPU IVF 검색과 top-k 선택의 표준 구현. 비교 대상 Faiss의 내부 구조</td><td class="c">IV-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-fast25"></td><td class="c"><span class="tag o">필수</span></td><td>Towards High-throughput and Low-latency Billion-scale Vector Search via CPU/GPU Collaborative Filtering and Re-ranking</td><td>USENIX FAST 2025</td><td>GPU 메모리를 넘는 벡터 검색을 CPU·GPU 협업으로 푼 최신 연구. RUMMY와 다른 해법 비교용</td><td class="c">VI-c</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-spann"></td><td class="c"><span class="tag">권장</span></td><td>SPANN: Highly-Efficient Billion-scale Approximate Nearest Neighbor Search</td><td>NeurIPS 2021</td><td>메모리·디스크 혼합 IVF 계열. cluster 크기를 맞추는 balanced clustering 아이디어</td><td class="c">VI-c</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-diskann"></td><td class="c"><span class="tag g">참고</span></td><td>DiskANN: Fast Accurate Billion-point Nearest Neighbor Search on a Single Node</td><td>NeurIPS 2019</td><td>그래프 인덱스 + SSD 방식. 관련 연구 절에서 IVF와 비교할 때</td><td class="c">VI-c</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-knntc"></td><td class="c"><span class="tag g">참고</span></td><td>Efficient Exact K-Nearest Neighbor Graph Construction for Billion-scale Datasets Using GPUs with Tensor Cores</td><td>ICS 2022</td><td>거리 계산을 Tensor Core 행렬곱으로 바꾸는 방법(5-4절의 심화)</td><td class="c">V-d</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-interconnect"></td><td class="c"><span class="tag g">참고</span></td><td>Evaluating Modern GPU Interconnect: PCIe, NVLink, NV-SLI, NVSwitch and GPUDirect</td><td>IEEE TPDS 2020</td><td>PCIe 대역폭 실측값을 해석할 때. 다중 GPU 확장 시 GPU 간 통신 이해</td><td class="c">VI-b</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-yinyang"></td><td class="c"><span class="tag g">참고</span></td><td>Yinyang K-Means: A Drop-In Replacement of the Classic K-Means with Consistent Speedup</td><td>ICML 2015</td><td>IVF 색인 단계의 k-means가 오래 걸릴 때 가속 방법</td><td class="c">II</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-codenet"></td><td class="c"><span class="tag">권장</span></td><td>CodeNet: A Large-Scale AI for Code Dataset for Learning a Diversity of Coding Tasks</td><td>NeurIPS 2021 Datasets &amp; Benchmarks</td><td>데이터셋 논문. 데이터 구성과 메타데이터 이해</td><td class="c">목록 밖</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p1-bigann"></td><td class="c"><span class="tag g">참고</span></td><td>Results of the NeurIPS'21 Challenge on Billion-Scale Approximate Nearest Neighbor Search</td><td>PMLR 176, 2022</td><td>SIFT1B·DEEP1B 등 벤치마크 데이터와 평가 방식(recall, QPS)의 기준</td><td class="c">목록 밖</td></tr>
+</table>
+
+<h3>주제 2 · 빈발 패턴 마이닝</h3>
+<table>
+<tr><th class="c" style="width:6%">읽음</th><th class="c" style="width:8%">순위</th><th style="width:32%">논문</th><th style="width:15%">게재</th><th>읽는 이유</th><th class="c" style="width:10%">목록</th></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-gminer"></td><td class="c"><span class="tag o">필수</span></td><td>GMiner: A Fast GPU-based Frequent Itemset Mining Method for Large-scale Data</td><td>Information Sciences 2018</td><td>교수님 논문. 주제 2의 기준점이며 질문이 가장 많이 나올 부분</td><td class="c">IV-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-fang"></td><td class="c"><span class="tag o">필수</span></td><td>Frequent Itemset Mining on Graphics Processors</td><td>DaMoN@SIGMOD 2009</td><td>비트맵 기반 GPU Apriori의 초기 연구. 처음 구현할 GPU 버전과 가장 가까움</td><td class="c">IV-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-pfp"></td><td class="c"><span class="tag o">필수</span></td><td>PFP: Parallel FP-Growth for Query Recommendation</td><td>ACM RecSys 2008</td><td>Spark MLlib FP-Growth가 따르는 분산 방식. 분산 기준선의 동작 원리</td><td class="c">VII-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-cost"></td><td class="c"><span class="tag o">필수</span></td><td>Scalability! But at what COST?</td><td>HotOS XV 2015</td><td>분산·병렬 성능을 공정하게 평가하는 기준(4-5절). 두 주제 공통</td><td class="c">I</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-gminerpp"></td><td class="c"><span class="tag">권장</span></td><td>GMiner++: Boosting GPU-based Frequent Itemset Mining by Reducing Redundant Computations</td><td>ESWA 2024</td><td>GMiner의 중복 계산 문제와 해결 방법</td><td class="c">IV-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-zhang"></td><td class="c"><span class="tag">권장</span></td><td>Accelerating Frequent Itemset Mining on Graphics Processing Units</td><td>J. Supercomputing 2013</td><td>Eclat 계열(수직 표현)의 GPU 구현</td><td class="c">IV-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-multicore"></td><td class="c"><span class="tag">권장</span></td><td>Optimization of Frequent Itemset Mining on Multiple-Core Processor</td><td>VLDB 2007</td><td>CPU 멀티코어 기준선을 제대로 만들기 위해</td><td class="c">III-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-popcnt"></td><td class="c"><span class="tag g">참고</span></td><td>Faster Population Counts Using AVX2 Instructions</td><td>The Computer Journal 2018</td><td>CPU 쪽 popcount 최적화. CPU 기준선이 불리하지 않게</td><td class="c">III-b</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-yafim"></td><td class="c"><span class="tag g">참고</span></td><td>YAFIM: A Parallel Frequent Itemset Mining Algorithm with Spark</td><td>IPDPSW 2014</td><td>Spark에서 Apriori를 돌리는 방식</td><td class="c">VII-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-bigminer"></td><td class="c"><span class="tag g">참고</span></td><td>BIGMiner: A Fast and Scalable Distributed Frequent Pattern Miner for Big Data</td><td>Cluster Computing 2018</td><td>교수님의 분산 버전. 분산 비교 절에서 언급</td><td class="c">VII-a</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-sgminer"></td><td class="c"><span class="tag g">참고</span></td><td>SGMiner: A Fast and Scalable GPU-Based Frequent Pattern Miner on SSDs</td><td>IEEE Access 2022</td><td>MOOCCubeX로 확장해 GPU 메모리를 넘을 때</td><td class="c">VI-c</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-apriori"></td><td class="c"><span class="tag">권장</span></td><td>Fast Algorithms for Mining Association Rules (Apriori)</td><td>VLDB 1994</td><td>Apriori 원전</td><td class="c">목록 밖</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-eclat"></td><td class="c"><span class="tag g">참고</span></td><td>Scalable Algorithms for Association Mining (Eclat)</td><td>IEEE TKDE 2000</td><td>수직 표현 방식의 원전</td><td class="c">목록 밖</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-fpgrowth"></td><td class="c"><span class="tag g">참고</span></td><td>Mining Frequent Patterns without Candidate Generation (FP-Growth)</td><td>SIGMOD 2000</td><td>FP-Growth 원전</td><td class="c">목록 밖</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-ednet"></td><td class="c"><span class="tag">권장</span></td><td>EdNet: A Large-Scale Hierarchical Dataset in Education</td><td>AIED 2020</td><td>데이터셋 논문. KT1~KT4 구성과 수집 환경</td><td class="c">목록 밖</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="p2-mooccubex"></td><td class="c"><span class="tag g">참고</span></td><td>MOOCCubeX: A Large Knowledge-centered Repository for Adaptive Learning in MOOCs</td><td>CIKM 2021</td><td>규모 확장용 데이터셋 논문</td><td class="c">목록 밖</td></tr>
+</table>
+
+<div class="ok"><b>논문 발표와 겹쳐 쓰기 좋은 논문.</b> 수업 논문 발표에서 목록 중 2~3편을 골라야 하므로, 프로젝트 근거 논문을 발표 논문으로 고르면 두 준비를 한 번에 할 수 있습니다. 주제 1이면 Faiss GPU(IEEE TBD 2021)나 FAST 2025 논문, 주제 2면 Fang 등(DaMoN 2009)이나 PFP가 좋습니다. 교수님 논문인 GMiner는 질문 수준이 높아질 수 있어 발표 논문보다는 프로젝트 근거로 쓰는 편이 안전합니다.</div>
+</section>
+
+<section id="datasets">
+<h2>데이터셋</h2>
+<p>규모와 출처는 각 데이터셋의 공식 저장소와 논문 기준입니다. "다운로드 확인"은 GPU 서버에서 실제로 받아 본 뒤 체크합니다.</p>
+<table>
+<tr><th class="c" style="width:7%">다운로드 확인</th><th style="width:15%">데이터셋</th><th style="width:28%">규모</th><th>내용</th><th style="width:14%">주제</th><th style="width:16%">접근 · 라이선스</th></tr>
+<tr><td class="c"><input type="checkbox" data-key="d-codenet"></td><td><b>IBM CodeNet</b></td><td>제출 코드 13,916,868건, 문제 4,053개, 55개 언어</td><td>온라인 저지 AIZU, AtCoder의 제출 코드. 정답 여부, 실행 시간, 메모리 사용량 메타데이터와 문제별 입출력 예시 포함</td><td>주제 1 (주 데이터)</td><td>github.com/IBM/Project_CodeNet. 라이선스는 저장소에서 확인</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="d-csedm"></td><td><b>CSEDM 2nd Data Challenge</b></td><td>학생 800여 명, 문제 50개, 제출 13만여 건</td><td>대학 프로그래밍 수업의 제출 로그. 원래 과제는 이후 성적 예측</td><td>주제 1 (응용 사례)</td><td>sites.google.com/ncsu.edu/csedm-dc-2021. 형식과 이용 조건 확인 필요</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="d-sift"></td><td><b>SIFT1B · DEEP1B</b></td><td>각 10억 개. SIFT1B 128차원 uint8(약 128GB), DEEP1B 96차원 FP32(약 384GB)</td><td>ANN 연구의 표준 벤치마크. 정답(ground truth) 최근접 이웃 제공</td><td>주제 1 (성능 비교)</td><td>big-ann-benchmarks에서 배포. 1천만~수억 개 부분집합으로 사용</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="d-ednet"></td><td><b>EdNet</b></td><td>학생 784,309명, 상호작용 131,441,538건, 문항 13,169개, 강의 1,021개, 스킬 태그 293종</td><td>토익 학습 앱 Santa의 로그. KT1(문제 풀이, 압축 1.2GB) ~ KT4(전체 행동, 압축 1.2GB, 해제 6.4GB) + Contents(문항 정답·태그)</td><td>주제 2 (주 데이터)</td><td>github.com/riiid/ednet. CC BY-NC 4.0</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="d-riiid"></td><td><b>Riiid Answer Correctness Prediction</b></td><td>약 1억 행</td><td>같은 회사(Riiid)의 Kaggle 대회 데이터. 학생·문항·정답 여부가 표 하나로 정리됨</td><td>주제 2 (EdNet 대체)</td><td>Kaggle 대회 페이지에서 규정 동의 후 다운로드</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="d-mooccubex"></td><td><b>MOOCCubeX</b></td><td>학생 3,330,294명, 행동 기록 2.96억 건, 강좌 4,216개, 영상 230,263개, 문항 358,265개, 개념 637,572개</td><td>중국 MOOC 플랫폼 XuetangX 기반. 개념 그래프 포함. 강좌 수는 출처마다 다르게 보고됨</td><td>주제 2 (규모 확장)</td><td>github.com/THU-KEG/MOOCCubeX</td></tr>
+<tr><td class="c"><input type="checkbox" data-key="d-klec"></td><td><b>AI Hub 한국어 강의음성</b></td><td>20개 강의 분야, 14개 난이도 (시간 규모는 AI Hub 페이지에서 확인)</td><td>강의 음성과 전사문. STT 분산 처리 주제로 쓸 수 있지만 이번 프로젝트에서는 보류</td><td>보류</td><td>aihub.or.kr. 내국인 신청 후 다운로드</td></tr>
+</table>
+<div class="warn">GPU 서버의 CPU 메모리 용량을 먼저 확인합니다. SIFT1B 전체(128GB)를 CPU 메모리에 올리려면 그보다 큰 메모리가 필요하고, 모자라면 부분집합 크기를 줄여야 합니다. 같은 이유로 CodeNet 임베딩 크기(43~57GB)도 노드 메모리 안에 들어가는지 봐야 합니다.</div>
+</section>
+
+<section id="plan">
+<h2>일정과 할 일</h2>
+<p>최종 발표 날짜는 아직 모르므로 제안 발표 주를 기준으로 주차를 잡았습니다. 학기 말까지 약 6주라고 가정했습니다.</p>
+<table>
+<tr><th class="c" style="width:12%">주차</th><th style="width:26%">목표</th><th>주제 1</th><th>주제 2</th></tr>
+<tr><td class="c">이번 주</td><td>제안 발표 준비</td><td colspan="2">슬라이드 6장과 대본, GPU 서버 사양 확인, 데이터 다운로드 링크 확인</td></tr>
+<tr><td class="c">1주차</td><td>주제 확정, 환경 구성</td><td>CuPy·Faiss 설치, PCIe 대역폭 측정</td><td>CuPy·PySpark 설치, EdNet 전처리</td></tr>
+<tr><td class="c">2주차</td><td>기준선 구현</td><td>임베딩 생성, 단계 1 (순차 IVF)</td><td>단계 1~2 (CPU, Spark)</td></tr>
+<tr><td class="c">3주차</td><td>핵심 병렬화</td><td>단계 2~3 (중복 전송 제거, overlap)</td><td>단계 3 (CuPy GPU 버전)</td></tr>
+<tr><td class="c">4주차</td><td>CUDA 커널</td><td>단계 4 (top-k 커널, cluster 분할)</td><td>단계 3 (support 계산 커널)</td></tr>
+<tr><td class="c">5주차</td><td>확장 실험</td><td>다중 GPU, 파라미터별 실험</td><td>다중 GPU, MOOCCubeX</td></tr>
+<tr><td class="c">6주차</td><td>정리</td><td colspan="2">그래프, 기술 보고서, 실행 방법 문서(README), 최종 발표</td></tr>
+</table>
+
+<h3>이번 주 할 일</h3>
+<ul class="check-list">
+<li><label><input type="checkbox" data-key="t-slide"> 두 주제 슬라이드 6장 작성 (주제당 3장)</label></li>
+<li><label><input type="checkbox" data-key="t-script"> 5분 발표 대본 작성 (수업 자료: 대본 미준비 시 감점 가능)</label></li>
+<li><label><input type="checkbox" data-key="t-server"> GPU 서버 확인: CPU 메모리 용량, CUDA 버전, 디스크 여유 공간, Spark 설치 여부</label></li>
+<li><label><input type="checkbox" data-key="t-ednet"> EdNet KT1 다운로드 링크 동작 확인 (안 되면 Kaggle Riiid 데이터)</label></li>
+<li><label><input type="checkbox" data-key="t-codenet"> CodeNet 다운로드 크기 확인</label></li>
+<li><label><input type="checkbox" data-key="t-gminer"> GMiner 원문에서 TFL·HIL 전략 확인</label></li>
+<li><label><input type="checkbox" data-key="t-rummy"> RUMMY 원문에서 구현 범위로 잡은 기법 다시 확인</label></li>
+<li><label><input type="checkbox" data-key="t-cuda"> 4-1절 CuPy 예제를 GPU 서버에서 직접 실행</label></li>
+</ul>
+
+<h3>예상 질문과 답변 준비</h3>
+<table>
+<tr><th style="width:38%">예상 질문</th><th>답변 방향</th></tr>
+<tr><td>주제 1: RUMMY 재현과 무엇이 다른가?</td><td>교육 데이터(제출 코드 임베딩) 적용, 기법별 기여도 분석(ablation), 다중 GPU 확장</td></tr>
+<tr><td>주제 1: 데이터가 GPU에 들어가면 out-of-core가 왜 필요한가?</td><td>임베딩 차원·정밀도에 따라 43~57GB로 A6000 용량을 넘거나 근접. SIFT1B는 128GB. GPU 메모리 예산을 실험 변수로 제어</td></tr>
+<tr><td>주제 2: GMiner와 무엇이 다른가?</td><td>목표는 GMiner를 넘는 것이 아니라 학습 로그 도메인에서 CPU·분산·GPU 방식 비교와 트랜잭션 단위의 영향 분석</td></tr>
+<tr><td>주제 2: 태그 293개면 데이터가 작지 않은가?</td><td>계산량은 후보 수가 좌우. 문항 단위면 2개 조합만 8,670만 개. 세션 단위로 트랜잭션도 늘어남</td></tr>
+<tr><td>공통: CUDA 경험이 없는데 가능한가?</td><td>CuPy로 전체를 먼저 구현하고 병목 연산만 커널로 교체. 커널 없이도 3단계까지 결과가 나오도록 설계</td></tr>
+</table>
+</section>
+
+</main>
+</div>
+<button id="toTop" type="button" aria-label="맨 위로">↑</button>
+<script>
+(function(){
+  var STORE = 'hpdm-proposal-notes-v1';
+  function load(){ try{ return JSON.parse(localStorage.getItem(STORE)) || {}; }catch(e){ return {}; } }
+  function save(s){ try{ localStorage.setItem(STORE, JSON.stringify(s)); }catch(e){} }
+  var state = load();
+  document.querySelectorAll('input[type=checkbox][data-key]').forEach(function(cb){
+    cb.checked = !!state[cb.dataset.key];
+    cb.addEventListener('change', function(){ state[cb.dataset.key] = cb.checked; save(state); });
+  });
+
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var btn = q.querySelector('button'), fb = q.querySelector('.fb');
+    btn.addEventListener('click', function(){
+      var picked = q.querySelector('input[type=radio]:checked');
+      fb.className = 'fb';
+      if(!picked){ fb.textContent = '보기를 하나 고른 뒤 확인하세요.'; fb.classList.add('wrong'); return; }
+      var ans = q.dataset.answer;
+      var right = q.querySelector('input[value="' + ans + '"]').parentNode.textContent.trim();
+      if(picked.value === ans){ fb.textContent = '정답입니다. ' + fb.dataset.explain; fb.classList.add('right'); }
+      else { fb.textContent = '정답은 "' + right + '"입니다. ' + fb.dataset.explain; fb.classList.add('wrong'); }
+    });
+  });
+
+  var top = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){ top.classList.toggle('show', window.scrollY > 600); });
+  top.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  window.addEventListener('load', function(){
+    if(window.renderMathInElement){
+      renderMathInElement(document.body, {delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}], ignoredTags:['script','noscript','style','textarea','pre','code']});
+    }
+  });
+})();
+</script>
+</body>
+</html>
