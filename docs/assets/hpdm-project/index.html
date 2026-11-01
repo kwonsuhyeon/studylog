@@ -871,7 +871,7 @@ support = popc(a &amp; b).sum(axis=1)          # 후보별 support</code></pre>
 <p>그래서 주제 2는 GPU 쪽은 비트맵 기반(Apriori·Eclat 계열), 분산 쪽은 Spark MLlib의 FP-Growth(PFP 방식)로 비교합니다. 알고리즘은 다르지만 출력은 같으므로 같은 입력에서 걸린 시간을 비교하는 것이 공정합니다.</p>
 
 <h4>GMiner는 무엇을 했나</h4>
-<p>교수님의 GMiner(Information Sciences 2018)는 비트맵 기반 GPU 빈발 항목집합 마이닝 방법입니다. 대규모 데이터에서도 GPU를 효율적으로 쓰도록 트랜잭션 비트맵을 블록으로 나눠 GPU로 보내며 support를 계산합니다. 탐색 전략으로 TFL(Traversal From the Last)과 HIL(Hopping from Intermediate Level)을 제안했는데, 정확한 동작은 제안 발표 전에 논문 원문으로 확인해야 합니다. 후속 연구 GMiner++(ESWA 2024)는 중복 계산을 줄였고 SGMiner(IEEE Access 2022)는 데이터가 GPU 메모리를 넘을 때 SSD를 활용했습니다.</p>
+<p>교수님의 GMiner(Information Sciences 2018)는 비트맵 기반 GPU 빈발 항목집합 마이닝 방법입니다. 대규모 데이터에서도 GPU를 효율적으로 쓰도록 트랜잭션 비트맵을 블록으로 나눠 GPU로 보내며 support를 계산합니다. 탐색 전략으로 TFL(Traversal from the First Level)과 HIL(Hopping from the Intermediate Level)을 제안했습니다. TFL은 중간 단계의 항목집합을 GPU 메모리에 저장하지 않고 첫 단계의 빈발 항목(F1) 비트열만으로 후보를 검사하고, HIL은 메모리를 더 써서 일부 조합의 비트열을 미리 저장해 긴 패턴의 계산을 줄입니다. 후속 연구 GMiner++(ESWA 2024)는 중복 계산을 줄였고 SGMiner(IEEE Access 2022)는 데이터가 GPU 메모리를 넘을 때 SSD를 활용했습니다.</p>
 <div class="warn">교수님 본인 논문이므로 GMiner 부분은 발표 전에 반드시 원문을 읽고, 본인이 이해한 범위만 슬라이드에 넣습니다. 수업 자료의 "명확하게 이해하지 못한 내용은 기호 하나라도 포함하지 말 것"에 해당하는 부분입니다.</div>
 
 <!-- ───────── C15 ───────── -->
