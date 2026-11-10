@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>데이터마이닝 개념 색인</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --bg:#f9f9f7; --card:#ffffff; --text:#1f1f1f; --muted:#6b6b66; --line:#e7e5df;
+  --blue:#2a78d6; --blue-soft:#eaf2fc; --orange:#eb6834; --orange-soft:#fdf0ea;
+  --green:#2f9e5b; --green-soft:#e9f6ee; --th:#f4f3ef; --code-bg:#f3f2ee; --top-btn:#111111;
+  --radius:14px; --sidebar-w:270px; --page-max:1400px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard",-apple-system,"Malgun Gothic",sans-serif;line-height:1.75;font-size:16px;word-break:keep-all}
+.layout{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr);gap:28px;max-width:var(--page-max);margin:0 auto;padding:32px 24px 80px}
+nav.toc{position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;font-size:14px}
+nav.toc .toc-title{font-weight:700;margin-bottom:10px}
+nav.toc .toc-group{font-size:12px;color:var(--orange);font-weight:700;margin:12px 6px 2px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 6px;border-radius:6px}
+nav.toc a:hover{background:var(--blue-soft);color:var(--blue)}
+main{min-width:0;counter-reset:sec}
+header.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 36px;margin-bottom:24px}
+header.hero h1{margin:0 0 8px;font-size:30px}
+header.hero p{margin:4px 0;color:var(--muted)}
+section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 36px;margin-bottom:24px;counter-increment:sec}
+section>h2{display:flex;align-items:center;gap:12px;margin:0 0 18px;font-size:24px}
+section>h2::before{content:counter(sec);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;flex:none}
+h3{font-size:19px;margin:30px 0 10px;padding-top:12px;border-top:1px dashed var(--line)}
+p{margin:8px 0}
+.core{background:var(--blue-soft);border-left:4px solid var(--blue);padding:14px 18px;border-radius:8px;margin:14px 0;font-weight:500}
+.warn{background:var(--orange-soft);border-left:4px solid var(--orange);padding:14px 18px;border-radius:8px;margin:14px 0}
+.ok{background:var(--green-soft);border-left:4px solid var(--green);padding:14px 18px;border-radius:8px;margin:14px 0}
+.paper{font-size:14px;color:var(--muted);margin:-8px 0 14px}
+.paper b{color:var(--blue)}
+.step{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px;margin-right:6px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;vertical-align:middle;text-align:left}
+th{background:var(--th);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+tr.y td{background:var(--orange-soft)}
+.hl{color:var(--orange);font-weight:700}
+.bl{color:var(--blue);font-weight:700}
+code{background:var(--code-bg);padding:1px 6px;border-radius:5px;font-size:.92em;font-family:Consolas,"D2Coding",monospace}
+pre{background:var(--code-bg);padding:14px 18px;border-radius:10px;overflow-x:auto;font-size:14px;line-height:1.6;font-family:Consolas,"D2Coding",monospace}
+.quiz{border:2px solid var(--blue-soft);border-radius:12px;padding:16px 20px;margin:18px 0;background:#fbfdff}
+.quiz .q{font-weight:700;margin-bottom:8px}
+.quiz label{display:block;padding:6px 10px;border-radius:8px;cursor:pointer}
+.quiz label:hover{background:var(--blue-soft)}
+.quiz button{margin-top:8px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:inherit;font-weight:600;cursor:pointer}
+.quiz .fb{display:none;margin-top:10px;padding:10px 14px;border-radius:8px}
+.quiz .fb.right{display:block;background:var(--green-soft)}
+.quiz .fb.wrong{display:block;background:var(--orange-soft)}
+details{margin:10px 0;border:1px solid var(--line);border-radius:10px;padding:10px 16px;background:#fcfcfa}
+details summary{cursor:pointer;font-weight:600;color:var(--blue)}
+.check-list{list-style:none;padding-left:0}
+.check-list li{padding:5px 0}
+.check-list input{transform:scale(1.15);margin-right:8px;accent-color:var(--blue)}
+.audio{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--th);border-radius:10px;padding:10px 16px;margin:0 0 18px}
+.audio .lbl{font-weight:700;font-size:14px}
+.audio audio{height:36px;flex:1;min-width:240px}
+.audio .miss{font-size:13px;color:var(--muted)}
+.mine{width:100%;min-height:64px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:15px;resize:vertical;background:#fffef9}
+.mine-lbl{font-weight:700;font-size:14px;color:var(--orange);margin-top:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.box h4{margin:0 0 6px;font-size:16px}
+svg text{font-family:"Pretendard",sans-serif}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0}
+.katex{max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle;position:relative}
+#toTop{position:fixed;right:28px;bottom:28px;width:46px;height:46px;border-radius:50%;background:var(--top-btn);color:#fff;border:none;font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#toTop.show{opacity:1;pointer-events:auto}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;padding:16px}
+  nav.toc{position:static;max-height:none}
+  section,header.hero{padding:22px 18px}
+  .grid2{grid-template-columns:1fr}
+}
+/* paper-study 추가 요소 */
+.infer{display:inline-block;font-size:12px;font-weight:700;color:var(--orange);border:1px solid var(--orange);border-radius:999px;padding:0 8px;margin:0 4px;vertical-align:1px;background:#fff}
+.src-quote{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:10px;margin:14px 0;overflow:hidden}
+.src-quote .en{padding:12px 16px;background:#fcfcfa;font-size:15px}
+.src-quote .ko{padding:12px 16px;background:var(--blue-soft);font-size:15px}
+.src-quote .ref{grid-column:1/-1;font-size:12px;color:var(--muted);padding:5px 16px;border-top:1px solid var(--line);background:#fff}
+.src-quote .ref code{font-size:12px}
+.lib-link{display:inline-block;margin-top:14px;font-size:14px}
+.lib-link .local{color:var(--muted);font-size:12px;margin-left:6px}
+.sym{font-family:"KaTeX_Main",serif}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.links a{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--blue-soft);color:var(--blue);text-decoration:none;font-weight:600;font-size:14px}
+.review{background:var(--th);border-left:4px solid var(--muted);padding:14px 18px;border-radius:8px;margin:14px 0}
+.review .from{font-size:13px;color:var(--muted);margin-top:6px}
+@media (max-width:980px){.src-quote{grid-template-columns:1fr}}
+@media print{nav.toc,#toTop,.audio{display:none}.layout{grid-template-columns:1fr}}
+
+/* pages.py 추가 요소 */
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.links a{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--blue-soft);color:var(--blue);text-decoration:none;font-weight:600;font-size:14px}
+.listen{display:grid;grid-template-columns:minmax(320px,440px) minmax(0,1fr);gap:28px;max-width:var(--page-max);margin:0 auto;padding:0 24px 80px;align-items:start}
+.listen-head{max-width:var(--page-max);margin:0 auto;padding:32px 24px 0}
+.player{position:sticky;top:16px;z-index:5}
+section.plain>h2::before{display:none}
+.m{color:var(--muted);font-size:13px}
+.player .now{font-weight:700;font-size:18px;margin-bottom:4px}
+.player .sub{color:var(--muted);font-size:14px;margin-bottom:12px}
+.player audio{width:100%}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.ctl button,.ctl select{font-family:inherit;font-size:15px;font-weight:600;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 14px;cursor:pointer;min-height:44px}
+.ctl button.main{background:var(--blue);color:#fff;border-color:var(--blue);flex:1}
+.tracks{list-style:none;margin:0;padding:0}
+.tracks li{margin:0 0 8px}
+.tracks button{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;font-family:inherit;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:12px 14px;cursor:pointer;min-height:56px}
+.tracks button .tag{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--th);font-weight:700}
+.tracks button .t{font-weight:600}
+.tracks button .m{color:var(--muted);font-size:13px}
+.tracks button .len{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.tracks button.on{border-color:var(--blue);background:var(--blue-soft)}
+.tracks button.on .tag{background:var(--blue);color:#fff}
+.tracks button.done .tag{background:var(--green-soft);color:var(--green)}
+.doc-group{font-size:13px;color:var(--orange);font-weight:700;margin:16px 4px 8px}
+.tr{margin:10px 0}
+.tr .en{display:none;color:var(--muted);font-size:15px;border-left:3px solid var(--line);padding-left:12px;margin-top:6px}
+body.show-en .tr .en{display:block}
+.tr .bid{font-size:11px;color:var(--muted);font-family:Consolas,monospace;margin-left:6px;user-select:none}
+figure{margin:16px 0;text-align:center}
+figure img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px}
+figcaption{font-size:14px;color:var(--muted);margin-top:6px}
+blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--line);color:var(--muted)}
+.en-toggle{position:fixed;right:28px;bottom:86px;border:none;border-radius:999px;background:var(--blue);color:#fff;font-family:inherit;font-weight:700;font-size:14px;padding:10px 16px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+@media (max-width:980px){
+  .listen{grid-template-columns:1fr;padding:0 16px 60px}
+  .listen-head{padding:16px 16px 0}
+  .player{top:8px}
+}
+</style>
+</head>
+<body>
+<div class="listen-head"><header class="hero"><h1>데이터마이닝 개념 색인</h1><p>개념 25개 · 자료 1개 (flyKNNG) · 2026-11-10 갱신</p><p>개념 이름으로 설명 위치 검색 · 링크로 해당 노트의 절 이동</p></header></div>
+<div class="listen" style="grid-template-columns:minmax(0,1fr)"><section class="plain">
+<div class="ctl" style="margin:0 0 14px"><input id="q" type="search" placeholder="개념 검색" style="flex:1;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-family:inherit;font-size:16px"><span id="cnt" class="m">25개</span></div>
+<div class="table-wrap"><table><thead><tr><th style="width:22%">개념</th><th>한 줄 정의</th><th style="width:34%">설명 위치</th></tr></thead>
+<tbody><tr data-k="bitonic 정렬 bitonic sort 비교할 위치가 값과 상관없이 미리 정해져 있어 분기가 생기지 않는 정렬 방법"><td><b>bitonic 정렬</b> <span class="m">bitonic sort</span></td><td>비교할 위치가 값과 상관없이 미리 정해져 있어 분기가 생기지 않는 정렬 방법</td><td><a href="../hpdm-flyknng/flyKNNG_논문_해설.html#bitonic">flyKNNG 해설 5절</a></td></tr>
+<tr data-k="block thread block shared memory를 함께 쓰는 thread 묶음으로, warp 여러 개로 구성"><td><b>block</b> <span class="m">thread block</span></td><td>shared memory를 함께 쓰는 thread 묶음으로, warp 여러 개로 구성</td><td><a href="../hpdm-flyknng/index.html#exec">flyKNNG 2절</a></td></tr>
+<tr data-k="exact knn exact k-nearest neighbor 근사 없이 모든 점 쌍의 거리를 비교해 k개 이웃을 정확히 찾는 방식"><td><b>exact kNN</b> <span class="m">exact k-nearest neighbor</span></td><td>근사 없이 모든 점 쌍의 거리를 비교해 k개 이웃을 정확히 찾는 방식</td><td><a href="../hpdm-flyknng/index.html#paper">flyKNNG 1절</a></td></tr>
+<tr data-k="fused kernel fused kernel 거리 계산과 top-k 선택을 하나로 합친 gpu 커널"><td><b>Fused Kernel</b></td><td>거리 계산과 top-k 선택을 하나로 합친 GPU 커널</td><td><a href="../hpdm-flyknng/index.html#fly">flyKNNG 7절</a></td></tr>
+<tr data-k="gemm general matrix multiplication 일반 행렬곱. 모든 점 쌍의 내적을 한 번에 구하는 데 사용"><td><b>GEMM</b> <span class="m">general matrix multiplication</span></td><td>일반 행렬곱. 모든 점 쌍의 내적을 한 번에 구하는 데 사용</td><td><a href="../hpdm-flyknng/index.html#gemm">flyKNNG 5절</a></td></tr>
+<tr data-k="global memory global memory 용량은 크지만 읽고 쓰는 비용이 큰 gpu 전체 메모리"><td><b>global memory</b></td><td>용량은 크지만 읽고 쓰는 비용이 큰 GPU 전체 메모리</td><td><a href="../hpdm-flyknng/index.html#mem">flyKNNG 3절</a></td></tr>
+<tr data-k="knng k-nearest neighbor graph 모든 점마다 가장 가까운 k개 이웃을 찾아 간선으로 이은 그래프"><td><b>KNNG</b> <span class="m">k-nearest neighbor graph</span></td><td>모든 점마다 가장 가까운 k개 이웃을 찾아 간선으로 이은 그래프</td><td><a href="../hpdm-flyknng/index.html#paper">flyKNNG 1절</a></td></tr>
+<tr data-k="mini-batch 처리 mini-batch processing 메모리에 안 들어가는 데이터를 batch 단위로 가져와 계산하는 방식"><td><b>mini-batch 처리</b> <span class="m">mini-batch processing</span></td><td>메모리에 안 들어가는 데이터를 batch 단위로 가져와 계산하는 방식</td><td><a href="../hpdm-flyknng/flyKNNG_논문_해설.html#batch">flyKNNG 해설 4절</a></td></tr>
+<tr data-k="mma matrix multiply-accumulate tensor core가 수행하는 행렬곱 누적 연산"><td><b>MMA</b> <span class="m">matrix multiply-accumulate</span></td><td>Tensor Core가 수행하는 행렬곱 누적 연산</td><td><a href="../hpdm-flyknng/index.html#tc">flyKNNG 4절</a></td></tr>
+<tr data-k="on-the-fly top-k on-the-fly top-k 거리를 계산할 때마다 지금까지의 top-k 후보와 비교해 갱신하고 나머지는 버리는 방식"><td><b>on-the-fly top-k</b></td><td>거리를 계산할 때마다 지금까지의 top-k 후보와 비교해 갱신하고 나머지는 버리는 방식</td><td><a href="../hpdm-flyknng/index.html#fly">flyKNNG 7절</a></td></tr>
+<tr data-k="ping-pong buffer ping-pong buffer 버퍼 두 개를 번갈아 써서 데이터 전송과 계산을 겹치는 방법"><td><b>Ping-Pong buffer</b></td><td>버퍼 두 개를 번갈아 써서 데이터 전송과 계산을 겹치는 방법</td><td><a href="../hpdm-flyknng/flyKNNG_논문_해설.html#batch">flyKNNG 해설 4절</a></td></tr>
+<tr data-k="register register thread마다 가진 가장 빠르고 가장 작은 저장 공간"><td><b>register</b></td><td>thread마다 가진 가장 빠르고 가장 작은 저장 공간</td><td><a href="../hpdm-flyknng/index.html#mem">flyKNNG 3절</a></td></tr>
+<tr data-k="shared memory shared memory block 안의 thread가 함께 쓰는 빠른 메모리로, 재사용할 데이터 타일을 두는 곳"><td><b>shared memory</b></td><td>block 안의 thread가 함께 쓰는 빠른 메모리로, 재사용할 데이터 타일을 두는 곳</td><td><a href="../hpdm-flyknng/index.html#mem">flyKNNG 3절</a></td></tr>
+<tr data-k="tensor core tensor core 작은 행렬곱을 한 번에 처리하는 gpu 전용 연산 장치"><td><b>Tensor Core</b></td><td>작은 행렬곱을 한 번에 처리하는 GPU 전용 연산 장치</td><td><a href="../hpdm-flyknng/index.html#tc">flyKNNG 4절</a></td></tr>
+<tr data-k="thread gpu thread gpu에서 같은 명령을 동시에 실행하는 가장 작은 실행 단위"><td><b>thread</b> <span class="m">GPU thread</span></td><td>GPU에서 같은 명령을 동시에 실행하는 가장 작은 실행 단위</td><td><a href="../hpdm-flyknng/index.html#exec">flyKNNG 2절</a></td></tr>
+<tr data-k="tile-major 배치 tile-major layout tensor core 결과가 warp의 thread register에 타일 순서로 흩어져 놓이는 배치"><td><b>tile-major 배치</b> <span class="m">tile-major layout</span></td><td>Tensor Core 결과가 warp의 thread register에 타일 순서로 흩어져 놓이는 배치</td><td><a href="../hpdm-flyknng/flyKNNG_논문_해설.html#alg2">flyKNNG 해설 6절</a></td></tr>
+<tr data-k="tiling tiling 큰 행렬을 작은 조각으로 나눠 빠른 메모리에 올려 두고 여러 번 쓰는 기법"><td><b>Tiling</b></td><td>큰 행렬을 작은 조각으로 나눠 빠른 메모리에 올려 두고 여러 번 쓰는 기법</td><td><a href="../hpdm-flyknng/index.html#tc">flyKNNG 4절</a></td></tr>
+<tr data-k="top-k top-k selection 값이 가장 큰 k개를 고르는 연산. 이 논문은 내적 유사도 기준이라 클수록 가까움"><td><b>top-k</b> <span class="m">top-k selection</span></td><td>값이 가장 큰 k개를 고르는 연산. 이 논문은 내적 유사도 기준이라 클수록 가까움</td><td><a href="../hpdm-flyknng/index.html#dir">flyKNNG 6절</a></td></tr>
+<tr data-k="top-k 불변식 top-k invariant topk를 항상 내림차순으로 유지한다는 조건. 새 거리와의 병합을 bitonic 수열로 처리하는 근거"><td><b>top-k 불변식</b> <span class="m">top-k invariant</span></td><td>topk를 항상 내림차순으로 유지한다는 조건. 새 거리와의 병합을 bitonic 수열로 처리하는 근거</td><td><a href="../hpdm-flyknng/flyKNNG_논문_해설.html#alg3">flyKNNG 해설 7절</a></td></tr>
+<tr data-k="warp warp thread 32개가 묶여 실제로 함께 실행되는 단위"><td><b>warp</b></td><td>thread 32개가 묶여 실제로 함께 실행되는 단위</td><td><a href="../hpdm-flyknng/index.html#exec">flyKNNG 2절</a></td></tr>
+<tr data-k="warp divergence warp divergence warp 안의 thread가 서로 다른 분기를 타서 실행이 느려지는 현상"><td><b>warp divergence</b></td><td>warp 안의 thread가 서로 다른 분기를 타서 실행이 느려지는 현상</td><td><a href="../hpdm-flyknng/index.html#warp">flyKNNG 8절</a></td></tr>
+<tr data-k="warp shuffle warp shuffle 같은 warp의 thread끼리 register 값을 메모리를 거치지 않고 주고받는 명령"><td><b>warp shuffle</b></td><td>같은 warp의 thread끼리 register 값을 메모리를 거치지 않고 주고받는 명령</td><td><a href="../hpdm-flyknng/index.html#warp">flyKNNG 8절</a></td></tr>
+<tr data-k="warp-grained pruning warp-grained pruning 갱신이 필요 없는 top-k 처리를 warp 단위로 통째로 건너뛰는 기법"><td><b>warp-grained pruning</b></td><td>갱신이 필요 없는 top-k 처리를 warp 단위로 통째로 건너뛰는 기법</td><td><a href="../hpdm-flyknng/index.html#warp">flyKNNG 8절</a></td></tr>
+<tr data-k="거리 계산의 행렬곱 변환 distance via inner product 유클리드 거리와 코사인 유사도를 전처리 후 내적 행렬로 바꿔 계산하는 방법"><td><b>거리 계산의 행렬곱 변환</b> <span class="m">distance via inner product</span></td><td>유클리드 거리와 코사인 유사도를 전처리 후 내적 행렬로 바꿔 계산하는 방법</td><td><a href="../hpdm-flyknng/index.html#gemm">flyKNNG 5절</a></td></tr>
+<tr data-k="정렬 네트워크 sorting network 비교 순서가 고정된 정렬 방식의 총칭"><td><b>정렬 네트워크</b> <span class="m">sorting network</span></td><td>비교 순서가 고정된 정렬 방식의 총칭</td><td><a href="../hpdm-flyknng/flyKNNG_논문_해설.html#bitonic">flyKNNG 해설 5절</a></td></tr></tbody></table></div>
+</section></div>
+<button id="toTop" type="button" aria-label="맨 위로">↑</button>
+<script>
+window.addEventListener('load',function(){if(window.renderMathInElement){renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'$',right:'$',display:false}],throwOnError:false});}});
+
+var q=document.getElementById('q'),rows=[].slice.call(document.querySelectorAll('tbody tr'));
+q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();var n=0;
+  rows.forEach(function(r){var ok=!v||r.dataset.k.indexOf(v)>=0;r.style.display=ok?'':'none';if(ok){n++;}});
+  document.getElementById('cnt').textContent=n+'개';});
+
+var t=document.getElementById('toTop');
+window.addEventListener('scroll',function(){t.classList.toggle('show',window.scrollY>600);});
+t.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>
