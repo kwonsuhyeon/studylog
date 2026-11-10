@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>졸업까지, 퀘스트처럼 · 구현 현황</title>
+<!-- 글꼴: 아이디어 발표와 같은 Pretendard -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ===========================================
+   테마 토큰 (10-27 아이디어 발표와 같은 값)
+   색을 바꾸려면 여기만 고친다
+   =========================================== */
+:root{
+  --navy:#0c2d4f;
+  --navy-2:#1d4a7a;
+  --yellow:#ffc83d;
+  --yellow-soft:#fff4d4;
+  --orange:#f49b00;
+  --blue:#2f62b0;
+  --blue-soft:#e6eef9;
+  --red:#c8392b;
+  --ink:#1d2433;
+  --ink-2:#4a5263;
+  --ink-3:#8a909c;
+  --line:#d9dde4;
+  --box:#f3f5f8;
+  --paper:#ffffff;
+  --stage-bg:#000;
+  --slide-bg:#ffffff;
+  --font:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --shot-w:398px;   /* 3장 폰 화면 틀 (테두리 포함) */
+  --shot-h:637px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ===========================================
+   고정 16:9 무대 (1920×1080을 화면에 맞춰 축소)
+   =========================================== */
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--stage-bg)}
+.deck-viewport{position:fixed;inset:0;overflow:hidden;background:var(--stage-bg)}
+.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:var(--slide-bg)}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:block;visibility:hidden;opacity:0;pointer-events:none;background:var(--slide-bg)}
+.slide.active,.slide.visible{visibility:visible;opacity:1;pointer-events:auto;z-index:1}
+img,svg{max-width:100%;max-height:100%}
+@media print{
+  html,body{width:1920px;height:auto;overflow:visible;background:#fff}
+  .deck-viewport{position:static;overflow:visible;background:#fff}
+  .deck-stage{position:static;width:auto;height:auto;transform:none!important;background:none}
+  .slide{position:relative;visibility:visible!important;opacity:1!important;break-after:page;page-break-after:always}
+  .slide:last-child{break-after:auto;page-break-after:auto}
+  .reveal{opacity:1!important;transform:none!important}
+  .progress,.edit-hotzone,.edit-toggle,.edit-save,.edit-status{display:none!important}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.2s!important}
+}
+
+body{font-family:var(--font);color:var(--ink);word-break:keep-all;-webkit-font-smoothing:antialiased}
+
+/* 등장 애니메이션 */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.slide.visible .reveal{opacity:1;transform:none}
+.slide.visible .d1{transition-delay:.08s}.slide.visible .d2{transition-delay:.18s}
+.slide.visible .d3{transition-delay:.28s}.slide.visible .d4{transition-delay:.38s}
+.slide.visible .d5{transition-delay:.48s}.slide.visible .d6{transition-delay:.58s}
+
+/* ===========================================
+   본문 슬라이드 공통 틀
+   =========================================== */
+.hd{position:absolute;left:0;right:0;top:0;height:100px}
+.hd::before{content:"";position:absolute;left:28px;top:26px;width:14px;height:50px;background:var(--yellow)}
+.hd h2{position:absolute;left:66px;top:22px;font-size:46px;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.hd::after{content:"";position:absolute;left:0;right:0;top:96px;height:5px;background:var(--navy)}
+.sh{position:absolute;left:112px;top:140px;display:flex;align-items:center;gap:22px;font-size:50px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.sh::before{content:"";width:22px;height:22px;border-right:9px solid var(--orange);border-top:9px solid var(--orange);transform:rotate(45deg);margin-right:6px}
+.sh small{font-size:28px;font-weight:600;color:var(--ink-3);margin-left:8px}
+.ft{position:absolute;left:0;right:0;bottom:0;height:110px;pointer-events:none}
+.ft .nv{position:absolute;left:0;bottom:0;width:640px;height:104px;background:var(--navy);clip-path:polygon(0 0,100% 0,93% 100%,0 100%)}
+.ft .yl{position:absolute;left:560px;right:0;bottom:0;height:88px;background:var(--yellow);clip-path:polygon(4% 0,100% 0,100% 100%,0 100%)}
+.ft img{position:absolute;left:44px;bottom:16px;height:72px}
+.pg{position:absolute;right:56px;bottom:26px;font-size:28px;font-weight:700;color:var(--navy)}
+.ct{position:absolute;left:112px;right:112px;top:240px;bottom:130px}
+.take{padding:22px 36px;background:var(--navy);color:#fff;border-radius:14px;font-size:36px;font-weight:700;text-align:center}
+.take b{color:var(--yellow)}
+
+/* ===========================================
+   1장: 표지
+   =========================================== */
+.cover{background:var(--navy)}
+.cover .ttl{position:absolute;left:112px;top:200px;width:1000px}
+.cover .ttl h1{font-size:104px;font-weight:800;line-height:1.18;color:var(--orange);letter-spacing:-.02em}
+.cover .ttl p{margin-top:28px;font-size:44px;font-weight:600;color:#fff;line-height:1.4}
+.cover .rule{position:absolute;left:112px;top:640px;width:860px;height:4px;background:var(--yellow)}
+.cover .sum{position:absolute;left:112px;top:672px;width:940px;font-size:36px;line-height:1.5;font-weight:700;color:var(--yellow)}
+.cover .meta{position:absolute;left:112px;top:810px;font-size:32px;line-height:1.7;color:#fff}
+.cover .logo{position:absolute;right:56px;bottom:40px;height:84px}
+.qmap{position:absolute;left:1120px;top:120px;width:720px;height:840px}
+.qmap .path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.qmap .p1{stroke:var(--navy-2);stroke-width:10}
+.qmap .p2{stroke:var(--orange);stroke-width:4;stroke-dasharray:1600;stroke-dashoffset:1600}
+.slide.visible .qmap .p2{animation:draw 2.6s .4s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.qmap .node{fill:var(--navy);stroke:var(--yellow);stroke-width:5}
+.qmap .node.done{fill:var(--yellow)}
+.qmap .node.now{fill:var(--orange);stroke:#fff}
+.qmap .goal{fill:var(--orange);stroke:#fff;stroke-width:6}
+.qmap text{font-family:var(--font);font-size:30px;font-weight:700;fill:#fff}
+.qmap text.sm{font-size:24px;font-weight:500;fill:#b9c7d8}
+.qmap text.cur{fill:var(--yellow)}
+
+/* ===========================================
+   2장: 계획 대비 진행 표 / 5장: UI 사례 표
+   =========================================== */
+.tb{width:100%;border-collapse:collapse}
+.tb th,.tb td{text-align:left;vertical-align:middle;padding:15px 22px;border-bottom:2px solid var(--line)}
+.tb th{font-size:24px;color:var(--ink-3);font-weight:700;border-bottom:4px solid var(--navy);padding-top:8px;padding-bottom:12px}
+.tb td{font-size:29px;line-height:1.38;padding-top:16px;padding-bottom:16px}
+.tb th span{font-weight:600;margin-left:6px}
+.tb.roomy th{font-size:27px;color:var(--navy)}
+.tb.roomy th span{font-size:22px;color:var(--ink-3)}
+.tb.roomy td{font-size:31px;padding-top:28px;padding-bottom:28px}
+.tb td.a{font-weight:800;color:var(--navy)}
+.tb td.w{color:var(--ink-2);font-weight:700;white-space:nowrap}
+.tb td small{display:block;font-size:23px;font-weight:600;color:var(--ink-3)}
+.badge{display:inline-block;padding:6px 20px;border-radius:999px;font-size:25px;font-weight:800;white-space:nowrap}
+.badge.ok{background:var(--blue-soft);color:var(--blue)}
+.badge.ing{background:var(--yellow-soft);color:var(--orange)}
+.badge.no{background:var(--orange);color:#fff}
+.tb tr.open td{background:var(--yellow-soft)}
+.note{margin-top:20px;font-size:28px;font-weight:700;color:var(--ink-2)}
+.note b{color:var(--orange)}
+
+/* ===========================================
+   3장: 폰 화면 두 장 / 4장: 대시보드 화면
+   =========================================== */
+.shots{display:grid;grid-template-columns:auto auto 1fr;gap:56px;align-items:start;height:100%}
+.ph{display:flex;flex-direction:column;align-items:center;gap:14px}
+.ph .fr{border:9px solid var(--navy);border-radius:34px;overflow:hidden;background:#fff;line-height:0}
+/* 두 화면을 같은 크기로: 틀 비율에 맞춰 위쪽 기준으로 채움 */
+.ph .fr{width:var(--shot-w);height:var(--shot-h)}
+.ph .fr img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;max-height:none;max-width:none}
+.ph .cap{font-size:28px;font-weight:800;color:var(--navy)}
+.pts{display:flex;flex-direction:column;gap:22px;align-self:center}
+.pt{border-left:10px solid var(--orange);background:var(--box);border-radius:0 14px 14px 0;padding:20px 28px}
+.pt .t{font-size:34px;font-weight:800;color:var(--navy)}
+.pt .d{margin-top:6px;font-size:27px;line-height:1.42;color:var(--ink-2)}
+.pt.b{border-color:var(--blue)}
+.vlinks{display:flex;align-items:center;gap:18px;margin-top:8px}
+.vlinks .lb{font-size:28px;font-weight:800;color:var(--ink-2);margin-right:6px}
+.vlinks a{padding:14px 30px;border-radius:12px;background:var(--navy);color:#fff;font-size:30px;font-weight:800;text-decoration:none}
+.vlinks a:hover{background:var(--navy-2)}
+.wide{display:grid;grid-template-columns:1160px 1fr;gap:44px;align-items:center}
+.wide .fr{border:4px solid var(--line);border-radius:18px;overflow:hidden;line-height:0}
+.wide .fr img{display:block;width:100%;max-height:none}
+
+/* ===========================================
+   6장: 앞으로의 계획
+   =========================================== */
+.plan{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.pl{border-radius:18px;background:var(--box);padding:30px 30px;min-height:280px}
+.pl .no{font-size:26px;font-weight:800;color:var(--orange)}
+.pl .t{margin-top:8px;font-size:38px;font-weight:800;color:var(--navy);line-height:1.28}
+.pl .d{margin-top:14px;font-size:27px;line-height:1.45;color:var(--ink-2)}
+.pl.key{background:var(--navy)}
+.pl.key .t{color:var(--yellow)}.pl.key .d{color:#fff}
+.mts{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:24px}
+.mt{border:3px solid var(--line);border-radius:16px;padding:16px 26px;display:flex;align-items:center;gap:16px}
+.mt .t{font-size:30px;font-weight:800;color:var(--navy)}
+.mt .d{font-size:23px;color:var(--ink-2)}
+.mt .n{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:38px;font-weight:800;color:var(--navy)}
+.mt .n small{display:block;font-size:20px;font-weight:600;color:var(--ink-3);text-align:center}
+.mt .n .af{color:var(--orange)}
+.mt .n .ar{color:var(--orange);font-size:32px}
+.mlab{margin-top:26px;font-size:28px;font-weight:800;color:var(--ink)}
+.mlab span{font-weight:600;color:var(--ink-3);font-size:24px;margin-left:10px}
+.future{margin-top:22px;display:flex;align-items:center;gap:22px;font-size:32px;font-weight:700}
+.future .lb{padding:8px 22px;border-radius:999px;background:var(--orange);color:#fff;font-size:26px}
+.future .bx{padding:13px 26px;border:3px solid var(--navy);border-radius:12px;color:var(--navy)}
+.future .bx.on{background:var(--navy);color:#fff}
+.future .to{color:var(--orange);font-size:38px}
+
+/* 쪽 진행 표시, 편집 모드 (왼쪽 위 모서리 또는 E 키) */
+.progress{position:fixed;left:0;top:0;height:4px;background:var(--orange);z-index:1001;transition:width .4s var(--ease)}
+.edit-hotzone{position:fixed;top:0;left:0;width:80px;height:80px;z-index:10000;cursor:pointer}
+.edit-toggle{position:fixed;top:14px;left:14px;z-index:10001;opacity:0;pointer-events:none;transition:opacity .3s;border:0;border-radius:8px;padding:10px 16px;background:var(--navy);color:#fff;font:600 15px var(--font);cursor:pointer}
+.edit-toggle.show,.edit-toggle.active{opacity:1;pointer-events:auto}
+.edit-toggle.active{background:var(--orange)}
+.edit-save{position:fixed;top:14px;left:104px;z-index:10001;display:none;border:0;border-radius:8px;padding:10px 16px;background:var(--blue);color:#fff;font:600 15px var(--font);cursor:pointer}
+body.editing .edit-save{display:block}
+.edit-status{position:fixed;top:20px;left:226px;z-index:10001;font:600 14px var(--font);color:#fff;background:rgba(12,45,79,.85);padding:5px 12px;border-radius:999px;opacity:0;transition:opacity .3s}
+.edit-status.show{opacity:1}
+body.editing [contenteditable="true"]{outline:2px dashed rgba(244,155,0,.6);outline-offset:4px}
+</style>
+</head>
+<body class="">
+<div class="progress" id="progress"></div>
+<div class="edit-hotzone" id="editHotzone"></div>
+<button class="edit-toggle" id="editToggle" title="편집 모드 (E)">편집</button>
+<button class="edit-save" id="editSave" title="고친 내용을 index.html 파일에 저장 (Ctrl+S)">파일로 저장</button>
+<div class="edit-status" id="editStatus"></div>
+
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+<!-- ========== 1. 표지 ========== -->
+<section class="slide cover active" data-title="표지">
+  <div class="ttl">
+    <h1 class="reveal d1">졸업까지,<br>퀘스트처럼</h1>
+    <p class="reveal d2">구현 현황과 앞으로의 계획</p>
+  </div>
+  <div class="rule reveal d3"></div>
+  <div class="sum reveal d3">기록 → 분류 → 피드백 흐름은 동작,<br>화면은 직접 쓰면서 개선 중</div>
+  <div class="meta reveal d4">2026.11.10.(화) · 통합적프로토타이핑 · 권수현</div>
+  <svg class="qmap" viewBox="0 0 720 840" aria-hidden="true">
+    <path class="path p1" d="M90 780 C 300 780, 520 720, 560 620 S 260 520, 200 430 S 520 330, 560 250 S 360 110, 330 60"></path>
+    <path class="path p2" d="M90 780 C 300 780, 520 720, 560 620 S 260 520, 200 430 S 520 330, 560 250 S 360 110, 330 60"></path>
+    <circle class="node done" cx="90" cy="780" r="20"></circle><text x="20" y="740">아이디어</text>
+    <circle class="node done" cx="560" cy="620" r="20"></circle><text x="600" y="630">기록</text>
+    <circle class="node done" cx="200" cy="430" r="20"></circle><text x="30" y="400">피드백</text>
+    <circle class="node now" cx="560" cy="250" r="22"></circle><text class="cur" x="600" y="260">퀘스트</text>
+    <circle class="goal" cx="330" cy="60" r="30"></circle><text x="385" y="70">최종 발표</text>
+    <text class="sm" x="250" y="830">지금은 11주차</text>
+  </svg>
+  <img class="logo" src="assets/koreatech-logo.png" alt="한국기술교육대학교">
+</section>
+
+<!-- ========== 2. 계획 대비 진행 ========== -->
+<section class="slide" data-title="계획 대비 진행">
+  <div class="hd"><h2>구현 현황</h2></div>
+  <div class="sh reveal d1">계획 대비 진행<small>아이디어 발표(10.27.)의 구현 계획 기준</small></div>
+  <div class="ct">
+    <table class="tb reveal d2">
+      <thead><tr><th style="width:400px">계획한 것</th><th style="width:170px">계획 주차</th><th>구현 내용</th><th style="width:170px">상태</th></tr></thead>
+      <tbody>
+        <tr><td class="a">폰 기록 앱 (PWA)</td><td class="w">9~10주차</td><td>코치 앱 v33 배포 · 버튼 입력, 타이머, 예약 알림</td><td><span class="badge ok">완료</span></td></tr>
+        <tr><td class="a">내 연구 / 당장 할 일 분류</td><td class="w">9~10주차</td><td>미래 투자 · 생산 대시보드에서 자동 집계</td><td><span class="badge ok">완료</span></td></tr>
+        <tr><td class="a">퀘스트 → 작은 행동</td><td class="w">11주차</td><td>오늘의 약속, 첫 동작 제안, 5초 카운트다운<small>큰 목표에서 퀘스트로 이어지는 계층 화면은 미구현</small></td><td><span class="badge ing">진행 중</span></td></tr>
+        <tr><td class="a">AI 피드백</td><td class="w">12~13주차</td><td>아침 · 저녁 브리핑으로 이번 주와 학기 누적 전달<small>현재는 누적 공부 시간과 기록만 전달 · 향후 연구와 생산적인 일에 집중하도록 유도하는 피드백으로 고도화 고민 중</small></td><td><span class="badge ok">완료</span></td></tr>
+        <tr><td class="a">AI 코치 대화</td><td class="w">12~13주차</td><td>하루 · 쉼 · 운동 · 연구 코치 4종, 대화 요약 저장</td><td><span class="badge ok">완료</span></td></tr>
+        <tr><td class="a">논문 노트 연동</td><td class="w">–</td><td>하이라이트한 PDF 수집, 읽은 논문 수 브리핑 반영</td><td><span class="badge ok">완료</span></td></tr>
+      </tbody>
+    </table>
+    <div class="note reveal d3">지금은 <b>11주차</b> · 본인 사용 시작, AI 피드백은 계획보다 먼저 동작</div>
+  </div>
+  <div class="ft"><div class="nv"></div><div class="yl"></div><img src="assets/koreatech-logo.png" alt=""></div><div class="pg">2</div>
+</section>
+
+<!-- ========== 3. 폰에서 기록하는 화면 ========== -->
+<section class="slide" data-title="폰 화면">
+  <div class="hd"><h2>구현 현황</h2></div>
+  <div class="sh reveal d1">폰에서 기록하는 화면</div>
+  <div class="ct">
+    <div class="shots">
+      <div class="ph reveal d2"><div class="fr"><img src="assets/coach-home.png" alt="코치 앱 첫 화면"></div><div class="cap">오늘의 약속</div></div>
+      <div class="ph reveal d3"><div class="fr"><img src="assets/coach-log.png" alt="코치 앱 기록 화면"></div><div class="cap">기록</div></div>
+      <div class="pts">
+        <div class="pt reveal d4"><div class="t">오늘 할 일을 약속으로 제시</div><div class="d">그날 일정에 맞춘 약속 3~4개, 약속마다 첫 동작 한 줄</div></div>
+        <div class="pt reveal d5"><div class="t">안 한 날은 왜 안 했는지, 한 날은 어떤 것을 했는지 기록</div><div class="d">시작 · 했어요 · 안 했어요 버튼과 한 일과 현재 상태를 기록</div></div>
+        <div class="pt b reveal d6"><div class="t">노트북 없이도 기록</div><div class="d">Dropbox로 동기화, 노트북을 켜면 하루 노트에 기록됨</div></div>
+        <div class="vlinks reveal d6"><span class="lb">구현 화면 영상</span><a href="https://youtube.com/shorts/B3dzeU4s_VA" target="_blank" rel="noopener">▶ 영상 1</a><a href="https://youtube.com/shorts/ukX-GraE4KQ" target="_blank" rel="noopener">▶ 영상 2</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="ft"><div class="nv"></div><div class="yl"></div><img src="assets/koreatech-logo.png" alt=""></div><div class="pg">3</div>
+</section>
+
+<!-- ========== 4. 쌓인 것을 돌려주는 화면 ========== -->
+<section class="slide" data-title="대시보드">
+  <div class="hd"><h2>구현 현황</h2></div>
+  <div class="sh reveal d1">연구 습관 형성을 위한 대시보드</div>
+  <div class="ct">
+    <div class="wide">
+      <div class="fr reveal d2"><img src="assets/dash-grass.png" alt="미래 투자 대시보드의 이번 주 목표와 연구 잔디"></div>
+      <div class="pts">
+        <div class="pt reveal d3"><div class="t">내 연구 대시보드</div><div class="d">내 연구를 한 날만 칸이 진해지는 연구 잔디, 이번 주 5일 접속 목표</div></div>
+        <div class="pt b reveal d4"><div class="t">아침 · 저녁 브리핑</div><div class="d">이번 주와 학기 누적을 메신저로 전달<br>공부 85.8h · 내 연구 34.9h (11.9. 기준)</div></div>
+      </div>
+    </div>
+    <div class="take reveal d5" style="margin-top:34px">기록이 없는 날은 <b>빈칸 그대로</b> 표시하여 현재 연구 접속 현황을 확인 가능</div>
+  </div>
+  <div class="ft"><div class="nv"></div><div class="yl"></div><img src="assets/koreatech-logo.png" alt=""></div><div class="pg">4</div>
+</section>
+
+<!-- ========== 5. 어려운 점 ========== -->
+<section class="slide" data-title="어려운 점">
+  <div class="hd"><h2>어려운 점</h2></div>
+  <div class="sh reveal d1">행동하게 만드는 UI</div>
+  <div class="ct">
+    <table class="tb roomy reveal d2">
+      <thead><tr><th style="width:250px">화면</th><th style="width:330px">1단계</th><th style="width:430px">2단계</th><th>최종(현재)</th></tr></thead>
+      <tbody>
+        <tr><td class="a">달성 표시</td><td>최근 14일 잔디</td><td>한 주 단위로 보이지 않는 달성</td><td>이번 주 7칸 도장, 문구 도장에서 스마일 도장으로</td></tr>
+        <tr><td class="a">몸 상태 입력</td><td>글로 적는 칸</td><td>폰에서 매번 적어야 하는 부담</td><td>정해진 값은 버튼과 숫자 칸, 자유 서술만 글 칸</td></tr>
+        <tr><td class="a">약속 결과</td><td>누른 시각을 그대로 기록</td><td>나중에 누르면 실제 시각과 어긋남</td><td>시작 시각 선택, 끝 시각 직접 입력, 버튼 3개 배치</td></tr>
+        <tr class="open"><td class="a">기록 유지</td><td>기록은 사용자 몫</td><td>바쁜 시기에 기록부터 중단<small>개강 후 70일 중 기록 33일</small></td><td><span class="badge no">미해결</span>&nbsp; 예약 알림과 첫 동작 제안으로 시도 중</td></tr>
+      </tbody>
+    </table>
+    <div class="take reveal d3" style="margin-top:30px">기능 구현보다 어려운 일은 <b>행동을 유도하는 화면</b> 설계 · 직접 쓰면서 계속 수정 중</div>
+  </div>
+  <div class="ft"><div class="nv"></div><div class="yl"></div><img src="assets/koreatech-logo.png" alt=""></div><div class="pg">5</div>
+</section>
+
+<!-- ========== 6. 앞으로의 계획 ========== -->
+<section class="slide" data-title="앞으로의 계획">
+  <div class="hd"><h2>앞으로의 계획</h2></div>
+  <div class="sh reveal d1">남은 구현과 확인 방법</div>
+  <div class="ct">
+    <div class="plan">
+      <div class="pl key reveal d2"><div class="no">11~12주차</div><div class="t">퀘스트 계층 화면</div><div class="d">큰 목표 → 퀘스트 → 작은 행동을 한 화면에서 연결</div></div>
+      <div class="pl reveal d3"><div class="no">12~13주차</div><div class="t">부담 없이 지속하는 기록</div><div class="d">알림 문구와 시각 조정, 한 번 눌러 끝나는 기록</div></div>
+      <div class="pl reveal d4"><div class="no">11~14주차</div><div class="t">4주 본인 사용과 전후 비교</div><div class="d">쓰면서 고친 화면 정리, 같은 기준으로 지표 재계산</div></div>
+    </div>
+    <div class="mlab reveal d5">확인 지표<span>아이디어 발표 때의 값과 4주 사용 뒤의 값을 같은 기준으로 비교</span></div>
+    <div class="mts reveal d5">
+      <div class="mt"><div><div class="t">내 연구 비율</div><div class="d">생산 시간 중</div></div><div class="n"><div>15%<small>10.20.</small></div><span class="ar">→</span><div class="af">?<small>4주 뒤</small></div></div></div>
+      <div class="mt"><div><div class="t">퀘스트 달성 수</div><div class="d">주별 완료 개수</div></div><div class="n"><div>0개<small>10.20.</small></div><span class="ar">→</span><div class="af">?<small>4주 뒤</small></div></div></div>
+      <div class="mt"><div><div class="t">기록한 날 수</div><div class="d">학기 중 50일 중</div></div><div class="n"><div>20일<small>10.20.</small></div><span class="ar">→</span><div class="af">?<small>4주 뒤</small></div></div></div>
+    </div>
+    <div class="future reveal d6"><span class="lb">향후</span><div class="bx on">프로토타입</div><span class="to">→</span><div class="bx">다른 대학원생과 함께 사용</div><span class="to">→</span><div class="bx">상용화 가능성 탐색</div></div>
+  </div>
+  <div class="ft"><div class="nv"></div><div class="yl"></div><img src="assets/koreatech-logo.png" alt=""></div><div class="pg">6</div>
+</section>
+
+</main>
+</div>
+
+<script>
+/* ===========================================
+   슬라이드 컨트롤러: 무대 크기 맞춤, 키보드, 클릭, 터치, 휠
+   =========================================== */
+class SlidePresentation {
+  constructor() {
+    this.slides = document.querySelectorAll('.slide');
+    this.stage = document.getElementById('deckStage');
+    this.progress = document.getElementById('progress');
+    this.current = 0;
+    this.wheelLock = false;
+    this.setupScale(); this.setupKeys(); this.setupClick(); this.setupTouch(); this.setupWheel();
+    const fromHash = parseInt(location.hash.replace('#', ''), 10);
+    this.show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+  }
+  setupScale() {
+    const fit = () => {
+      const f = Math.min(innerWidth / 1920, innerHeight / 1080);
+      const x = (innerWidth - 1920 * f) / 2, y = (innerHeight - 1080 * f) / 2;
+      this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+    };
+    fit();
+    addEventListener('resize', fit);
+  }
+  setupKeys() {
+    document.addEventListener('keydown', e => {
+      if (e.target.isContentEditable) return;
+      if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); this.show(this.current + 1); }
+      if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); this.show(this.current - 1); }
+      if (e.key === 'Home') this.show(0);
+      if (e.key === 'End') this.show(this.slides.length - 1);
+    });
+  }
+  setupClick() {
+    // 화면 오른쪽 절반을 누르면 다음, 왼쪽 절반은 이전 (편집 중에는 끔)
+    this.stage.addEventListener('click', e => {
+      if (document.body.classList.contains('editing')) return;
+      if (e.target.closest('a')) return;   // 링크를 누를 때는 슬라이드를 넘기지 않음
+      this.show(this.current + (e.clientX > innerWidth / 2 ? 1 : -1));
+    });
+  }
+  setupTouch() {
+    let sx = 0;
+    addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+    addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - sx;
+      if (Math.abs(dx) > 50) this.show(this.current + (dx < 0 ? 1 : -1));
+    });
+  }
+  setupWheel() {
+    addEventListener('wheel', e => {
+      if (this.wheelLock || Math.abs(e.deltaY) < 30) return;
+      this.wheelLock = true;
+      this.show(this.current + (e.deltaY > 0 ? 1 : -1));
+      setTimeout(() => { this.wheelLock = false; }, 700);
+    }, { passive: true });
+  }
+  show(i) {
+    this.current = Math.max(0, Math.min(i, this.slides.length - 1));
+    this.slides.forEach((s, k) => {
+      const on = k === this.current;
+      s.classList.toggle('active', on);
+      s.classList.toggle('visible', on);
+    });
+    this.progress.style.width = ((this.current + 1) / this.slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + (this.current + 1));
+  }
+}
+const deck = new SlidePresentation();
+
+/* ===========================================
+   편집 모드 (E 키 또는 왼쪽 위 모서리)
+   - 글자를 고치면 바로 이 브라우저에 자동 저장 (따로 누를 것 없음)
+   - "파일로 저장" 또는 Ctrl+S: 고친 내용을 index.html 파일 자체에 덮어쓰기
+   - 파일 내용이 바뀐 칸에는 예전에 고친 글을 덮어씌우지 않음 (원래 글이 같을 때만 복원)
+   =========================================== */
+const editor = {
+  isActive: false,
+  key: 'quest-progress-deck-edits-v2',
+  orig: [],
+  timer: null,
+  fileHandle: null,
+  targets() { return document.querySelectorAll('.slide h1, .slide h2, .slide p, .slide .t, .slide .d, .slide .sh, .slide th, .slide td, .slide .note, .slide .take, .slide .sum, .slide .meta, .slide .bx, .slide .cap, .slide .no'); },
+  toggleEditMode() {
+    this.isActive = !this.isActive;
+    document.body.classList.toggle('editing', this.isActive);
+    document.getElementById('editToggle').classList.toggle('active', this.isActive);
+    document.getElementById('editToggle').textContent = this.isActive ? '편집 끝' : '편집';
+    this.targets().forEach(el => el.setAttribute('contenteditable', this.isActive ? 'true' : 'false'));
+    if (!this.isActive) this.save();
+  },
+  // 바뀐 칸만 {원래 글, 고친 글}로 저장
+  save() {
+    try {
+      const out = {};
+      this.targets().forEach((el, i) => { if (el.innerHTML !== this.orig[i]) out[i] = { o: this.orig[i], h: el.innerHTML }; });
+      localStorage.setItem(this.key, JSON.stringify(out));
+      this.status('자동 저장됨');
+    } catch (e) {}
+  },
+  queueSave() { clearTimeout(this.timer); this.timer = setTimeout(() => this.save(), 300); },
+  load() {
+    const els = this.targets();
+    this.orig = [...els].map(el => el.innerHTML);
+    try {
+      const saved = JSON.parse(localStorage.getItem(this.key) || '{}');
+      Object.keys(saved).forEach(i => { if (els[i] && saved[i].o === this.orig[i]) els[i].innerHTML = saved[i].h; });
+    } catch (e) {}
+  },
+  status(msg) {
+    const el = document.getElementById('editStatus');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(this.statusTimer); this.statusTimer = setTimeout(() => el.classList.remove('show'), 1600);
+  },
+  // 지금 화면의 글을 담은 HTML 문서 만들기 (편집 표시와 화면 상태는 빼고)
+  serialize() {
+    const doc = document.documentElement.cloneNode(true);
+    doc.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    doc.querySelector('body').classList.remove('editing');
+    doc.querySelectorAll('.slide').forEach((s, k) => { s.classList.remove('visible'); s.classList.toggle('active', k === 0); });
+    doc.querySelector('#deckStage').removeAttribute('style');
+    doc.querySelector('#progress').removeAttribute('style');
+    const tg = doc.querySelector('#editToggle'); tg.className = 'edit-toggle'; tg.textContent = '편집';
+    const st = doc.querySelector('#editStatus'); st.className = 'edit-status'; st.textContent = '';
+    return '<!DOCTYPE html>\n' + doc.outerHTML + '\n';
+  },
+  async saveToFile() {
+    const html = this.serialize();
+    try {
+      if (window.showSaveFilePicker) {
+        // 처음 한 번만 파일을 고르고(index.html 선택), 그 뒤로는 같은 파일에 바로 덮어씀
+        if (!this.fileHandle) this.fileHandle = await showSaveFilePicker({ suggestedName: 'index.html', types: [{ description: 'HTML', accept: { 'text/html': ['.html'] } }] });
+        const w = await this.fileHandle.createWritable();
+        await w.write(html); await w.close();
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        a.download = 'index.html'; a.click(); URL.revokeObjectURL(a.href);
+      }
+      // 파일이 새 기준이 되므로 브라우저 저장분은 비움
+      this.orig = [...this.targets()].map(el => el.innerHTML);
+      localStorage.removeItem(this.key);
+      this.status('파일에 저장됨');
+    } catch (e) { if (e.name !== 'AbortError') this.status('파일 저장 실패'); }
+  }
+};
+editor.load();
+const editToggle = document.getElementById('editToggle');
+const hotzone = document.getElementById('editHotzone');
+let hideTimeout = null;
+editToggle.addEventListener('click', () => editor.toggleEditMode());
+hotzone.addEventListener('click', () => editor.toggleEditMode());
+hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); editToggle.classList.add('show'); });
+hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
+editToggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+editToggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
+document.getElementById('editSave').addEventListener('click', () => editor.saveToFile());
+// 글자를 칠 때마다 자동 저장, 창을 닫거나 새로 고칠 때도 한 번 더
+document.addEventListener('input', e => { if (e.target.isContentEditable) editor.queueSave(); });
+addEventListener('pagehide', () => { if (editor.isActive) editor.save(); });
+document.addEventListener('keydown', e => {
+  if ((e.key === 'e' || e.key === 'E') && !e.ctrlKey && !e.metaKey && !e.target.isContentEditable) editor.toggleEditMode();
+  if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); editor.saveToFile(); }
+});
+</script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body></html>
