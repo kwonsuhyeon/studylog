@@ -94,7 +94,28 @@ svg text{font-family:"Pretendard",sans-serif}
 .links a{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--blue-soft);color:var(--blue);text-decoration:none;font-weight:600;font-size:14px}
 .review{background:var(--th);border-left:4px solid var(--muted);padding:14px 18px;border-radius:8px;margin:14px 0}
 .review .from{font-size:13px;color:var(--muted);margin-top:6px}
-@media (max-width:980px){.src-quote{grid-template-columns:1fr}}
+/* 그림·표 해설 카드 (references/writing.md "그림·표 해설") */
+.figcard{border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:20px 0;background:var(--card);scroll-margin-top:16px}
+.figcard>header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.figcard>header h3{margin:0;padding:0;border:0;font-size:19px;flex:1;min-width:200px}
+.fig-no{display:inline-block;background:var(--blue);color:#fff;font-weight:700;font-size:13px;padding:3px 12px;border-radius:999px;white-space:nowrap}
+.fig-done{font-size:13px;color:var(--muted);white-space:nowrap;cursor:pointer}
+.fig-done input{transform:scale(1.15);margin-right:6px;accent-color:var(--blue)}
+.fig-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.figcard.wide .fig-body{grid-template-columns:1fr}
+.fig-img{margin:0}
+.fig-img img{display:block;max-width:100%;height:auto;margin:0 auto;border:1px solid var(--line);border-radius:8px;background:#fff}
+.fig-cap{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6}
+.fig-cap .en{display:block}
+.fig-cap .ko{display:block;color:var(--text)}
+.figcard h4{margin:18px 0 6px;font-size:15px;color:var(--blue)}
+.fig-body h4:first-child{margin-top:0}
+table.fig-read{margin-top:0}
+table.fig-read th{width:27%}
+.fig-claim{background:var(--orange-soft);border-left:4px solid var(--orange);padding:12px 16px;border-radius:8px;margin:14px 0}
+.fig-links{font-size:14px;color:var(--muted);margin-top:12px}
+.approx{display:inline-block;font-size:12px;font-weight:700;color:var(--blue);border:1px solid var(--blue);border-radius:999px;padding:0 8px;margin:0 4px;vertical-align:1px;background:#fff;white-space:nowrap}
+@media (max-width:980px){.src-quote{grid-template-columns:1fr}.fig-body{grid-template-columns:1fr}.figcard{padding:16px 14px}}
 @media print{nav.toc,#toTop,.audio{display:none}.layout{grid-template-columns:1fr}}
 
 /* pages.py 추가 요소 */
@@ -139,7 +160,7 @@ blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--line);colo
 </style>
 </head>
 <body>
-<div class="listen-head"><header class="hero"><h1>Tahoe: Tree Structure-Aware High Performance Inference Engine for Decision Tree Ensemble on GPU 듣기</h1><p>음성 8개 연속 재생 · 마지막 재생 위치 기억 · 잠금 화면에서 이전·다음 트랙 이동</p><div class="links"><a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트</a><a href="Xie_2021_Tahoe_논문_해설.html">논문 해설</a></div></header></div>
+<div class="listen-head"><header class="hero"><h1>Tahoe: Tree Structure-Aware High Performance Inference Engine for Decision Tree Ensemble on GPU 듣기</h1><p>음성 8개 연속 재생 · 마지막 재생 위치 기억 · 잠금 화면에서 이전·다음 트랙 이동</p><div class="links"><a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트</a><a href="Xie_2021_Tahoe_논문_해설.html">논문 해설</a><a href="Xie_2021_Tahoe_그림표_해설.html">그림·표 해설</a><a href="Xie_2021_Tahoe_번역.html">번역 읽기</a></div></header></div>
 <div class="listen">
 <section class="player">
 <div class="now" id="now"></div><div class="sub" id="sub"></div>
@@ -149,12 +170,12 @@ blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--line);colo
 </section>
 <section class="plain">
 <h2>트랙 목록</h2>
-<div class="doc-group">배경지식 노트</div><ul class="tracks"><li><button type="button"><span class="tag">A</span><span><div class="t">결정트리 추론과 배열 저장</div><div class="m">1~3절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">B</span><span><div class="t">병합 접근·부하 불균형·리덕션</div><div class="m">4~6절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">C</span><span><div class="t">추론 전략과 SimHash·LSH</div><div class="m">7~9절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">D</span><span><div class="t">성능 모델 읽기</div><div class="m">10~11절</div></span><span class="len"></span></button></li></ul><div class="doc-group">논문 해설</div><ul class="tracks"><li><button type="button"><span class="tag">E</span><span><div class="t">문제와 동기 실험</div><div class="m">1~3절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">F</span><span><div class="t">노드·트리 재배치와 적응형 형식</div><div class="m">4~6절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">G</span><span><div class="t">네 가지 전략과 성능 모델</div><div class="m">7~9절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">H</span><span><div class="t">실험 결과와 토론</div><div class="m">10~15절</div></span><span class="len"></span></button></li></ul>
+<div class="doc-group">배경지식 노트</div><ul class="tracks"><li><button type="button"><span class="tag">A</span><span><div class="t">결정트리 추론과 배열 저장</div><div class="m">1~3절</div></span><span class="len">5.4분 gemini</span></button></li><li><button type="button"><span class="tag">B</span><span><div class="t">병합 접근·부하 불균형·리덕션</div><div class="m">4~6절</div></span><span class="len">5.3분 gemini</span></button></li><li><button type="button"><span class="tag">C</span><span><div class="t">추론 전략과 SimHash·LSH</div><div class="m">7~9절</div></span><span class="len">5.2분 gemini</span></button></li><li><button type="button"><span class="tag">D</span><span><div class="t">성능 모델 읽기</div><div class="m">10~11절</div></span><span class="len">5.5분 gemini</span></button></li></ul><div class="doc-group">논문 해설</div><ul class="tracks"><li><button type="button"><span class="tag">E</span><span><div class="t">문제와 동기 실험</div><div class="m">1~3절</div></span><span class="len">5.3분 gemini</span></button></li><li><button type="button"><span class="tag">F</span><span><div class="t">노드·트리 재배치와 적응형 형식</div><div class="m">4~6절</div></span><span class="len">5.4분 gemini</span></button></li><li><button type="button"><span class="tag">G</span><span><div class="t">네 가지 전략과 성능 모델</div><div class="m">7~9절</div></span><span class="len">5.5분 gemini</span></button></li><li><button type="button"><span class="tag">H</span><span><div class="t">실험 결과와 토론</div><div class="m">10~15절</div></span><span class="len">5.4분 gemini</span></button></li></ul>
 </section>
 </div>
 <button id="toTop" type="button" aria-label="맨 위로">↑</button>
 <script>
-var T=[{"tag": "A", "title": "결정트리 추론과 배열 저장", "doc": "배경지식 노트", "sections": "1~3절", "len": "", "src": "audio/Xie_2021_Tahoe_A.mp3"}, {"tag": "B", "title": "병합 접근·부하 불균형·리덕션", "doc": "배경지식 노트", "sections": "4~6절", "len": "", "src": "audio/Xie_2021_Tahoe_B.mp3"}, {"tag": "C", "title": "추론 전략과 SimHash·LSH", "doc": "배경지식 노트", "sections": "7~9절", "len": "", "src": "audio/Xie_2021_Tahoe_C.mp3"}, {"tag": "D", "title": "성능 모델 읽기", "doc": "배경지식 노트", "sections": "10~11절", "len": "", "src": "audio/Xie_2021_Tahoe_D.mp3"}, {"tag": "E", "title": "문제와 동기 실험", "doc": "논문 해설", "sections": "1~3절", "len": "", "src": "audio/Xie_2021_Tahoe_E.mp3"}, {"tag": "F", "title": "노드·트리 재배치와 적응형 형식", "doc": "논문 해설", "sections": "4~6절", "len": "", "src": "audio/Xie_2021_Tahoe_F.mp3"}, {"tag": "G", "title": "네 가지 전략과 성능 모델", "doc": "논문 해설", "sections": "7~9절", "len": "", "src": "audio/Xie_2021_Tahoe_G.mp3"}, {"tag": "H", "title": "실험 결과와 토론", "doc": "논문 해설", "sections": "10~15절", "len": "", "src": "audio/Xie_2021_Tahoe_H.mp3"}], KEY="Xie_2021_Tahoe-listen", a=document.getElementById('player'), cur=0, lastSave=0;
+var T=[{"tag": "A", "title": "결정트리 추론과 배열 저장", "doc": "배경지식 노트", "sections": "1~3절", "len": "5.4분 gemini", "src": "audio/Xie_2021_Tahoe_A.mp3"}, {"tag": "B", "title": "병합 접근·부하 불균형·리덕션", "doc": "배경지식 노트", "sections": "4~6절", "len": "5.3분 gemini", "src": "audio/Xie_2021_Tahoe_B.mp3"}, {"tag": "C", "title": "추론 전략과 SimHash·LSH", "doc": "배경지식 노트", "sections": "7~9절", "len": "5.2분 gemini", "src": "audio/Xie_2021_Tahoe_C.mp3"}, {"tag": "D", "title": "성능 모델 읽기", "doc": "배경지식 노트", "sections": "10~11절", "len": "5.5분 gemini", "src": "audio/Xie_2021_Tahoe_D.mp3"}, {"tag": "E", "title": "문제와 동기 실험", "doc": "논문 해설", "sections": "1~3절", "len": "5.3분 gemini", "src": "audio/Xie_2021_Tahoe_E.mp3"}, {"tag": "F", "title": "노드·트리 재배치와 적응형 형식", "doc": "논문 해설", "sections": "4~6절", "len": "5.4분 gemini", "src": "audio/Xie_2021_Tahoe_F.mp3"}, {"tag": "G", "title": "네 가지 전략과 성능 모델", "doc": "논문 해설", "sections": "7~9절", "len": "5.5분 gemini", "src": "audio/Xie_2021_Tahoe_G.mp3"}, {"tag": "H", "title": "실험 결과와 토론", "doc": "논문 해설", "sections": "10~15절", "len": "5.4분 gemini", "src": "audio/Xie_2021_Tahoe_H.mp3"}], KEY="Xie_2021_Tahoe-listen", a=document.getElementById('player'), cur=0, lastSave=0;
 var rows=[].slice.call(document.querySelectorAll('.tracks button'));
 function store(o){try{localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}}
 function saved(){try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}}
