@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tahoe 배경지식 노트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --bg:#f9f9f7; --card:#ffffff; --text:#1f1f1f; --muted:#6b6b66; --line:#e7e5df;
+  --blue:#2a78d6; --blue-soft:#eaf2fc; --orange:#eb6834; --orange-soft:#fdf0ea;
+  --green:#2f9e5b; --green-soft:#e9f6ee; --th:#f4f3ef; --code-bg:#f3f2ee; --top-btn:#111111;
+  --smem:#fff3c4; --smem-line:#d9a400; --null:#efeeea;
+  --radius:14px; --sidebar-w:270px; --page-max:1400px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard",-apple-system,"Malgun Gothic",sans-serif;line-height:1.75;font-size:16px;word-break:keep-all}
+.layout{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr);gap:28px;max-width:var(--page-max);margin:0 auto;padding:32px 24px 80px}
+nav.toc{position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;font-size:14px}
+nav.toc .toc-title{font-weight:700;margin-bottom:10px}
+nav.toc .toc-group{font-size:12px;color:var(--orange);font-weight:700;margin:12px 6px 2px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 6px;border-radius:6px}
+nav.toc a:hover{background:var(--blue-soft);color:var(--blue)}
+main{min-width:0;counter-reset:sec}
+header.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 36px;margin-bottom:24px}
+header.hero h1{margin:0 0 8px;font-size:30px}
+header.hero p{margin:4px 0;color:var(--muted)}
+section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 36px;margin-bottom:24px;counter-increment:sec}
+section>h2{display:flex;align-items:center;gap:12px;margin:0 0 18px;font-size:24px}
+section>h2::before{content:counter(sec);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;flex:none}
+h3{font-size:19px;margin:30px 0 10px;padding-top:12px;border-top:1px dashed var(--line)}
+p{margin:8px 0}
+.core{background:var(--blue-soft);border-left:4px solid var(--blue);padding:14px 18px;border-radius:8px;margin:14px 0;font-weight:500}
+.warn{background:var(--orange-soft);border-left:4px solid var(--orange);padding:14px 18px;border-radius:8px;margin:14px 0}
+.ok{background:var(--green-soft);border-left:4px solid var(--green);padding:14px 18px;border-radius:8px;margin:14px 0}
+.paper{font-size:14px;color:var(--muted);margin:-8px 0 14px}
+.paper b{color:var(--blue)}
+.step{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px;margin-right:6px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;vertical-align:middle;text-align:left}
+th{background:var(--th);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+tr.y td{background:var(--orange-soft)}
+.hl{color:var(--orange);font-weight:700}
+.bl{color:var(--blue);font-weight:700}
+code{background:var(--code-bg);padding:1px 6px;border-radius:5px;font-size:.92em;font-family:Consolas,"D2Coding",monospace}
+pre{background:var(--code-bg);padding:14px 18px;border-radius:10px;overflow-x:auto;font-size:14px;line-height:1.6;font-family:Consolas,"D2Coding",monospace}
+.quiz{border:2px solid var(--blue-soft);border-radius:12px;padding:16px 20px;margin:18px 0;background:#fbfdff}
+.quiz .q{font-weight:700;margin-bottom:8px}
+.quiz label{display:block;padding:6px 10px;border-radius:8px;cursor:pointer}
+.quiz label:hover{background:var(--blue-soft)}
+.quiz button{margin-top:8px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:inherit;font-weight:600;cursor:pointer}
+.quiz .fb{display:none;margin-top:10px;padding:10px 14px;border-radius:8px}
+.quiz .fb.right{display:block;background:var(--green-soft)}
+.quiz .fb.wrong{display:block;background:var(--orange-soft)}
+details{margin:10px 0;border:1px solid var(--line);border-radius:10px;padding:10px 16px;background:#fcfcfa}
+details summary{cursor:pointer;font-weight:600;color:var(--blue)}
+.check-list{list-style:none;padding-left:0}
+.check-list li{padding:5px 0}
+.check-list input{transform:scale(1.15);margin-right:8px;accent-color:var(--blue)}
+.audio{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--th);border-radius:10px;padding:10px 16px;margin:0 0 18px}
+.audio .lbl{font-weight:700;font-size:14px}
+.audio audio{height:36px;flex:1;min-width:240px}
+.audio .miss{font-size:13px;color:var(--muted)}
+.mine{width:100%;min-height:64px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:15px;resize:vertical;background:#fffef9}
+.mine-lbl{font-weight:700;font-size:14px;color:var(--orange);margin-top:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.box h4{margin:0 0 6px;font-size:16px}
+svg text{font-family:"Pretendard",sans-serif}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0}
+@media (max-width:980px){.katex{max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle;position:relative;scrollbar-width:none}.katex::-webkit-scrollbar{display:none}}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.links a{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--blue-soft);color:var(--blue);text-decoration:none;font-weight:600;font-size:14px}
+#toTop{position:fixed;right:28px;bottom:28px;width:46px;height:46px;border-radius:50%;background:var(--top-btn);color:#fff;border:none;font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#toTop.show{opacity:1;pointer-events:auto}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;padding:16px}
+  nav.toc{position:static;max-height:none}
+  section,header.hero{padding:22px 18px}
+  .grid2{grid-template-columns:1fr}
+}
+/* paper-study 추가 요소 */
+.infer{display:inline-block;font-size:12px;font-weight:700;color:var(--orange);border:1px solid var(--orange);border-radius:999px;padding:0 8px;margin:0 4px;vertical-align:1px;background:#fff}
+.src-quote{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:10px;margin:14px 0;overflow:hidden}
+.src-quote .en{padding:12px 16px;background:#fcfcfa;font-size:15px}
+.src-quote .ko{padding:12px 16px;background:var(--blue-soft);font-size:15px}
+.src-quote .ref{grid-column:1/-1;font-size:12px;color:var(--muted);padding:5px 16px;border-top:1px solid var(--line);background:#fff}
+.src-quote .ref code{font-size:12px}
+.lib-link{display:inline-block;margin-top:14px;font-size:14px}
+.lib-link .local{color:var(--muted);font-size:12px;margin-left:6px}
+.sym{font-family:"KaTeX_Main",serif}
+@media (max-width:980px){.src-quote{grid-template-columns:1fr}}
+@media print{nav.toc,#toTop,.audio{display:none}.layout{grid-template-columns:1fr}}
+/* 이 노트 전용: 메모리 칸, SVG 색 (모두 :root 변수) */
+.mem{display:flex;flex-wrap:wrap;gap:3px;margin:8px 0}
+.mem span{display:inline-block;min-width:54px;text-align:center;font-size:13px;padding:5px 4px;border:1px solid var(--line);border-radius:5px;background:var(--card);font-variant-numeric:tabular-nums}
+.mem span.nul{background:var(--null);color:var(--muted)}
+.mem span.hit{background:var(--orange-soft);border-color:var(--orange);font-weight:700}
+.mem span.gap{border:none;background:none;min-width:8px;padding:0}
+.mem-cap{font-size:13px;color:var(--muted);margin:0}
+svg .nd{fill:var(--card);stroke:var(--blue);stroke-width:1.5}
+svg .nd-hl{fill:var(--orange-soft);stroke:var(--orange);stroke-width:2}
+svg .lf{fill:var(--th);stroke:var(--muted);stroke-width:1.2}
+svg .ed{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .ed-hl{stroke:var(--orange);stroke-width:3;fill:none}
+svg .ed-path{stroke:var(--text);stroke-width:2.5;fill:none}
+svg .n1{fill:var(--blue-soft);stroke:var(--blue);stroke-width:2}
+svg .n2{fill:var(--orange-soft);stroke:var(--orange);stroke-width:2}
+svg .n3{fill:var(--green-soft);stroke:var(--green);stroke-width:2}
+td.r1{background:var(--blue-soft);font-weight:700}
+td.r2{background:var(--orange-soft);font-weight:700}
+td.r3{background:var(--green-soft);font-weight:700}
+svg .box-b{fill:var(--blue-soft);stroke:var(--blue)}
+svg .box-w{fill:var(--card);stroke:var(--line)}
+svg .box-s{fill:var(--smem);stroke:var(--smem-line)}
+svg .box-g{fill:var(--th);stroke:var(--muted)}
+svg .t-m{fill:var(--muted)}
+svg .t-b{fill:var(--blue)}
+svg .t-o{fill:var(--orange)}
+svg .t-k{fill:var(--text)}
+svg .ar{stroke:var(--text);stroke-width:1.4;fill:none}
+svg .ar-o{stroke:var(--orange);stroke-width:1.8;fill:none}
+.legend-s{display:inline-block;width:14px;height:14px;background:var(--smem);border:1px solid var(--smem-line);vertical-align:-2px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <a href="#s0">논문 한눈에 보기</a>
+  <div class="toc-group">듣기 A</div>
+  <a href="#s1">1. 결정트리 추론과 앙상블</a>
+  <a href="#s2">2. 간선 확률과 노드 확률</a>
+  <a href="#s3">3. 트리를 배열로 저장하기</a>
+  <div class="toc-group">듣기 B</div>
+  <a href="#s4">4. 메모리 병합 접근</a>
+  <a href="#s5">5. 부하 불균형과 변동계수</a>
+  <a href="#s6">6. 리덕션</a>
+  <div class="toc-group">듣기 C</div>
+  <a href="#s7">7. shared memory에 무엇을 두나</a>
+  <a href="#s8">8. SimHash</a>
+  <a href="#s9">9. 지역 민감 해싱 (LSH)</a>
+  <div class="toc-group">듣기 D</div>
+  <a href="#s10">10. 분석적 성능 모델 읽기</a>
+  <a href="#next">11. 다음 단계와 점검</a>
+</nav>
+<main>
+<header class="hero">
+  <h1>Tahoe 배경지식 노트</h1>
+  <p>Zhen Xie, Wenqian Dong, Jiawen Liu, Hang Liu, Dong Li. <i>Tahoe: Tree Structure-Aware High Performance Inference Engine for Decision Tree Ensemble on GPU.</i> EuroSys '21. <a href="https://doi.org/10.1145/3447786.3456251">doi:10.1145/3447786.3456251</a></p>
+  <p>논문 2~6절을 읽기 전에 필요한 개념 10개를 정리했다. 결정트리 학습(지니·엔트로피·가지치기)은 안다고 보고, 학습이 끝난 트리로 예측하는 <b>추론</b>을 GPU에서 빠르게 하는 데 필요한 것만 다룬다. 논문 자체의 설계 설명은 <a href="Xie_2021_Tahoe_논문_해설.html">논문 해설</a>에 있다.</p>
+  <p>수치와 인용은 원문 기준이고 근거는 서재 블록 id(<code>[c04#b003]</code> 형식)로 적었다. 손 계산 예제 가운데 직접 만든 것은 제목에 "(직접 만든 예)"를 붙였고 Python으로 검산했다. 원문에 없는 해석에는 <span class="infer">추론</span>을 붙였다.</p>
+  <div class="links"><a href="listen.html">🎧 듣기 전용</a><a href="Xie_2021_Tahoe_번역.html">📖 번역 읽기</a></div>
+</header>
+
+<!-- ============ 0: 요약 ============ -->
+<section id="s0" style="counter-increment:none">
+<h3 style="margin-top:0;font-size:22px">논문 한눈에 보기</h3>
+<div class="core">기존 FIL은 트리가 어떻게 생겼든, 데이터가 무엇이든 한 가지 저장 형식(reorg)과 한 가지 추론 전략(shared data)으로 추론했다. Tahoe는 트리의 구조와 통계를 보고 저장 순서를 바꾸고, 상황에 맞는 추론 전략을 스스로 골라 쓰는 추론 엔진이다.</div>
+<p>Tahoe는 네 전략 중 하나의 이름이 아니라 아래 세 가지를 묶은 시스템의 이름이다. 실험에서 말하는 Tahoe의 성능은 재배치를 적용하고 성능 모델이 고른 전략으로 돌린 결과다.</p>
+<div class="table-wrap"><table>
+<tr><th style="width:22%">구성 요소</th><th>하는 일</th><th style="width:26%">푸는 문제</th><th style="width:14%">노트</th></tr>
+<tr><td>적응형 포레스트 형식<br>(adaptive forest format)</td><td>노드 재배치: 간선 확률이 높은 자식을 왼쪽에 배치<br>트리 재배치: SimHash·LSH로 찾은 비슷한 트리끼리 나란히 배치</td><td>흩어진 메모리 접근<br>스레드 간 부하 불균형</td><td>2~5절, 8·9절</td></tr>
+<tr><td>추론 전략 4개</td><td>기존 shared data에 direct, shared forest, splitting shared forest 추가. shared memory에 올리는 대상과 샘플 하나를 나눠 처리하는지 여부로 구분</td><td>리덕션 비용</td><td>6·7절</td></tr>
+<tr><td>성능 모델</td><td>포레스트와 배치의 특성으로 전략별 예상 시간을 계산해 가장 빠른 전략 선택</td><td>상황마다 달라지는 최적 전략</td><td>10절</td></tr>
+</table></div>
+<p>동작 순서는 네 단계다.</p>
+<ol>
+<li>학습이 끝난 포레스트를 받는다.</li>
+<li>간선 확률로 노드를, 유사도로 트리를 재배치해 적응형 포레스트 형식으로 저장한다.</li>
+<li>포레스트 크기와 깊이, 배치 크기 등을 성능 모델에 넣어 네 전략의 예상 시간을 계산한다.</li>
+<li>가장 빠를 것으로 예측된 전략으로 추론한다.</li>
+</ol>
+<div class="table-wrap"><table>
+<tr><th style="width:24%">전략</th><th>shared memory에 올린 것</th><th>샘플 하나를 처리하는 주체</th><th>리덕션</th></tr>
+<tr><td>shared data (기존 FIL)</td><td>샘플</td><td>블록 안 여러 스레드</td><td>블록 단위, 샘플마다</td></tr>
+<tr><td>direct</td><td>없음</td><td>스레드 하나</td><td>없음</td></tr>
+<tr><td>shared forest</td><td>포레스트 전체</td><td>스레드 하나</td><td>없음</td></tr>
+<tr><td>splitting shared forest</td><td>포레스트 조각</td><td>여러 블록</td><td>전역, 배치마다 한 번</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">스터디 대화에서 정리한 요약이다. 각 항목의 원문 근거는 표에 적은 절에 있다.</p>
+</section>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+<h2>결정트리 추론과 앙상블</h2>
+<div class="audio"><span class="lbl">🔊 듣기 A (1~3절)</span><audio controls preload="none" src="audio/Xie_2021_Tahoe_A.mp3"></audio></div>
+<p class="paper">원문 <b>1절</b> <code>[c03#b003]</code>, <b>2절</b> Decision tree and ensemble <code>[c04#b003]</code> <code>[c04#b005]</code></p>
+
+<div class="core">결정트리 추론(decision tree inference)은 루트(root)에서 출발해 "속성 \(x_j\) &lt; 임계값 \(b_i\)?"를 묻고 한쪽 자식으로 내려가기를 리프(leaf)에 닿을 때까지 반복하는 일이다. 앙상블(ensemble)은 트리 여러 개의 결과를 합쳐 최종 예측을 낸다.</div>
+
+<p>수업에서 배운 결정트리는 <b>학습</b> 쪽 이야기였다. 지니 지수나 엔트로피로 어떤 속성을 어떤 값에서 나눌지 정하고, 가지치기로 트리를 줄였다. Tahoe는 학습이 끝난 트리를 받아서 새 샘플의 예측값을 빨리 내는 <b>추론</b>만 다룬다.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:18%">구분</th><th>학습 (수업에서 배운 것)</th><th>추론 (Tahoe가 다루는 것)</th></tr>
+<tr><td>입력</td><td>레이블이 붙은 훈련 데이터</td><td>학습이 끝난 트리 묶음(포레스트) + 새 샘플</td></tr>
+<tr><td>하는 일</td><td>분할 속성·임계값 선택, 가지치기</td><td>루트→리프 경로 따라가기, 트리 결과 합치기</td></tr>
+<tr><td>비용의 원천</td><td>후보 분할의 불순도 계산</td><td>노드 읽기(메모리 접근), 결과 합치기(리덕션)</td></tr>
+<tr><td>GPU에서의 문제</td><td>이 논문 범위 밖</td><td>트리·샘플마다 경로가 달라 메모리 접근이 불규칙</td></tr>
+</table></div>
+
+<h3>노드 하나에 들어 있는 것</h3>
+<p>원문 2절은 결정 노드(루트 또는 내부 노드) 하나가 세 가지를 담는다고 적는다 <code>[c04#b003]</code>. 논문은 자식이 최대 둘인 이진 결정트리(binary decision tree)만 다룬다.</p>
+<div class="table-wrap"><table>
+<tr><th style="width:18%">기호</th><th>뜻</th><th style="width:30%">Figure 1 Tree#1 루트의 예</th></tr>
+<tr><td class="c">\(F_j\)</td><td>속성 번호(attribute index). 샘플의 몇 번째 속성을 볼지</td><td>\(F_1\) → 1번 속성</td></tr>
+<tr><td class="c">\(V_{ti}\)</td><td>비교할 값(임계값, threshold). 원문 1절의 \(b_i\)에 해당</td><td>\(V_{11}\) (Tree 1의 1번 노드)</td></tr>
+<tr><td class="c">\(D\)</td><td>기본 경로(default path). 샘플에 그 속성 값이 없을 때 갈 쪽</td><td>왼쪽 간선 [D, 0.8]</td></tr>
+<tr><td class="c">\(x_j\)</td><td>샘플의 \(j\)번째 속성 값</td><td>—</td></tr>
+</table></div>
+
+<h3>숫자로 따라가기 (직접 만든 예)</h3>
+<p>아래 트리는 비교를 최대 세 번 하는 작은 트리다. 이 예에서는 비교가 참이면 왼쪽, 거짓이면 오른쪽으로 간다. 샘플은 \(s = (x_1{=}6,\ x_2{=}2,\ x_3{=}0.7,\ x_4{=}\text{없음})\)이다.</p>
+<p>\(x_1\)~\(x_4\)는 샘플 하나가 가진 속성 값이고, 아래첨자는 비교 순서가 아니라 속성 번호다. 어떤 속성을 볼지는 노드마다 적혀 있어서, 지나가지 않은 노드의 속성은 끝까지 읽지 않는다.</p>
+<svg viewBox="0 0 760 260" width="100%" style="max-width:760px;display:block;margin:10px auto" role="img" aria-label="비교 세 번짜리 결정트리와 샘플 s의 경로">
+  <line class="ed" x1="380" y1="40" x2="200" y2="105"/>
+  <line class="ed-hl" x1="380" y1="40" x2="560" y2="105"/>
+  <line class="ed" x1="200" y1="105" x2="110" y2="170"/>
+  <line class="ed" x1="200" y1="105" x2="290" y2="170"/>
+  <line class="ed" x1="560" y1="105" x2="460" y2="170"/>
+  <line class="ed-hl" x1="560" y1="105" x2="660" y2="170"/>
+  <line class="ed-hl" x1="660" y1="170" x2="600" y2="230"/>
+  <line class="ed" x1="660" y1="170" x2="720" y2="230"/>
+  <rect class="nd-hl" x="315" y="22" width="130" height="36" rx="18"/><text x="380" y="46" font-size="14" text-anchor="middle" class="t-k">x₁ &lt; 5 ?</text>
+  <rect class="nd" x="135" y="87" width="130" height="36" rx="18"/><text x="200" y="111" font-size="14" text-anchor="middle" class="t-k">x₂ &lt; 3 ?</text>
+  <rect class="nd-hl" x="495" y="87" width="130" height="36" rx="18"/><text x="560" y="111" font-size="14" text-anchor="middle" class="t-k">x₃ &lt; 0.5 ?</text>
+  <rect class="lf" x="70" y="155" width="80" height="30" rx="6"/><text x="110" y="175" font-size="13" text-anchor="middle" class="t-k">리프 A</text>
+  <rect class="lf" x="250" y="155" width="80" height="30" rx="6"/><text x="290" y="175" font-size="13" text-anchor="middle" class="t-k">리프 B</text>
+  <rect class="lf" x="420" y="155" width="80" height="30" rx="6"/><text x="460" y="175" font-size="13" text-anchor="middle" class="t-k">리프 C</text>
+  <rect class="nd-hl" x="595" y="152" width="130" height="36" rx="18"/><text x="660" y="176" font-size="14" text-anchor="middle" class="t-k">x₄ &lt; 10 ? (D=왼쪽)</text>
+  <rect class="lf" x="560" y="215" width="80" height="30" rx="6" style="stroke:var(--orange);stroke-width:2"/><text x="600" y="235" font-size="13" text-anchor="middle" class="t-o">리프 D</text>
+  <rect class="lf" x="680" y="215" width="76" height="30" rx="6"/><text x="718" y="235" font-size="13" text-anchor="middle" class="t-k">리프 E</text>
+  <text x="20" y="250" font-size="12" class="t-m">주황색 = 샘플 s가 지나간 경로</text>
+</svg>
+<p><span class="step">STEP 1</span> 루트에서 \(x_1 = 6\)을 5와 비교한다. \(6 &lt; 5\)는 거짓이므로 오른쪽으로 간다.</p>
+<p><span class="step">STEP 2</span> \(x_3 = 0.7\)을 0.5와 비교한다. 거짓이므로 다시 오른쪽이다.</p>
+<p><span class="step">STEP 3</span> \(x_4\)를 봐야 하는데 샘플에 값이 없다. 노드에 적힌 기본 경로 \(D\)(왼쪽)를 따라 리프 D에 닿는다. 노드는 세 번 읽었고 비교는 두 번 했다. 샘플 \(s\)는 \(x_2\)를 한 번도 보지 않았다.</p>
+<p>다른 샘플 \(s' = (x_1{=}3,\ x_2{=}4,\ \dots)\)는 왼쪽 → 오른쪽으로 두 번 만에 리프 B에서 끝난다. 같은 트리라도 샘플마다 거치는 노드와 단계 수가 다르다. GPU 스레드 여러 개가 이 일을 동시에 하면 각자 다른 주소를 읽고 끝나는 시점도 다르다. 이것이 원문 1절이 말하는 불규칙한 메모리 접근과 부하 불균형의 출발점이다 <code>[c03#b004]</code> <code>[c03#b005]</code>.</p>
+
+<h3>트리 세 개의 결과 합치기 (직접 만든 예)</h3>
+<p>원문은 개별 트리의 예측을 "결합해" 최종 예측을 만든다고만 적는다 <code>[c03#b003]</code>. 결합 방식은 앙상블 종류에 따라 다르다 <span class="infer">추론</span>. 랜덤 포레스트(random forest, RF)는 트리를 서로 독립으로 만들고, GBDT(Gradient Boosting Decision Trees)는 앞 트리의 오차를 다음 트리가 줄이도록 차례로 만든다 <code>[c10#b002]</code> <code>[c10#b003]</code>.</p>
+<div class="table-wrap"><table>
+<tr><th>앙상블</th><th class="num">트리 1</th><th class="num">트리 2</th><th class="num">트리 3</th><th>합치는 법</th><th class="num">최종</th></tr>
+<tr><td>RF 분류 (리프 = 클래스)</td><td class="num">1</td><td class="num">0</td><td class="num">1</td><td>다수결</td><td class="num">1</td></tr>
+<tr><td>RF (리프 = 클래스 1 확률)</td><td class="num">0.9</td><td class="num">0.4</td><td class="num">0.7</td><td>평균 \((0.9+0.4+0.7)/3\)</td><td class="num">0.667</td></tr>
+<tr class="y"><td>GBDT (리프 = 점수)</td><td class="num">+0.30</td><td class="num">−0.10</td><td class="num">+0.25</td><td>합 \(0.30-0.10+0.25\)</td><td class="num">0.45</td></tr>
+</table></div>
+<p>GBDT의 합 0.45는 확률이 아니라 범위 제한이 없는 점수다. 트리 값을 더하다 보면 3.2도, −1.7도 나온다. 이진 분류라면 이 점수를 시그모이드(sigmoid) 함수에 넣어 0과 1 사이의 확률로 바꾼다 <span class="infer">추론</span>.</p>
+$$ \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad \sigma(0.45) = \frac{1}{1 + e^{-0.45}} = \frac{1}{1 + 0.638} \approx 0.611 $$
+<p>클래스 1일 확률이 약 61%라는 뜻이고, 0.5를 넘으므로 클래스 1로 분류한다. 점수가 0이면 확률은 정확히 0.5다. 점수가 양수로 클수록 1에, 음수로 클수록 0에 가까워진다(\(\sigma(3) \approx 0.953\), \(\sigma(-3) \approx 0.047\)). RF는 리프에 처음부터 확률이 적혀 있어 평균만 내면 되고, 이 변환이 필요 없다.</p>
+<p>어느 쪽이든 트리마다 나온 값을 하나로 모으는 단계가 있다. GPU에서는 트리를 여러 스레드가 나눠 맡으므로 이 모으는 단계가 6절의 리덕션이 된다.</p>
+<p>원문 8절은 GBM 계열이 얕은 트리를 많이, RF가 깊은 트리를 적게 쓰는 경향이 있다고 적는다 <code>[c10#b003]</code>. 실험에 쓴 15개 포레스트는 트리 8개(HOCK)부터 3000개(Higgs)까지, 최대 깊이 3(covtype)부터 20(gisette)까지 다양하다 <code>[c09#b008]</code>.</p>
+
+<div class="quiz" data-answer="c">
+  <div class="q">Q. 샘플에 결정 노드가 묻는 속성 값이 없을 때 Tahoe가 쓰는 트리 형식에서는 어떻게 하나?</div>
+  <label><input type="radio" name="q-s1-1" value="a"> 추론을 멈추고 기본 예측값을 낸다</label>
+  <label><input type="radio" name="q-s1-1" value="b"> 왼쪽과 오른쪽을 모두 따라가 평균을 낸다</label>
+  <label><input type="radio" name="q-s1-1" value="c"> 노드에 저장된 기본 경로(D)를 따라간다</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="원문 2절: 결정 노드는 속성 번호, 비교 값, 그리고 입력에 그 속성 값이 없을 때 택할 기본 경로(D)를 담는다 [c04#b003]. Figure 1에서 [D, 0.8]처럼 간선에 D가 표시된다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s1-mine" placeholder="결정트리 추론과 앙상블 결합을 한두 문장으로"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c04">서재에서 2절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+<h2>간선 확률과 노드 확률</h2>
+<p class="paper">원문 <b>2절</b> <code>[c04#b003]</code>, <b>4.1절</b> 노드 재배치 <code>[c06#b006]</code> <code>[c06#b007]</code>, <b>4.2절</b> SimHash 가중치 <code>[c06#b016]</code></p>
+
+<div class="core">간선 확률(edge probability)은 어떤 간선을 지나갈 확률이고, 노드 확률(node probability)은 루트부터 그 노드까지 간선 확률을 모두 곱한 값이다.</div>
+
+<p>원문은 학습이 끝난 뒤 각 간선이 선택될 확률을 계산해 두고 Tahoe가 추론 때 쓴다고 적는다 <code>[c04#b003]</code>. Algorithm 1의 마지막 줄도 "추론 중 간선 확률 집계"다 <code>[c08#b028]</code>. 그 노드에 도착한 샘플 가운데 왼쪽으로 간 비율을 세면 간선 확률이 된다. 예를 들어 루트에 도착한 100개 중 80개가 왼쪽으로 갔다면 왼쪽 간선 확률은 0.8이다 <span class="infer">추론</span>.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:18%">기호</th><th>뜻</th><th style="width:22%">예제 값</th></tr>
+<tr><td class="c">\(p(u \to v)\)</td><td>노드 \(u\)에서 자식 \(v\)로 가는 간선 확률. 한 노드의 두 자식 간선 확률을 더하면 1</td><td class="num">0.8 + 0.2 = 1</td></tr>
+<tr><td class="c">\(P(v)\)</td><td>노드 \(v\)의 노드 확률. 루트는 1</td><td class="num">\(P(V_{14}) = 0.48\)</td></tr>
+</table></div>
+$$ P(v) = \prod_{(u \to w)\,\in\,\text{루트에서 } v \text{까지의 경로}} p(u \to w) $$
+
+<h3>숫자로 따라가기 (원문 Figure 1의 Tree#1)</h3>
+<p>Figure 1의 Tree#1 간선에는 확률이 적혀 있다. 아래 그림에 그 값을 그대로 옮겼다.</p>
+<svg viewBox="0 0 760 210" width="100%" style="max-width:760px;display:block;margin:10px auto" role="img" aria-label="Figure 1 Tree#1의 간선 확률과 노드 확률">
+  <line class="ed" x1="380" y1="40" x2="200" y2="105"/><line class="ed" x1="380" y1="40" x2="560" y2="105"/>
+  <line class="ed" x1="200" y1="105" x2="110" y2="170"/><line class="ed" x1="200" y1="105" x2="290" y2="170"/>
+  <line class="ed" x1="560" y1="105" x2="470" y2="170"/><line class="ed" x1="560" y1="105" x2="650" y2="170"/>
+  <text x="270" y="64" font-size="13" class="t-o">[D, 0.8]</text><text x="470" y="64" font-size="13" class="t-o">[0.2]</text>
+  <text x="120" y="135" font-size="13" class="t-o">[0.6]</text><text x="250" y="135" font-size="13" class="t-o">[D, 0.4]</text>
+  <text x="480" y="135" font-size="13" class="t-o">[0.3]</text><text x="610" y="135" font-size="13" class="t-o">[D, 0.7]</text>
+  <rect class="nd" x="320" y="22" width="120" height="36" rx="18"/><text x="380" y="45" font-size="14" text-anchor="middle" class="t-k">F₁ V₁₁ · 1</text>
+  <rect class="nd" x="140" y="87" width="120" height="36" rx="18"/><text x="200" y="110" font-size="14" text-anchor="middle" class="t-k">F₂ V₁₂ · 0.8</text>
+  <rect class="nd" x="500" y="87" width="120" height="36" rx="18"/><text x="560" y="110" font-size="14" text-anchor="middle" class="t-k">F₃ V₁₃ · 0.2</text>
+  <rect class="nd" x="50" y="152" width="120" height="36" rx="18"/><text x="110" y="175" font-size="14" text-anchor="middle" class="t-k">F₄ V₁₄ · 0.48</text>
+  <rect class="nd" x="230" y="152" width="120" height="36" rx="18"/><text x="290" y="175" font-size="14" text-anchor="middle" class="t-k">F₅ V₁₅ · 0.32</text>
+  <rect class="nd" x="410" y="152" width="120" height="36" rx="18"/><text x="470" y="175" font-size="14" text-anchor="middle" class="t-k">F₆ V₁₆ · 0.06</text>
+  <rect class="nd" x="590" y="152" width="120" height="36" rx="18"/><text x="650" y="175" font-size="14" text-anchor="middle" class="t-k">F₇ V₁₇ · 0.14</text>
+  <text x="20" y="204" font-size="12" class="t-m">주황 = 간선 확률(원문 Figure 1), 노드 안 숫자 = 노드 확률(곱으로 계산)</text>
+</svg>
+<p><span class="step">STEP 1</span> 루트 \(V_{11}\)의 노드 확률은 1이다. 2층은 간선 확률이 곧 노드 확률이다. \(P(V_{12}) = 0.8\), \(P(V_{13}) = 0.2\).</p>
+<p><span class="step">STEP 2</span> 3층은 두 간선을 곱한다.</p>
+$$ P(V_{14}) = 0.8 \times 0.6 = 0.48,\quad P(V_{15}) = 0.8 \times 0.4 = 0.32 $$
+$$ P(V_{16}) = 0.2 \times 0.3 = 0.06,\quad P(V_{17}) = 0.2 \times 0.7 = 0.14 $$
+<p><span class="step">STEP 3</span> 검산한다. 3층 노드 확률의 합은 \(0.48+0.32+0.06+0.14 = 1.00\)이다. 모든 샘플은 3층 노드 중 정확히 하나를 지나기 때문이다.</p>
+
+<h3>이 확률을 논문 어디에 쓰나</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:22%">쓰는 곳</th><th>쓰는 값</th><th>하는 일</th></tr>
+<tr><td>4.1절 노드 재배치</td><td>간선 확률</td><td>두 자식 중 확률이 높은 쪽을 왼쪽에 두도록 교환. Tree#2 루트의 자식이 0.3(왼쪽)·0.7(오른쪽)이라 교환 <code>[c06#b007]</code></td></tr>
+<tr><td>4.2절 SimHash</td><td>노드 확률</td><td>토큰 문자열에 곱하는 가중치 <code>[c06#b016]</code>. Figure 3의 가중치 0.80, 0.48, 0.32, 0.20, 0.14, 0.06이 위 STEP의 노드 확률과 같은 값 (8절에서 다시 사용)</td></tr>
+</table></div>
+
+<div class="quiz" data-answer="a">
+  <div class="q">Q. Figure 1 Tree#1에서 노드 \(V_{16}\)의 노드 확률은?</div>
+  <label><input type="radio" name="q-s2-1" value="a"> 0.06</label>
+  <label><input type="radio" name="q-s2-1" value="b"> 0.3</label>
+  <label><input type="radio" name="q-s2-1" value="c"> 0.5</label>
+  <label><input type="radio" name="q-s2-1" value="d"> 0.24</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="루트→V13 간선 0.2, V13→V16 간선 0.3을 곱해 0.06이다. 원문 2절은 노드 확률을 루트에서 그 노드까지 간선 확률의 곱으로 정의한다 [c04#b003]. Figure 3에서 토큰 3-6의 가중치가 0.06인 것과도 맞는다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s2-mine" placeholder="간선 확률과 노드 확률의 관계"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c04">서재에서 2절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+<h2>트리를 배열로 저장하기</h2>
+<p class="paper">원문 <b>2절</b> Storage format <code>[c04#b006]</code> <code>[c04#b007]</code>, Figure 1 <code>[c04#b004]</code>, <b>4.1절</b> <code>[c06#b005]</code>, <b>4.3절</b> <code>[c06#b026]</code></p>
+
+<div class="core">GPU 메모리는 한 줄짜리 배열이라 트리도 노드를 일렬로 늘어놓아 저장한다. FIL(NVIDIA RAPIDS Forest Inference Library)이 쓰는 reorg 형식(reorg format)은 각 트리를 너비 우선 순서(breadth-first order)로 두되, 여러 트리의 같은 자리 노드를 번갈아 끼워 넣는다.</div>
+
+<p>너비 우선 순서는 루트, 2층 왼쪽, 2층 오른쪽, 3층 왼쪽부터 차례로 적는 방식이다. 트리 하나만 있으면 이것으로 끝이다. 트리가 여러 개일 때 reorg 형식은 "모든 트리의 루트 → 모든 트리의 2층 왼쪽 노드 → 모든 트리의 2층 오른쪽 노드 → …" 순으로 저장한다 <code>[c04#b006]</code>. 비어 있는 자리는 NULL로 채운다.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:18%">기호</th><th>뜻</th><th style="width:30%">예</th></tr>
+<tr><td class="c">\(V_{ti}\)</td><td>Tree \(t\)의 \(i\)번 자리 노드. Figure 1의 표기</td><td>\(V_{23}\) = Tree#2의 2층 오른쪽</td></tr>
+<tr><td class="c">자리 번호 \(i\)</td><td>꽉 찬 이진트리로 볼 때의 너비 우선 위치 (1 = 루트, 2·3 = 2층, 4~7 = 3층)</td><td>자리 6 = 오른쪽 자식의 왼쪽 자식</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">Tree#2는 2층 왼쪽 \(V_{22}\)가 리프라 3층 노드가 \(V_{23}\) 아래 두 개뿐이다. 원문은 이 둘을 \(V_{24}, V_{25}\)로 이름 붙였고 reorg 순서에서 자리 6·7에 놓는다. 그래서 \(V_{ti}\)의 \(i\)는 "몇 번째로 만든 노드"이고 자리 번호와 항상 같지는 않다 <span class="infer">추론</span>.</p>
+
+<h3>숫자로 따라가기 (원문 Figure 1의 세 트리)</h3>
+<p>배열로 옮기기 전의 세 트리는 아래처럼 생겼다. Tree#1은 3층까지 꽉 찼다. Tree#2는 2층 왼쪽 \(V_{22}\) 아래가 비었고, Tree#3은 2층 오른쪽 \(V_{33}\) 아래가 비었다. 노드 옆 작은 숫자가 자리 번호다.</p>
+<svg viewBox="0 0 1080 232" width="100%" style="max-width:1080px;display:block;margin:10px auto" role="img" aria-label="원문 Figure 1의 세 트리 구조와 자리 번호">
+  <defs>
+    <g id="t3-edges">
+      <line class="ed" x1="170" y1="50" x2="85" y2="110"/><line class="ed" x1="170" y1="50" x2="255" y2="110"/>
+    </g>
+    <g id="t3-nums" font-size="11">
+      <text x="138" y="31" class="t-m">1</text>
+      <text x="53" y="91" class="t-m">2</text><text x="287" y="91" text-anchor="end" class="t-m">3</text>
+      <text x="10" y="151" class="t-m">4</text><text x="160" y="151" text-anchor="end" class="t-m">5</text>
+      <text x="180" y="151" class="t-m">6</text><text x="330" y="151" text-anchor="end" class="t-m">7</text>
+    </g>
+  </defs>
+  <!-- Tree#1 -->
+  <g transform="translate(10,0)">
+    <text x="0" y="18" font-size="14" font-weight="700" class="t-k">Tree#1</text>
+    <use href="#t3-edges"/>
+    <line class="ed" x1="85" y1="110" x2="42" y2="170"/><line class="ed" x1="85" y1="110" x2="128" y2="170"/>
+    <line class="ed" x1="255" y1="110" x2="212" y2="170"/><line class="ed" x1="255" y1="110" x2="298" y2="170"/>
+    <rect class="nd" x="138" y="35" width="64" height="30" rx="15"/><text x="170" y="55" font-size="13" text-anchor="middle" class="t-k">V11</text>
+    <rect class="nd" x="53" y="95" width="64" height="30" rx="15"/><text x="85" y="115" font-size="13" text-anchor="middle" class="t-k">V12</text>
+    <rect class="nd" x="223" y="95" width="64" height="30" rx="15"/><text x="255" y="115" font-size="13" text-anchor="middle" class="t-k">V13</text>
+    <rect class="nd" x="10" y="155" width="64" height="30" rx="15"/><text x="42" y="175" font-size="13" text-anchor="middle" class="t-k">V14</text>
+    <rect class="nd" x="96" y="155" width="64" height="30" rx="15"/><text x="128" y="175" font-size="13" text-anchor="middle" class="t-k">V15</text>
+    <rect class="nd" x="180" y="155" width="64" height="30" rx="15"/><text x="212" y="175" font-size="13" text-anchor="middle" class="t-k">V16</text>
+    <rect class="nd" x="266" y="155" width="64" height="30" rx="15"/><text x="298" y="175" font-size="13" text-anchor="middle" class="t-k">V17</text>
+    <use href="#t3-nums"/>
+  </g>
+  <!-- Tree#2 -->
+  <g transform="translate(370,0)">
+    <text x="0" y="18" font-size="14" font-weight="700" class="t-k">Tree#2</text>
+    <use href="#t3-edges"/>
+    <line class="ed" x1="85" y1="110" x2="42" y2="170" style="stroke-dasharray:4 4"/><line class="ed" x1="85" y1="110" x2="128" y2="170" style="stroke-dasharray:4 4"/>
+    <line class="ed" x1="255" y1="110" x2="212" y2="170"/><line class="ed" x1="255" y1="110" x2="298" y2="170"/>
+    <rect class="nd" x="138" y="35" width="64" height="30" rx="15"/><text x="170" y="55" font-size="13" text-anchor="middle" class="t-k">V21</text>
+    <rect class="nd" x="53" y="95" width="64" height="30" rx="15"/><text x="85" y="115" font-size="13" text-anchor="middle" class="t-k">V22</text>
+    <rect class="nd" x="223" y="95" width="64" height="30" rx="15"/><text x="255" y="115" font-size="13" text-anchor="middle" class="t-k">V23</text>
+    <rect class="lf" x="10" y="155" width="64" height="30" rx="6" style="stroke-dasharray:4 4"/><text x="42" y="175" font-size="12" text-anchor="middle" class="t-m">NULL</text>
+    <rect class="lf" x="96" y="155" width="64" height="30" rx="6" style="stroke-dasharray:4 4"/><text x="128" y="175" font-size="12" text-anchor="middle" class="t-m">NULL</text>
+    <rect class="nd" x="180" y="155" width="64" height="30" rx="15"/><text x="212" y="175" font-size="13" text-anchor="middle" class="t-k">V24</text>
+    <rect class="nd" x="266" y="155" width="64" height="30" rx="15"/><text x="298" y="175" font-size="13" text-anchor="middle" class="t-k">V25</text>
+    <use href="#t3-nums"/>
+  </g>
+  <!-- Tree#3 -->
+  <g transform="translate(730,0)">
+    <text x="0" y="18" font-size="14" font-weight="700" class="t-k">Tree#3</text>
+    <use href="#t3-edges"/>
+    <line class="ed" x1="85" y1="110" x2="42" y2="170"/><line class="ed" x1="85" y1="110" x2="128" y2="170"/>
+    <line class="ed" x1="255" y1="110" x2="212" y2="170" style="stroke-dasharray:4 4"/><line class="ed" x1="255" y1="110" x2="298" y2="170" style="stroke-dasharray:4 4"/>
+    <rect class="nd" x="138" y="35" width="64" height="30" rx="15"/><text x="170" y="55" font-size="13" text-anchor="middle" class="t-k">V31</text>
+    <rect class="nd" x="53" y="95" width="64" height="30" rx="15"/><text x="85" y="115" font-size="13" text-anchor="middle" class="t-k">V32</text>
+    <rect class="nd" x="223" y="95" width="64" height="30" rx="15"/><text x="255" y="115" font-size="13" text-anchor="middle" class="t-k">V33</text>
+    <rect class="nd" x="10" y="155" width="64" height="30" rx="15"/><text x="42" y="175" font-size="13" text-anchor="middle" class="t-k">V34</text>
+    <rect class="nd" x="96" y="155" width="64" height="30" rx="15"/><text x="128" y="175" font-size="13" text-anchor="middle" class="t-k">V35</text>
+    <rect class="lf" x="180" y="155" width="64" height="30" rx="6" style="stroke-dasharray:4 4"/><text x="212" y="175" font-size="12" text-anchor="middle" class="t-m">NULL</text>
+    <rect class="lf" x="266" y="155" width="64" height="30" rx="6" style="stroke-dasharray:4 4"/><text x="298" y="175" font-size="12" text-anchor="middle" class="t-m">NULL</text>
+    <use href="#t3-nums"/>
+  </g>
+  <text x="10" y="222" font-size="12" class="t-m">작은 숫자 = 자리 번호(1~7), 점선 NULL = 노드가 없는 자리 (배열에서는 빈칸으로 저장)</text>
+</svg>
+<p><span class="step">STEP 1</span> 트리마다 자리 1~7을 채운다. 없는 자리는 NULL이다.</p>
+<div class="table-wrap"><table>
+<tr><th>자리</th><th class="c">1</th><th class="c">2</th><th class="c">3</th><th class="c">4</th><th class="c">5</th><th class="c">6</th><th class="c">7</th></tr>
+<tr><td>층</td><td class="c">1층</td><td class="c" colspan="2">2층</td><td class="c" colspan="4">3층</td></tr>
+<tr><td>Tree#1</td><td class="c">V11</td><td class="c">V12</td><td class="c">V13</td><td class="c">V14</td><td class="c">V15</td><td class="c">V16</td><td class="c">V17</td></tr>
+<tr><td>Tree#2</td><td class="c">V21</td><td class="c">V22</td><td class="c">V23</td><td class="c">NULL</td><td class="c">NULL</td><td class="c">V24</td><td class="c">V25</td></tr>
+<tr><td>Tree#3</td><td class="c">V31</td><td class="c">V32</td><td class="c">V33</td><td class="c">V34</td><td class="c">V35</td><td class="c">NULL</td><td class="c">NULL</td></tr>
+</table></div>
+<p><span class="step">STEP 2</span> 트리를 하나씩 이어 붙이면 Tree#1의 7칸, Tree#2의 7칸, Tree#3의 7칸이 차례로 놓인다. 스레드 1이 Tree#1 루트(0번 칸)를, 스레드 2가 Tree#2 루트(7번 칸)를 읽으면 두 주소가 7칸 떨어진다.</p>
+<p><span class="step">STEP 3</span> reorg 형식은 위 표를 <b>열 단위로</b> 읽어 내려간다. 자리 1의 세 노드, 자리 2의 세 노드, … 순이다. 결과는 아래와 같고, 0~20은 배열 안 칸 번호다.</p>
+<div class="mem">
+<span>0 V11</span><span>1 V21</span><span>2 V31</span><span class="gap"></span>
+<span>3 V12</span><span>4 V22</span><span>5 V32</span><span class="gap"></span>
+<span>6 V13</span><span>7 V23</span><span>8 V33</span><span class="gap"></span>
+<span>9 V14</span><span class="nul">10 NULL</span><span>11 V34</span><span class="gap"></span>
+<span>12 V15</span><span class="nul">13 NULL</span><span>14 V35</span><span class="gap"></span>
+<span>15 V16</span><span>16 V24</span><span class="nul">17 NULL</span><span class="gap"></span>
+<span>18 V17</span><span>19 V25</span><span class="nul">20 NULL</span>
+</div>
+<p class="mem-cap">reorg 형식 (원문 Figure 1 첫 줄과 같은 순서)</p>
+<p>3층 부분 "V14, NULL, V34, V15, NULL, V35, V16, V24, NULL, V17, V25, NULL"은 원문 4.1절이 적은 순서와 한 칸도 다르지 않다 <code>[c06#b005]</code>. 배열을 세 칸씩 끊어 보면 같은 자리의 노드끼리 한 묶음이 된다.</p>
+<div class="table-wrap"><table>
+<tr><th style="width:12%">묶음</th><th class="c">루트<br>(자리 1)</th><th class="c">2층 왼쪽<br>(자리 2)</th><th class="c">2층 오른쪽<br>(자리 3)</th><th class="c">3층<br>(자리 4)</th><th class="c">3층<br>(자리 5)</th><th class="c">3층<br>(자리 6)</th><th class="c">3층<br>(자리 7)</th></tr>
+<tr><td>칸</td><td class="c">0 · 1 · 2</td><td class="c">3 · 4 · 5</td><td class="c">6 · 7 · 8</td><td class="c">9 · 10 · 11</td><td class="c">12 · 13 · 14</td><td class="c">15 · 16 · 17</td><td class="c">18 · 19 · 20</td></tr>
+<tr><td>노드</td><td class="c">V11 V21 V31</td><td class="c">V12 V22 V32</td><td class="c">V13 V23 V33</td><td class="c">V14 NULL V34</td><td class="c">V15 NULL V35</td><td class="c">V16 V24 NULL</td><td class="c">V17 V25 NULL</td></tr>
+</table></div>
+<p>세 스레드가 트리를 하나씩 맡아 한 층씩 내려간다고 하자. 루트를 읽을 때는 0·1·2번 칸, 바로 붙은 주소다. 2층에서 셋 다 왼쪽으로 가면 V12·V22·V32(3·4·5번 칸), 셋 다 오른쪽으로 가면 V13·V23·V33(6·7·8번 칸)이라 여전히 한 묶음 안이다. 같은 쪽 가지를 고르는 동안에는 계속 붙어 있다.</p>
+<p>고르는 가지가 갈라지면 멀어진다. 스레드 1은 왼쪽(V12, 3번), 스레드 2는 오른쪽(V23, 7번), 스레드 3은 왼쪽(V32, 5번)으로 가면 읽는 칸이 3·7·5로 퍼진다. 3층에서 V14(9번), V24(16번), V35(14번)를 읽게 되면 9번부터 16번까지 흩어진다. 이 거리가 메모리 트랜잭션 몇 번에 해당하는지는 다음 절에서 센다.</p>
+
+<h3>미리 보기: Tahoe의 adaptive forest format</h3>
+<p>4.3절의 적응형 포레스트 형식(adaptive forest format)은 reorg 형식을 두 군데 고친다 <code>[c06#b026]</code>. 트리 순서를 유사도로 정하고(8·9절), 자식 둘 중 노드 확률이 높은 쪽을 왼쪽에 둔다(2절의 확률). Figure 1 둘째 줄은 트리 순서가 T2, T3, T1이 된 결과다.</p>
+<div class="mem">
+<span>0 V21</span><span>1 V31</span><span>2 V11</span><span class="gap"></span>
+<span>3 V23</span><span>4 V32</span><span>5 V12</span><span class="gap"></span>
+<span>6 V22</span><span>7 V33</span><span>8 V13</span><span class="gap"></span>
+<span>9 V24</span><span>10 V35</span><span>11 V14</span><span class="gap"></span>
+<span>12 V25</span><span>13 V34</span><span>14 V15</span><span class="gap"></span>
+<span class="nul">15 NULL</span><span class="nul">16 NULL</span><span>17 V17</span><span class="gap"></span>
+<span class="nul">18 NULL</span><span class="nul">19 NULL</span><span>20 V16</span>
+</div>
+<p class="mem-cap">adaptive forest format (원문 Figure 1 둘째 줄)</p>
+<div class="ok">원문 4.1절 본문은 교환 뒤 "Tree#2의 \(V_{25}\)와 Tree#1의 \(V_{14}\)가 연속된 메모리 공간에 놓인다"고 적었다 <code>[c06#b007]</code>. 위 배열에서 \(V_{14}\)는 11번 칸, \(V_{25}\)는 12번 칸이라 그림과 본문이 맞는다. 트리 순서가 T2, T3, T1로 바뀌었기 때문에 Tree#1의 노드가 각 묶음의 끝(2·5·8·11번 칸)에 오고, 바로 다음 칸에 Tree#2의 노드가 온다. 3층 첫 묶음(9·10·11번 칸)에는 세 트리에서 확률이 높은 \(V_{24}\)·\(V_{35}\)·\(V_{14}\)가 모여 있어서, 세 스레드가 모두 높은 확률 쪽으로 가면 트랜잭션 한 번에 읽힌다.</div>
+
+<div class="quiz" data-answer="b">
+  <div class="q">Q. reorg 형식에서 \(V_{12}\) 바로 다음 칸에 저장되는 노드는?</div>
+  <label><input type="radio" name="q-s3-1" value="a"> \(V_{13}\) (같은 트리의 2층 오른쪽)</label>
+  <label><input type="radio" name="q-s3-1" value="b"> \(V_{22}\) (Tree#2의 2층 왼쪽)</label>
+  <label><input type="radio" name="q-s3-1" value="c"> \(V_{14}\) (같은 트리의 3층 첫 노드)</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="reorg 형식은 모든 트리의 같은 자리 노드를 먼저 모은다. 2층 왼쪽 노드 V12, V22, V32가 이어지고 그다음이 2층 오른쪽 V13, V23, V33이다 [c04#b007]."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s3-mine" placeholder="reorg 형식이 트리 노드를 어떤 순서로 놓는지"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c04">서재에서 2절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+<h2>메모리 병합 접근</h2>
+<div class="audio"><span class="lbl">🔊 듣기 B (4~6절)</span><audio controls preload="none" src="audio/Xie_2021_Tahoe_B.mp3"></audio></div>
+<p class="paper">원문 <b>1절</b> 27.2% <code>[c03#b004]</code>, <b>3절</b> Uncoalesced memory accesses <code>[c05#b004]</code> <code>[c05#b005]</code>, <b>4.1절</b> <code>[c06#b005]</code>, <b>7.3절</b> <code>[c09#b019]</code></p>
+
+<div class="core">GPU는 global memory를 128바이트 단위(메모리 트랜잭션, memory transaction)로 가져온다. 한 warp의 스레드들이 같은 128바이트 안을 읽으면 트랜잭션 한 번으로 끝나고(메모리 병합 접근, memory coalescing), 흩어져 있으면 여러 번 가져오며 그만큼 대역폭을 버린다.</div>
+
+<p>warp는 같은 명령을 함께 실행하는 스레드 32개 묶음이다 <span class="infer">추론</span>. 32개가 "노드 하나 읽기" 명령을 동시에 내면 GPU는 그 주소들이 어느 128바이트 구간에 걸치는지 보고 구간마다 트랜잭션을 한 번씩 낸다. 원문 3절은 두 주소가 128바이트보다 멀면 한 트랜잭션으로 합쳐지지 않는다고 적는다 <code>[c05#b005]</code>.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:26%">용어</th><th>뜻</th></tr>
+<tr><td>메모리 트랜잭션</td><td>global memory에서 한 번에 가져오는 덩어리. 원문 기준 128바이트 <code>[c05#b005]</code></td></tr>
+<tr><td>메모리 병합 접근 (coalesced access)</td><td>warp 안 스레드들의 요청이 적은 수의 트랜잭션으로 합쳐지는 경우. 이렇게 합쳐진 접근을 병합된 접근이라 부름</td></tr>
+<tr><td>요청 데이터 / 가져온 데이터</td><td>스레드가 실제로 필요했던 바이트 ÷ 메모리가 실제로 옮긴 바이트. 원문이 메모리 접근 효율의 지표로 씀 <code>[c05#b005]</code></td></tr>
+</table></div>
+$$ \text{메모리 접근 효율} = \frac{\text{요청한 바이트}}{\text{가져온 바이트}} $$
+
+<h3>숫자로 따라가기 (원문 4.1절 가정)</h3>
+<p>원문 4.1절은 노드 하나의 크기를 트랜잭션의 1/3로 가정한다 <code>[c06#b005]</code>. 128바이트라면 노드 하나는 약 42.7바이트이고, 트랜잭션 하나에 노드 세 칸이 들어간다. 배열을 0번 칸부터 세 칸씩 끊어 트랜잭션 번호를 붙인다(0~2번 칸 = 트랜잭션 0, 3~5번 칸 = 트랜잭션 1, …) <span class="infer">추론</span>. 스레드 1·2·3이 각각 Tree#1·#2·#3을 맡고, Figure 1의 화살표대로 내려간다.</p>
+<p>아래 그림은 세 스레드가 지나가는 경로를 층마다 다른 색으로 칠한 것이다. 파랑이 1층, 주황이 2층, 초록이 3층에서 읽는 노드다.</p>
+<svg viewBox="0 0 1080 232" width="100%" style="max-width:1080px;display:block;margin:10px auto" role="img" aria-label="세 스레드가 세 트리에서 지나가는 경로">
+  <g transform="translate(10,0)">
+    <text x="0" y="18" font-size="14" font-weight="700" class="t-k">Tree#1 · 스레드 1</text>
+    <use href="#t3-edges"/>
+    <line class="ed" x1="85" y1="110" x2="42" y2="170"/><line class="ed" x1="85" y1="110" x2="128" y2="170"/>
+    <line class="ed" x1="255" y1="110" x2="212" y2="170"/><line class="ed" x1="255" y1="110" x2="298" y2="170"/>
+    <line class="ed-path" x1="170" y1="50" x2="85" y2="110"/><line class="ed-path" x1="85" y1="110" x2="42" y2="170"/>
+    <rect class="n1" x="138" y="35" width="64" height="30" rx="15"/><text x="170" y="55" font-size="13" text-anchor="middle" class="t-k">V11</text>
+    <rect class="n2" x="53" y="95" width="64" height="30" rx="15"/><text x="85" y="115" font-size="13" text-anchor="middle" class="t-k">V12</text>
+    <rect class="nd" x="223" y="95" width="64" height="30" rx="15"/><text x="255" y="115" font-size="13" text-anchor="middle" class="t-k">V13</text>
+    <rect class="n3" x="10" y="155" width="64" height="30" rx="15"/><text x="42" y="175" font-size="13" text-anchor="middle" class="t-k">V14</text>
+    <rect class="nd" x="96" y="155" width="64" height="30" rx="15"/><text x="128" y="175" font-size="13" text-anchor="middle" class="t-k">V15</text>
+    <rect class="nd" x="180" y="155" width="64" height="30" rx="15"/><text x="212" y="175" font-size="13" text-anchor="middle" class="t-k">V16</text>
+    <rect class="nd" x="266" y="155" width="64" height="30" rx="15"/><text x="298" y="175" font-size="13" text-anchor="middle" class="t-k">V17</text>
+    <use href="#t3-nums"/>
+  </g>
+  <g transform="translate(370,0)">
+    <text x="0" y="18" font-size="14" font-weight="700" class="t-k">Tree#2 · 스레드 2</text>
+    <use href="#t3-edges"/>
+    <line class="ed" x1="85" y1="110" x2="42" y2="170" style="stroke-dasharray:4 4"/><line class="ed" x1="85" y1="110" x2="128" y2="170" style="stroke-dasharray:4 4"/>
+    <line class="ed" x1="255" y1="110" x2="212" y2="170"/><line class="ed" x1="255" y1="110" x2="298" y2="170"/>
+    <line class="ed-path" x1="170" y1="50" x2="255" y2="110"/><line class="ed-path" x1="255" y1="110" x2="212" y2="170"/>
+    <rect class="n1" x="138" y="35" width="64" height="30" rx="15"/><text x="170" y="55" font-size="13" text-anchor="middle" class="t-k">V21</text>
+    <rect class="nd" x="53" y="95" width="64" height="30" rx="15"/><text x="85" y="115" font-size="13" text-anchor="middle" class="t-k">V22</text>
+    <rect class="n2" x="223" y="95" width="64" height="30" rx="15"/><text x="255" y="115" font-size="13" text-anchor="middle" class="t-k">V23</text>
+    <rect class="lf" x="10" y="155" width="64" height="30" rx="6" style="stroke-dasharray:4 4"/><text x="42" y="175" font-size="12" text-anchor="middle" class="t-m">NULL</text>
+    <rect class="lf" x="96" y="155" width="64" height="30" rx="6" style="stroke-dasharray:4 4"/><text x="128" y="175" font-size="12" text-anchor="middle" class="t-m">NULL</text>
+    <rect class="n3" x="180" y="155" width="64" height="30" rx="15"/><text x="212" y="175" font-size="13" text-anchor="middle" class="t-k">V24</text>
+    <rect class="nd" x="266" y="155" width="64" height="30" rx="15"/><text x="298" y="175" font-size="13" text-anchor="middle" class="t-k">V25</text>
+    <use href="#t3-nums"/>
+  </g>
+  <g transform="translate(730,0)">
+    <text x="0" y="18" font-size="14" font-weight="700" class="t-k">Tree#3 · 스레드 3</text>
+    <use href="#t3-edges"/>
+    <line class="ed" x1="85" y1="110" x2="42" y2="170"/><line class="ed" x1="85" y1="110" x2="128" y2="170"/>
+    <line class="ed" x1="255" y1="110" x2="212" y2="170" style="stroke-dasharray:4 4"/><line class="ed" x1="255" y1="110" x2="298" y2="170" style="stroke-dasharray:4 4"/>
+    <line class="ed-path" x1="170" y1="50" x2="85" y2="110"/><line class="ed-path" x1="85" y1="110" x2="128" y2="170"/>
+    <rect class="n1" x="138" y="35" width="64" height="30" rx="15"/><text x="170" y="55" font-size="13" text-anchor="middle" class="t-k">V31</text>
+    <rect class="n2" x="53" y="95" width="64" height="30" rx="15"/><text x="85" y="115" font-size="13" text-anchor="middle" class="t-k">V32</text>
+    <rect class="nd" x="223" y="95" width="64" height="30" rx="15"/><text x="255" y="115" font-size="13" text-anchor="middle" class="t-k">V33</text>
+    <rect class="nd" x="10" y="155" width="64" height="30" rx="15"/><text x="42" y="175" font-size="13" text-anchor="middle" class="t-k">V34</text>
+    <rect class="n3" x="96" y="155" width="64" height="30" rx="15"/><text x="128" y="175" font-size="13" text-anchor="middle" class="t-k">V35</text>
+    <rect class="lf" x="180" y="155" width="64" height="30" rx="6" style="stroke-dasharray:4 4"/><text x="212" y="175" font-size="12" text-anchor="middle" class="t-m">NULL</text>
+    <rect class="lf" x="266" y="155" width="64" height="30" rx="6" style="stroke-dasharray:4 4"/><text x="298" y="175" font-size="12" text-anchor="middle" class="t-m">NULL</text>
+    <use href="#t3-nums"/>
+  </g>
+  <text x="10" y="222" font-size="12" class="t-m">파랑 = 1층에서 읽는 노드, 주황 = 2층, 초록 = 3층 (Figure 1의 화살표 경로)</text>
+</svg>
+<p>reorg 형식에서는 3절 STEP 1 표의 <b>열 하나가 곧 트랜잭션 하나</b>다. 같은 자리의 노드 셋이 연속한 세 칸에 놓이기 때문이다. 같은 색 노드가 몇 개 열에 걸쳐 있는지 세면 그 층의 트랜잭션 수가 된다.</p>
+<div class="table-wrap"><table>
+<tr><th style="width:16%">reorg</th><th class="c">트랜잭션 0<br>(칸 0~2)</th><th class="c">트랜잭션 1<br>(칸 3~5)</th><th class="c">트랜잭션 2<br>(칸 6~8)</th><th class="c">트랜잭션 3<br>(칸 9~11)</th><th class="c">트랜잭션 4<br>(칸 12~14)</th><th class="c">트랜잭션 5<br>(칸 15~17)</th><th class="c">트랜잭션 6<br>(칸 18~20)</th></tr>
+<tr><td>Tree#1</td><td class="c r1">V11</td><td class="c r2">V12</td><td class="c">V13</td><td class="c r3">V14</td><td class="c">V15</td><td class="c">V16</td><td class="c">V17</td></tr>
+<tr><td>Tree#2</td><td class="c r1">V21</td><td class="c">V22</td><td class="c r2">V23</td><td class="c">NULL</td><td class="c">NULL</td><td class="c r3">V24</td><td class="c">V25</td></tr>
+<tr><td>Tree#3</td><td class="c r1">V31</td><td class="c r2">V32</td><td class="c">V33</td><td class="c">V34</td><td class="c r3">V35</td><td class="c">NULL</td><td class="c">NULL</td></tr>
+<tr><td>가져오는 층</td><td class="c">1층</td><td class="c">2층</td><td class="c">2층</td><td class="c">3층</td><td class="c">3층</td><td class="c">3층</td><td class="c">–</td></tr>
+</table></div>
+<p>파랑은 한 열, 주황은 두 열, 초록은 세 열에 걸쳐 있다. 트랜잭션은 1 + 2 + 3 = 6번이다. adaptive 형식은 같은 노드 아홉 개를 아래처럼 다시 놓는다(3절 미리 보기의 배열).</p>
+<div class="table-wrap"><table>
+<tr><th style="width:16%">adaptive</th><th class="c">트랜잭션 0<br>(칸 0~2)</th><th class="c">트랜잭션 1<br>(칸 3~5)</th><th class="c">트랜잭션 2<br>(칸 6~8)</th><th class="c">트랜잭션 3<br>(칸 9~11)</th><th class="c">트랜잭션 4<br>(칸 12~14)</th><th class="c">트랜잭션 5<br>(칸 15~17)</th><th class="c">트랜잭션 6<br>(칸 18~20)</th></tr>
+<tr><td>Tree#2</td><td class="c r1">V21</td><td class="c r2">V23</td><td class="c">V22</td><td class="c r3">V24</td><td class="c">V25</td><td class="c">NULL</td><td class="c">NULL</td></tr>
+<tr><td>Tree#3</td><td class="c r1">V31</td><td class="c r2">V32</td><td class="c">V33</td><td class="c r3">V35</td><td class="c">V34</td><td class="c">NULL</td><td class="c">NULL</td></tr>
+<tr><td>Tree#1</td><td class="c r1">V11</td><td class="c r2">V12</td><td class="c">V13</td><td class="c r3">V14</td><td class="c">V15</td><td class="c">V17</td><td class="c">V16</td></tr>
+<tr><td>가져오는 층</td><td class="c">1층</td><td class="c">2층</td><td class="c">–</td><td class="c">3층</td><td class="c">–</td><td class="c">–</td><td class="c">–</td></tr>
+</table></div>
+<p>색마다 한 열에 모였다. 트랜잭션은 1 + 1 + 1 = 3번이다. 아래 STEP은 reorg 쪽을 칸 번호로 다시 따라간다.</p>
+<p><span class="step">STEP 1</span> 1층. 세 스레드가 루트 V11, V21, V31(0·1·2번 칸)을 읽는다. 모두 트랜잭션 0 안이므로 한 번에 끝난다.</p>
+<p><span class="step">STEP 2</span> 2층. 스레드 1은 왼쪽 V12(3번), 스레드 2는 오른쪽 V23(7번), 스레드 3은 왼쪽 V32(5번)를 읽는다. 3·5번은 트랜잭션 1, 7번은 트랜잭션 2라 두 번 가져온다.</p>
+<p><span class="step">STEP 3</span> 3층. 스레드 1은 V14(9번), 스레드 2는 V24(16번), 스레드 3은 V35(14번)를 읽는다. 원문이 "연속하지 않고 같은 트랜잭션에 들지 않는다"고 한 바로 그 세 노드다 <code>[c06#b005]</code>. 트랜잭션 3·5·4, 세 번이 필요하다.</p>
+<div class="table-wrap"><table>
+<tr><th>층</th><th>읽는 노드 (칸 번호)</th><th class="num">reorg 트랜잭션</th><th class="num">요청/가져온</th><th>adaptive에서 같은 노드 (칸 번호)</th><th class="num">adaptive 트랜잭션</th></tr>
+<tr><td>1층</td><td>V11(0), V21(1), V31(2)</td><td class="num">1</td><td class="num">3/3 = 100%</td><td>V11(2), V21(0), V31(1)</td><td class="num">1</td></tr>
+<tr><td>2층</td><td>V12(3), V23(7), V32(5)</td><td class="num">2</td><td class="num">3/6 = 50%</td><td>V12(5), V23(3), V32(4)</td><td class="num">1</td></tr>
+<tr class="y"><td>3층</td><td>V14(9), V24(16), V35(14)</td><td class="num">3</td><td class="num">3/9 = 33.3%</td><td>V14(11), V24(9), V35(10)</td><td class="num">1</td></tr>
+<tr><td>합계</td><td>노드 9개 요청</td><td class="num">6</td><td class="num">9/18 = 50%</td><td>노드 9개 요청</td><td class="num">3 (100%)</td></tr>
+</table></div>
+<p>표의 비율은 노드 칸 수로 센 값이다(1칸 = 트랜잭션의 1/3). reorg 형식은 층이 깊어질수록 트랜잭션이 늘고 효율이 떨어진다. adaptive 형식은 세 스레드가 실제로 지나는 노드를 매 층 한 트랜잭션 안에 모아 두었다. Figure 1 둘째 줄 아래의 "Coalesced" 표시가 이 결과다.</p>
+
+<h3>원문 측정값</h3>
+<div class="table-wrap"><table>
+<tr><th>측정</th><th class="num">값</th><th>조건</th><th>근거</th></tr>
+<tr><td>요청/가져온 비율 (FIL 전체)</td><td class="num">27.2%</td><td>FIL로 GPU 추론</td><td><code>[c03#b004]</code></td></tr>
+<tr><td>요청/가져온 비율 (트리 7~10층)</td><td class="num">13.7%</td><td>Higgs, RF 120그루, 최대 깊이 10</td><td><code>[c05#b002]</code> <code>[c05#b005]</code></td></tr>
+<tr><td>포레스트 접근의 요청/가져온 비율 (adaptive 형식)</td><td class="num">45.8%</td><td>마이크로벤치마크, 성능 모델 가정 (1)</td><td><code>[c08#b008]</code></td></tr>
+<tr><td>global memory 읽기 처리량 (P100)</td><td class="num">98.8 → 314.0 GB/s</td><td>FIL → Tahoe</td><td><code>[c09#b019]</code></td></tr>
+</table></div>
+<p>Figure 2(a)는 인접한 두 스레드가 읽는 주소의 평균 거리를 층별로 그렸다. 위쪽 층에서는 작다가 깊어질수록 커진다. 원문은 이유를 두 가지 든다. 깊이 내려갈수록 트리마다 다른 가지를 탈 가능성이 커지고, 트리 모양(topology) 자체가 서로 다르다 <code>[c05#b004]</code>.</p>
+
+<div class="quiz" data-answer="c">
+  <div class="q">Q. 노드 크기가 트랜잭션의 1/3일 때, 세 스레드가 서로 다른 트랜잭션에 있는 노드를 하나씩 읽으면 요청/가져온 비율은?</div>
+  <label><input type="radio" name="q-s4-1" value="a"> 100%</label>
+  <label><input type="radio" name="q-s4-1" value="b"> 50%</label>
+  <label><input type="radio" name="q-s4-1" value="c"> 33.3%</label>
+  <label><input type="radio" name="q-s4-1" value="d"> 13.7%</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="트랜잭션 3번으로 노드 9칸 분량을 가져오고 실제로 쓴 것은 3칸이므로 3/9 = 33.3%다. 13.7%는 원문이 Higgs 포레스트의 7~10층에서 측정한 값이다 [c05#b005]."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s4-mine" placeholder="메모리 병합 접근과 요청/가져온 비율"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c05">서재에서 3절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+<h2>부하 불균형과 변동계수</h2>
+<p class="paper">원문 <b>1절</b> <code>[c03#b005]</code>, <b>3절</b> Load imbalance <code>[c05#b006]</code>, <b>6.1절</b> 가정 (3) <code>[c08#b008]</code>, <b>7.3절</b> Table 3 <code>[c09#b017]</code> <code>[c09#b020]</code></p>
+
+<div class="core">부하 불균형(load imbalance)은 스레드마다 맡은 일의 양이 달라 일찍 끝난 스레드가 기다리는 상태다. 원문은 스레드별 실행 시간의 변동계수(coefficient of variation, CV = 표준편차 ÷ 평균)로 그 정도를 잰다.</div>
+
+<p>FIL은 트리를 라운드 로빈(round-robin)으로 스레드에 나눈다. 트리 깊이는 보지 않는다 <code>[c05#b006]</code>. 학습할 때 속성을 무작위로 고르고 사후 가지치기(post-pruning)를 하면 트리 깊이가 제각각이 되므로 깊은 트리를 받은 스레드가 더 오래 일한다 <code>[c03#b005]</code>. 수업에서 배운 가지치기가 여기서는 추론 속도 문제로 이어진다.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:18%">기호</th><th>뜻</th><th style="width:30%">예제 값 (불균형한 경우)</th></tr>
+<tr><td class="c">\(t_k\)</td><td>스레드 \(k\)의 실행 시간</td><td>2, 4, 6, 12</td></tr>
+<tr><td class="c">\(\mu\)</td><td>평균 실행 시간</td><td class="num">6</td></tr>
+<tr><td class="c">\(\sigma\)</td><td>표준편차</td><td class="num">3.742</td></tr>
+<tr><td class="c">CV</td><td>\(\sigma / \mu\). 평균에 비해 얼마나 퍼졌나. 단위가 없어 서로 다른 포레스트끼리 비교 가능</td><td class="num">62.4%</td></tr>
+</table></div>
+$$ \mu = \frac{1}{n}\sum_{k=1}^{n} t_k, \qquad \sigma = \sqrt{\frac{1}{n}\sum_{k=1}^{n}(t_k-\mu)^2}, \qquad \mathrm{CV} = \frac{\sigma}{\mu} $$
+<p style="font-size:14px;color:var(--muted)">원문은 표준편차를 \(n\)으로 나누는지 \(n-1\)로 나누는지 밝히지 않았다. 여기서는 \(n\)으로 나눴다 <span class="infer">추론</span>.</p>
+
+<h3>숫자로 따라가기 (직접 만든 예)</h3>
+<p>스레드 4개가 같은 양의 일(합계 24)을 두 가지 방식으로 나눠 받았다고 하자.</p>
+<p><span class="step">STEP 1</span> 평균을 구한다. 두 경우 모두 \(24 / 4 = 6\)이다.</p>
+<p><span class="step">STEP 2</span> 편차 제곱의 평균을 구하고 제곱근을 씌운다.</p>
+$$ \text{A: } \sqrt{\tfrac{(2-6)^2+(4-6)^2+(6-6)^2+(12-6)^2}{4}} = \sqrt{\tfrac{16+4+0+36}{4}} = \sqrt{14} \approx 3.742 $$
+$$ \text{B: } \sqrt{\tfrac{(5-6)^2+0+0+(7-6)^2}{4}} = \sqrt{0.5} \approx 0.707 $$
+<p><span class="step">STEP 3</span> CV와 대기 시간을 비교한다. 블록은 가장 느린 스레드가 끝나야 리덕션으로 넘어가므로 나머지 스레드가 기다린 시간을 더하면 놀고 있던 몫이 나온다 <span class="infer">추론</span>.</p>
+<div class="table-wrap"><table>
+<tr><th>경우</th><th>스레드별 시간</th><th class="num">평균</th><th class="num">표준편차</th><th class="num">CV</th><th class="num">끝나는 시각</th><th class="num">대기 합 / 전체</th></tr>
+<tr class="y"><td>A (라운드 로빈, 깊이 무시)</td><td>2, 4, 6, 12</td><td class="num">6</td><td class="num">3.742</td><td class="num">62.4%</td><td class="num">12</td><td class="num">24/48 = 50.0%</td></tr>
+<tr><td>B (비슷한 트리끼리 고르게)</td><td>5, 6, 6, 7</td><td class="num">6</td><td class="num">0.707</td><td class="num">11.8%</td><td class="num">7</td><td class="num">4/28 = 14.3%</td></tr>
+</table></div>
+<p>일의 총량은 같은데 B가 5만큼 일찍 끝난다. Tahoe의 트리 재배치(4.2절)는 A를 B로 바꾸려 한다.</p>
+
+<h3>원문 측정값</h3>
+<div class="table-wrap"><table>
+<tr><th>측정</th><th class="num">값</th><th>근거</th></tr>
+<tr><td>FIL 스레드 간 실행 시간 차이</td><td class="num">최대 10배</td><td><code>[c03#b005]</code></td></tr>
+<tr><td>FIL, Higgs 포레스트, 블록 하나가 샘플 1000개 처리</td><td class="num">CV 49.1%</td><td><code>[c05#b006]</code></td></tr>
+<tr><td>트리 재배치 뒤 (성능 모델 가정 3의 근거)</td><td class="num">CV 12.7%</td><td><code>[c08#b008]</code></td></tr>
+<tr><td>Table 3 평균 CV, P100 높은 병렬 작업</td><td class="num">51.3% → 16.2%</td><td><code>[c09#b017]</code></td></tr>
+</table></div>
+
+<div class="quiz" data-answer="b">
+  <div class="q">Q. 스레드 시간이 4, 4, 4, 4에서 1, 1, 1, 13으로 바뀌었다. 무엇이 그대로이고 무엇이 커지나?</div>
+  <label><input type="radio" name="q-s5-1" value="a"> 평균이 커지고 CV는 그대로다</label>
+  <label><input type="radio" name="q-s5-1" value="b"> 평균은 4로 그대로이고 CV가 0에서 크게 커진다</label>
+  <label><input type="radio" name="q-s5-1" value="c"> 둘 다 그대로다</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="합이 16으로 같으니 평균은 4다. 두 번째 경우 표준편차는 √27 ≈ 5.196이라 CV ≈ 130%가 된다. 블록은 13까지 기다려야 한다. 원문은 이런 퍼짐을 CV로 재고(3절 CV 49.1% [c05#b006]) 트리 재배치로 줄인다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s5-mine" placeholder="부하 불균형을 CV로 재는 이유"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c05">서재에서 3절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+<h2>리덕션</h2>
+<p class="paper">원문 <b>2절</b> <code>[c04#b008]</code>, <b>3절</b> High reduction overhead <code>[c05#b007]</code> <code>[c05#b008]</code>, <b>5.1절</b> <code>[c07#b004]</code> <code>[c07#b010]</code>, <b>6.1절</b> <code>[c08#b004]</code></p>
+
+<div class="core">리덕션(reduction)은 여러 스레드가 낸 부분 결과를 하나로 합치는 연산이다. 같은 스레드 블록 안에서 합치면 블록 단위 리덕션(blockwise reduction), 블록 여러 개의 결과를 합치면 전역 리덕션(global reduction)이다.</div>
+
+<p>FIL의 shared data 방식에서는 스레드마다 트리 일부를 맡는다. 샘플 하나의 최종 예측을 내려면 블록 안 모든 스레드의 결과를 더해야 한다 <code>[c04#b008]</code>. 1절의 "트리 결과 합치기"를 GPU 스레드들이 나눠서 하는 셈이다.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:20%">구분</th><th>블록 단위 리덕션</th><th>전역 리덕션</th></tr>
+<tr><td>합치는 범위</td><td>한 스레드 블록 안의 스레드들</td><td>여러 스레드 블록의 결과</td></tr>
+<tr><td>중간값 위치 <span class="infer">추론</span></td><td>shared memory</td><td>global memory</td></tr>
+<tr><td>원문이 쓴 구현</td><td><code>cub::BlockReduce</code></td><td><code>cub::DeviceSegmentedReduce</code></td></tr>
+<tr><td>쓰는 전략</td><td>shared data (샘플마다)</td><td>splitting shared forest (배치마다)</td></tr>
+<tr><td>근거</td><td><code>[c08#b004]</code> <code>[c07#b004]</code></td><td><code>[c08#b004]</code> <code>[c07#b010]</code></td></tr>
+</table></div>
+
+<h3>숫자로 따라가기 (직접 만든 예)</h3>
+<p>스레드 8개가 GBDT 트리를 나눠 맡아 샘플 하나의 부분 점수를 냈다. 한 스레드가 차례로 더하면 덧셈 7번을 순서대로 해야 한다. 트리 모양 리덕션(tree reduction)은 이웃끼리 짝지어 동시에 더한다.</p>
+<div class="table-wrap"><table>
+<tr><th>단계</th><th>계산</th><th>남은 값</th></tr>
+<tr><td>시작</td><td>스레드 0~7의 부분 점수</td><td>0.30, −0.10, 0.25, 0.05, −0.20, 0.15, 0.10, −0.05</td></tr>
+<tr><td><span class="step">STEP 1</span></td><td>4쌍을 동시에 더함</td><td>0.20, 0.30, −0.05, 0.05</td></tr>
+<tr><td><span class="step">STEP 2</span></td><td>2쌍을 동시에 더함</td><td>0.50, 0.00</td></tr>
+<tr class="y"><td><span class="step">STEP 3</span></td><td>1쌍을 더함</td><td>0.50 (최종 점수)</td></tr>
+</table></div>
+<p>단계 수는 \(\log_2 8 = 3\)이다. 스레드가 256개면 \(\log_2 256 = 8\)단계다. 단계마다 모든 스레드가 앞 단계를 끝낼 때까지 맞춰 기다리는 동기화(synchronization)가 필요하다 <span class="infer">추론</span>. 5절의 부하 불균형이 있으면 가장 느린 스레드가 끝날 때까지 첫 단계가 시작조차 못 한다. 그래서 원문 5.2절은 "동기화와 리덕션 오버헤드"를 묶어서 말한다 <code>[c07#b016]</code>.</p>
+
+<h3>원문 측정값</h3>
+<div class="table-wrap"><table>
+<tr><th>측정</th><th class="num">값</th><th>근거</th></tr>
+<tr><td>Higgs 포레스트(트리 120개)에서 리덕션이 차지한 추론 시간</td><td class="num">최대 53%</td><td><code>[c05#b007]</code></td></tr>
+<tr><td>트리 수 10 → 200으로 바꿀 때 리덕션 비중 (Figure 2(b))</td><td class="num">35% ~ 72%</td><td><code>[c05#b008]</code></td></tr>
+</table></div>
+<p>트리가 많을수록 합칠 부분 결과가 늘어나 비중이 커진다. Tahoe는 이 비용을 아예 없애는 전략(다음 절)과, 배치 하나에 한 번만 하도록 몰아서 샘플당 몫을 줄이는 전략을 함께 둔다.</p>
+
+<div class="quiz" data-answer="a">
+  <div class="q">Q. 트리 모양 리덕션으로 스레드 32개의 부분 결과를 합치면 몇 단계가 걸리나?</div>
+  <label><input type="radio" name="q-s6-1" value="a"> 5단계</label>
+  <label><input type="radio" name="q-s6-1" value="b"> 16단계</label>
+  <label><input type="radio" name="q-s6-1" value="c"> 31단계</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="한 단계마다 값의 개수가 절반이 되므로 32 → 16 → 8 → 4 → 2 → 1, log2 32 = 5단계다. 31은 한 스레드가 차례로 더할 때의 덧셈 횟수다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s6-mine" placeholder="블록 단위 리덕션과 전역 리덕션의 차이"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c05">서재에서 3절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+<h2>shared memory에 무엇을 두나</h2>
+<div class="audio"><span class="lbl">🔊 듣기 C (7~9절)</span><audio controls preload="none" src="audio/Xie_2021_Tahoe_C.mp3"></audio></div>
+<p class="paper">원문 <b>1절</b> <code>[c03#b009]</code>, <b>2절</b> <code>[c04#b008]</code>, <b>5.1절</b> <code>[c07#b004]</code>~<code>[c07#b010]</code>, Figure 4 <code>[c07#b007]</code>, <b>5.2절</b> <code>[c07#b015]</code>~<code>[c07#b021]</code></p>
+
+<div class="core">shared memory는 블록 하나가 함께 쓰는 빠르고 작은 메모리라 샘플과 포레스트를 둘 다 올릴 수 없다 <code>[c03#b009]</code>. 추론 전략 네 가지는 "shared memory에 무엇을 두나"와 "리덕션이 있나" 두 질문으로 구분된다.</div>
+
+<div class="table-wrap"><table>
+<tr><th style="width:16%">전략</th><th>shared memory에 두는 것</th><th>스레드 하나가 맡는 일</th><th>리덕션</th><th>제약·약점</th></tr>
+<tr><td><b>shared data</b><br>(FIL 기존 방식)</td><td>샘플 한 배치</td><td>포레스트의 일부 트리</td><td>블록 단위, 샘플마다</td><td>트리가 많을수록 리덕션 비중 증가</td></tr>
+<tr><td><b>direct</b></td><td>없음</td><td>포레스트 전체 × 자기 샘플</td><td>없음</td><td>포레스트와 샘플 모두 global memory에서 읽음</td></tr>
+<tr><td><b>shared forest</b></td><td>포레스트 전체</td><td>포레스트 전체 × 자기 샘플</td><td>없음</td><td>포레스트가 shared memory에 다 들어가야 함</td></tr>
+<tr><td><b>splitting shared forest</b></td><td>포레스트의 한 조각 (블록마다 다른 조각, 조각 \(P\)개)</td><td>조각 안 트리 × 배치의 샘플</td><td>전역, 배치마다 한 번</td><td>배치마다 포레스트 조각을 다시 올림, 전역 리덕션 비용</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">근거: shared data <code>[c04#b008]</code>, direct <code>[c07#b005]</code> <code>[c07#b006]</code>, shared forest <code>[c07#b008]</code> <code>[c07#b009]</code>, splitting shared forest <code>[c07#b010]</code>.</p>
+
+<h3>원문 Figure 4를 단순화한 그림</h3>
+<p><span class="legend-s"></span> 노란 칸이 shared memory에 올라간 것이다. 원문 그림도 shared memory를 노란색으로 칠했다 <code>[c07#b007]</code>. 원문 Figure 4는 새 전략 세 개만 그렸고, 여기에는 비교를 위해 shared data를 왼쪽에 더했다.</p>
+<svg viewBox="0 0 1000 300" width="100%" style="max-width:1000px;display:block;margin:10px auto" role="img" aria-label="네 추론 전략의 shared memory 사용과 리덕션">
+  <!-- 패널 -->
+  <rect class="box-w" x="5" y="5" width="240" height="290" rx="10"/>
+  <rect class="box-w" x="255" y="5" width="240" height="290" rx="10"/>
+  <rect class="box-w" x="505" y="5" width="240" height="290" rx="10"/>
+  <rect class="box-w" x="755" y="5" width="240" height="290" rx="10"/>
+  <text x="125" y="30" font-size="15" font-weight="700" text-anchor="middle" class="t-k">shared data (FIL)</text>
+  <text x="375" y="30" font-size="15" font-weight="700" text-anchor="middle" class="t-k">direct</text>
+  <text x="625" y="30" font-size="15" font-weight="700" text-anchor="middle" class="t-k">shared forest</text>
+  <text x="875" y="30" font-size="15" font-weight="700" text-anchor="middle" class="t-k">splitting shared forest</text>
+  <!-- shared data -->
+  <rect class="box-g" x="20" y="50" width="210" height="34" rx="6"/><text x="125" y="72" font-size="13" text-anchor="middle" class="t-k">포레스트 (global)</text>
+  <rect class="box-s" x="20" y="110" width="210" height="34" rx="6"/><text x="125" y="132" font-size="13" text-anchor="middle" class="t-k">샘플 배치 (shared)</text>
+  <text x="125" y="172" font-size="12" text-anchor="middle" class="t-m">스레드 t₁…tₘ이 트리를 나눠 맡음</text>
+  <rect class="box-b" x="45" y="190" width="160" height="34" rx="6"/><text x="125" y="212" font-size="13" text-anchor="middle" class="t-b">블록 단위 리덕션</text>
+  <text x="125" y="250" font-size="12" text-anchor="middle" class="t-o">샘플마다 리덕션</text>
+  <!-- direct -->
+  <rect class="box-g" x="270" y="50" width="210" height="34" rx="6"/><text x="375" y="72" font-size="13" text-anchor="middle" class="t-k">포레스트 (global)</text>
+  <rect class="box-g" x="270" y="110" width="210" height="34" rx="6"/><text x="375" y="132" font-size="13" text-anchor="middle" class="t-k">샘플 (global)</text>
+  <text x="375" y="172" font-size="12" text-anchor="middle" class="t-m">스레드 하나가 포레스트 전체로</text>
+  <text x="375" y="190" font-size="12" text-anchor="middle" class="t-m">샘플 하나를 끝까지 처리</text>
+  <text x="375" y="250" font-size="13" text-anchor="middle" class="t-o">리덕션 없음</text>
+  <!-- shared forest -->
+  <rect class="box-s" x="520" y="50" width="210" height="34" rx="6"/><text x="625" y="72" font-size="13" text-anchor="middle" class="t-k">포레스트 전체 (shared)</text>
+  <rect class="box-g" x="520" y="110" width="210" height="34" rx="6"/><text x="625" y="132" font-size="13" text-anchor="middle" class="t-k">샘플 (global)</text>
+  <text x="625" y="172" font-size="12" text-anchor="middle" class="t-m">스레드 하나가 포레스트 전체로</text>
+  <text x="625" y="190" font-size="12" text-anchor="middle" class="t-m">샘플 하나를 끝까지 처리</text>
+  <text x="625" y="250" font-size="13" text-anchor="middle" class="t-o">리덕션 없음</text>
+  <text x="625" y="275" font-size="12" text-anchor="middle" class="t-m">포레스트가 작아야 가능</text>
+  <!-- splitting -->
+  <rect class="box-g" x="770" y="50" width="210" height="34" rx="6"/><text x="875" y="72" font-size="13" text-anchor="middle" class="t-k">포레스트 조각 1 … P (global)</text>
+  <rect class="box-s" x="770" y="100" width="100" height="34" rx="6"/><text x="820" y="122" font-size="12" text-anchor="middle" class="t-k">블록1: 조각1</text>
+  <rect class="box-s" x="880" y="100" width="100" height="34" rx="6"/><text x="930" y="122" font-size="12" text-anchor="middle" class="t-k">블록P: 조각P</text>
+  <rect class="box-g" x="770" y="146" width="210" height="30" rx="6"/><text x="875" y="166" font-size="13" text-anchor="middle" class="t-k">샘플 배치 (global)</text>
+  <rect class="box-b" x="795" y="190" width="160" height="34" rx="6"/><text x="875" y="212" font-size="13" text-anchor="middle" class="t-b">전역 리덕션</text>
+  <text x="875" y="250" font-size="12" text-anchor="middle" class="t-o">배치마다 한 번</text>
+</svg>
+
+<h3>포레스트가 shared memory에 들어가나 (직접 만든 예)</h3>
+<p>논문은 노드 한 개의 바이트 수와 shared memory 용량을 적지 않았다. 아래는 노드 8바이트, 블록당 shared memory 48KB(49,152바이트), 깊이 \(D\)인 트리의 노드 수 상한 \(2^D-1\)을 가정한 계산이다 <span class="infer">추론</span>. 트리 수와 깊이는 Table 2 값이다 <code>[c09#b008]</code>.</p>
+<p><span class="step">STEP 1</span> ijcnn1 포레스트(트리 10개, 깊이 6). 트리 하나 \(63 \times 8 = 504\)바이트, 포레스트 전체 5,040바이트. 48KB 안에 들어가므로 shared forest가 가능하다. 원문도 ijcnn1을 shared forest가 적용되는 다섯 데이터셋에 넣었다 <code>[c07#b017]</code>.</p>
+<p><span class="step">STEP 2</span> Higgs 포레스트(트리 3000개, 깊이 8). 트리 하나 \(255 \times 8 = 2{,}040\)바이트, 포레스트 전체 6,120,000바이트(약 5.8MB). 들어가지 않는다.</p>
+<p><span class="step">STEP 3</span> 그래서 쪼갠다. 한 조각에 트리 \(\lfloor 49{,}152 / 2{,}040 \rfloor = 24\)개, 조각 수 \(P = \lceil 3000/24 \rceil = 125\). 블록 125개가 조각 하나씩 맡고, 배치 하나가 끝나면 125개 결과를 전역 리덕션으로 합친다.</p>
+<p style="font-size:14px;color:var(--muted)">가정 값이 실제와 다르므로 다른 데이터셋에 같은 계산을 하면 원문 분류와 어긋날 수 있다. 어느 포레스트가 들어가는지는 원문 5.2절 목록을 기준으로 한다.</p>
+
+<h3>원문 Figure 5: 어느 전략이 이겼나 (P100, 배치 100K)</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:22%">가장 빠른 전략</th><th>데이터셋</th><th>원문이 든 이유</th></tr>
+<tr><td>shared data</td><td>allstate, covtype, cup98, year</td><td>트리 1K 미만이지만 shared memory에 다 안 들어감, 샘플 속성 수가 적음 <code>[c07#b015]</code></td></tr>
+<tr><td>direct</td><td>SVHN, gisette</td><td>깊은 트리 → 재배치 뒤에도 불균형이 커서 동기화·리덕션 제거가 이득 <code>[c07#b016]</code></td></tr>
+<tr><td>shared forest</td><td>HOCK, cifar10, ijcnn1, phishing, letter</td><td>포레스트가 들어감, 포레스트가 샘플보다 자주 재사용됨 <code>[c07#b017]</code></td></tr>
+<tr><td>splitting shared forest</td><td>Higgs, SUSY, hepmass, aloi</td><td>트리가 작아 전역 리덕션할 데이터가 적음 <code>[c07#b018]</code></td></tr>
+</table></div>
+<p>배치 크기도 승자를 바꾼다. Higgs에서는 배치가 10K 미만일 때 shared data가, 그 이상일 때 splitting shared forest가 가장 빨랐다 <code>[c07#b020]</code>. 원문 5.2절은 "모든 경우에 가장 좋은 전략 하나는 없다"고 결론짓는다 <code>[c07#b021]</code>. 10절의 성능 모델이 이 선택을 맡는다.</p>
+
+<div class="quiz" data-answer="d">
+  <div class="q">Q. 리덕션이 전혀 없는 전략끼리 묶은 것은?</div>
+  <label><input type="radio" name="q-s7-1" value="a"> shared data, direct</label>
+  <label><input type="radio" name="q-s7-1" value="b"> shared forest, splitting shared forest</label>
+  <label><input type="radio" name="q-s7-1" value="c"> shared data, splitting shared forest</label>
+  <label><input type="radio" name="q-s7-1" value="d"> direct, shared forest</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="direct와 shared forest는 스레드 하나가 포레스트 전체로 샘플을 끝까지 처리하므로 합칠 것이 없다 [c07#b006] [c07#b009]. shared data는 블록 단위 리덕션, splitting shared forest는 전역 리덕션을 쓴다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s7-mine" placeholder="네 전략을 두 질문으로 구분하기"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c07">서재에서 5절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="s8">
+<h2>SimHash</h2>
+<p class="paper">원문 <b>4.2절</b> Tokenization·Applying SimHash <code>[c06#b014]</code> <code>[c06#b016]</code> <code>[c06#b023]</code>, Figure 3 <code>[c06#b021]</code></p>
+
+<div class="core">SimHash는 트리 하나를 짧은 비트열(체크섬, checksum)로 요약한다. 토큰마다 해시 비트열을 만들고, 비트 0과 1을 −1과 +1로 보고 가중치를 곱해 위치별로 더한 뒤, 부호만 남긴다.</div>
+
+<p>Tahoe가 트리 재배치를 하려면 어떤 트리끼리 비슷한지 알아야 한다. 원문이 말하는 "비슷하다"는 추론 때 비슷한 경로를 지나고 비슷한 속성을 읽는다는 뜻이다 <code>[c06#b011]</code>. 트리를 쌍마다 비교하면 트리 3000개에서 최대 19분이 걸려 온라인으로 쓸 수 없다 <code>[c06#b012]</code>. 그래서 트리마다 체크섬을 한 번만 만들고 체크섬끼리 비교한다.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:18%">기호</th><th>뜻</th><th class="num" style="width:16%">Figure 3</th><th class="num" style="width:16%">실험 (7.1절)</th></tr>
+<tr><td class="c">\(T_{nodes}\)</td><td>토큰 하나에 넣는 노드 수. 그림에는 \(k\)로 표기</td><td class="num">2</td><td class="num">4</td></tr>
+<tr><td class="c">\(L_{hash}\)</td><td>토큰을 해시한 문자열의 길이(비트 수)</td><td class="num">8</td><td class="num">128</td></tr>
+<tr><td class="c">\(w\)</td><td>가중치 = 토큰 마지막 노드의 노드 확률</td><td class="num">0.80 등</td><td class="num">—</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">실험 값 근거 <code>[c09#b005]</code>. 해시 함수는 SHA1이다 <code>[c06#b016]</code>.</p>
+
+<h3>먼저 작은 예로 (직접 만든 예)</h3>
+<p>SimHash의 계산은 비트 자리마다 하는 투표다. 토큰이 세 개뿐이고 비트열이 4비트인 트리로 먼저 따라가 본다. 토큰과 비트열, 가중치는 설명을 위해 직접 만든 값이다.</p>
+<p><span class="step">STEP 1</span> 토큰마다 해시 비트열과 가중치를 받는다. 같은 토큰은 언제나 같은 비트열을 받는다.</p>
+<div class="table-wrap"><table>
+<tr><th>토큰</th><th class="num">가중치</th><th class="c">비트 1</th><th class="c">비트 2</th><th class="c">비트 3</th><th class="c">비트 4</th></tr>
+<tr><td>A</td><td class="num">0.8</td><td class="c">1</td><td class="c">0</td><td class="c">1</td><td class="c">1</td></tr>
+<tr><td>B</td><td class="num">0.5</td><td class="c">0</td><td class="c">0</td><td class="c">1</td><td class="c">0</td></tr>
+<tr><td>C</td><td class="num">0.2</td><td class="c">1</td><td class="c">1</td><td class="c">0</td><td class="c">0</td></tr>
+</table></div>
+<p><span class="step">STEP 2</span> 자리마다 투표한다. 비트가 1이면 찬성(+), 0이면 반대(−)이고, 표의 무게는 그 토큰의 가중치다.</p>
+<div class="table-wrap"><table>
+<tr><th>토큰</th><th class="num">비트 1</th><th class="num">비트 2</th><th class="num">비트 3</th><th class="num">비트 4</th></tr>
+<tr><td>A (0.8)</td><td class="num">+0.8</td><td class="num">−0.8</td><td class="num">+0.8</td><td class="num">+0.8</td></tr>
+<tr><td>B (0.5)</td><td class="num">−0.5</td><td class="num">−0.5</td><td class="num">+0.5</td><td class="num">−0.5</td></tr>
+<tr><td>C (0.2)</td><td class="num">+0.2</td><td class="num">+0.2</td><td class="num">−0.2</td><td class="num">−0.2</td></tr>
+<tr class="y"><td>합계</td><td class="num">+0.5</td><td class="num">−1.1</td><td class="num">+1.1</td><td class="num">+0.1</td></tr>
+<tr><td>체크섬 (양수면 1)</td><td class="num">1</td><td class="num">0</td><td class="num">1</td><td class="num">1</td></tr>
+</table></div>
+<p><span class="step">STEP 3</span> 합계의 부호만 남기면 체크섬은 1011이다. 가장 무거운 토큰 A의 비트열과 같다. 가중치는 샘플이 그 토큰을 얼마나 자주 지나는지를 뜻하므로, 자주 쓰는 경로가 체크섬을 사실상 결정하고 드물게 쓰는 경로는 영향이 작다.</p>
+<p>두 트리가 같은 토큰을 많이 갖고 있으면 같은 표가 많이 겹쳐서 자리마다 결과도 대부분 같게 나온다. 가벼운 토큰 몇 개가 달라도 결과는 잘 뒤집히지 않는다. 일반 해시는 입력이 조금만 달라도 결과가 완전히 달라지지만, SimHash는 조금 다른 트리에 조금만 다른 체크섬을 준다 <span class="infer">추론</span>. 아래는 같은 계산을 원문 Figure 3의 값(토큰 6개, 8비트)으로 한 것이다.</p>
+
+<h3>숫자로 따라가기 (원문 Figure 3, Tree#1)</h3>
+<p><span class="step">STEP 1</span> 토큰화(tokenization). 루트→리프 경로를 노드 2개씩 자른다. 경로 1-2-4는 1-2, 2-4가 되고, 1-2-5는 1-2, 2-5가 된다. 겹치는 1-2를 한 번만 세면 Tree#1의 토큰은 1-2, 2-4, 2-5, 1-3, 3-7, 3-6, 여섯 개다 <code>[c06#b023]</code>. 숫자는 노드 번호이고 1이 \(V_{11}\), 4가 \(V_{14}\)다.</p>
+<p><span class="step">STEP 2</span> 토큰마다 SHA1로 8비트 문자열을 만든다. 그림은 비트를 −1과 1로 적었다(0 → −1) <span class="infer">추론</span>. 가중치는 각 토큰의 마지막 노드의 노드 확률이고, 2절에서 계산한 값과 같다.</p>
+<div class="table-wrap"><table>
+<tr><th>토큰</th><th>마지막 노드</th><th class="num">가중치 \(w\)</th><th class="c">1</th><th class="c">2</th><th class="c">3</th><th class="c">4</th><th class="c">5</th><th class="c">6</th><th class="c">7</th><th class="c">8</th></tr>
+<tr><td>1-2</td><td>\(V_{12}\)</td><td class="num">0.80</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td></tr>
+<tr><td>2-4</td><td>\(V_{14}\)</td><td class="num">0.48</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">−1</td></tr>
+<tr><td>2-5</td><td>\(V_{15}\)</td><td class="num">0.32</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">−1</td><td class="c">1</td></tr>
+<tr><td>1-3</td><td>\(V_{13}\)</td><td class="num">0.20</td><td class="c">−1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td></tr>
+<tr><td>3-7</td><td>\(V_{17}\)</td><td class="num">0.14</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td></tr>
+<tr><td>3-6</td><td>\(V_{16}\)</td><td class="num">0.06</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">문자열과 가중치는 원문 Figure 3을 그대로 옮겼다. 실제 SHA1 출력으로 다시 만든 값은 아니다.</p>
+<p><span class="step">STEP 3</span> 위치마다 \(w \times\) 비트를 세로로 더한다. 1번 위치를 풀어 쓰면 아래와 같다.</p>
+$$ -0.80 + 0.48 + 0.32 - 0.20 - 0.14 + 0.06 = -0.28 $$
+<p>나머지 위치도 같은 방법으로 더한다.</p>
+<div class="table-wrap"><table>
+<tr><th>위치</th><th>가중합 계산</th><th class="num">체크섬</th></tr>
+<tr><td class="c">1</td><td>−0.80 + 0.48 + 0.32 − 0.20 − 0.14 + 0.06</td><td class="num">−0.28</td></tr>
+<tr><td class="c">2</td><td>0.80 − 0.48 + 0.32 − 0.20 + 0.14 − 0.06</td><td class="num">0.52</td></tr>
+<tr><td class="c">3</td><td>−0.80 + 0.48 − 0.32 + 0.20 + 0.14 + 0.06</td><td class="num">−0.24</td></tr>
+<tr><td class="c">4</td><td>−0.80 − 0.48 + 0.32 − 0.20 + 0.14 + 0.06</td><td class="num">−0.96</td></tr>
+<tr class="y"><td class="c">5</td><td>0.80 + 0.48 + 0.32 + 0.20 − 0.14 − 0.06</td><td class="num">1.60</td></tr>
+<tr><td class="c">6</td><td>−0.80 + 0.48 − 0.32 + 0.20 − 0.14 + 0.06</td><td class="num">−0.52</td></tr>
+<tr><td class="c">7</td><td>0.80 − 0.48 − 0.32 + 0.20 + 0.14 − 0.06</td><td class="num">0.28</td></tr>
+<tr><td class="c">8</td><td>−0.80 − 0.48 + 0.32 − 0.20 + 0.14 + 0.06</td><td class="num">−0.96</td></tr>
+</table></div>
+<p>Python으로 다시 더한 결과 [−0.28, 0.52, −0.24, −0.96, 1.6, −0.52, 0.28, −0.96]이 나와 원문 Figure 3의 체크섬과 같다.</p>
+<p><span class="step">STEP 4</span> 정규화(normalization). 0 이상이면 1, 0보다 작으면 0으로 바꾼다 <code>[c06#b018]</code>.</p>
+$$ [-0.28,\ 0.52,\ -0.24,\ -0.96,\ 1.6,\ -0.52,\ 0.28,\ -0.96] \ \rightarrow\ [0,1,0,0,1,0,1,0] $$
+<p>가중치가 큰 토큰이 부호를 좌우한다. 5번 위치는 가중치 0.80인 토큰 1-2가 1이고 다른 큰 토큰도 1이라 크게 양수가 됐다. 샘플이 자주 지나는 경로가 체크섬에 더 많이 반영되도록 노드 확률을 가중치로 쓴 것이다. 원문은 이 가중치가 LSH의 유사도 포착에 필요하다고만 적었다 <code>[c06#b016]</code>.</p>
+
+<div class="quiz" data-answer="b">
+  <div class="q">Q. 어떤 위치의 가중합이 정확히 0이면 정규화 뒤 그 위치 값은?</div>
+  <label><input type="radio" name="q-s8-1" value="a"> 0</label>
+  <label><input type="radio" name="q-s8-1" value="b"> 1</label>
+  <label><input type="radio" name="q-s8-1" value="c"> −1</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="원문 4.2절은 0보다 작으면 0, 0보다 크거나 같으면 1로 정규화한다고 적었다 [c06#b018]. 0은 '크거나 같다'에 들어가므로 1이다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s8-mine" placeholder="SimHash가 트리 하나를 비트열로 바꾸는 과정"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c06">서재에서 4절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 9 ============ -->
+<section id="s9">
+<h2>지역 민감 해싱 (LSH)</h2>
+<p class="paper">원문 <b>4.2절</b> Applying LSH <code>[c06#b018]</code>, An example <code>[c06#b024]</code>, Complexity analysis <code>[c06#b020]</code> <code>[c06#b022]</code>, Figure 3</p>
+
+<div class="core">지역 민감 해싱(Locality Sensitive Hashing, LSH)은 비슷한 입력이 같은 해시값을 받도록 만든 해싱이다. Tahoe는 정규화한 체크섬을 청크(chunk) \(M\)개로 나눠 청크마다 해시하고, 같은 해시값이 나온 횟수(충돌 수)가 많은 트리끼리 메모리에 나란히 놓는다.</div>
+
+<p>일반 해시는 입력이 한 비트만 달라도 결과가 완전히 달라지게 만든다. LSH는 반대로 비슷한 입력이 충돌하기를 바란다. 원문은 청크 해시로 Rabin-Karp 해싱을 쓴다 <code>[c06#b018]</code>. Rabin-Karp 해시는 문자열을 어떤 밑(base)의 자릿수로 보고 값을 계산하므로 같은 청크는 언제나 같은 값을 받는다. 2비트 청크에 밑 2를 쓰면 "01"은 1, "11"은 3이 된다 <span class="infer">추론</span>.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:18%">기호·용어</th><th>뜻</th><th class="num" style="width:16%">Figure 3</th><th class="num" style="width:16%">실험</th></tr>
+<tr><td class="c">\(M\)</td><td>정규화한 체크섬을 나누는 청크 수</td><td class="num">4 (2비트씩)</td><td class="num">64</td></tr>
+<tr><td>충돌 (collision)</td><td>두 트리의 같은 번호 청크가 같은 해시값을 받음</td><td class="num">—</td><td class="num">—</td></tr>
+<tr><td>버킷 (bucket)</td><td>충돌한 트리 쌍의 묶음. 원문 예에서는 (T1,T2), (T2,T3), (T1,T3)</td><td class="num">—</td><td class="num">—</td></tr>
+</table></div>
+
+<h3>숫자로 따라가기 (원문 Figure 3)</h3>
+<p><span class="step">STEP 1</span> 트리 세 개의 정규화된 체크섬을 2비트씩 네 청크로 자른다. T1은 8절에서 구한 [0,1,0,0,1,0,1,0]이다.</p>
+<div class="table-wrap"><table>
+<tr><th>트리</th><th class="c">청크 0</th><th class="c">청크 1</th><th class="c">청크 2</th><th class="c">청크 3</th></tr>
+<tr><td>T1</td><td class="c">0 1</td><td class="c">0 0</td><td class="c">1 0</td><td class="c">1 0</td></tr>
+<tr><td>T2</td><td class="c">1 1</td><td class="c">0 1</td><td class="c">1 1</td><td class="c">0 1</td></tr>
+<tr><td>T3</td><td class="c">1 1</td><td class="c">1 0</td><td class="c">1 0</td><td class="c">0 1</td></tr>
+</table></div>
+<div class="warn">원문 Figure 3의 표는 세 행의 이름을 T1, T1, T2로 적었다. 그림 아래 "Group" 줄의 묶음((T1)(T2,T3) 등)과 충돌 수 표가 맞으려면 둘째 행이 T2, 셋째 행이 T3여야 하므로 그렇게 고쳐 읽었다 <span class="infer">추론</span>.</div>
+<p><span class="step">STEP 2</span> 청크마다 해시하고 같은 값끼리 묶는다(밑 2 Rabin-Karp로 계산, Python 검산).</p>
+<div class="table-wrap"><table>
+<tr><th>청크</th><th>T1</th><th>T2</th><th>T3</th><th>묶음 (원문 Group)</th><th>충돌한 쌍</th></tr>
+<tr><td class="c">0</td><td class="c">01 → 1</td><td class="c">11 → 3</td><td class="c">11 → 3</td><td>(T1)(T2,T3)</td><td>T2&amp;T3</td></tr>
+<tr><td class="c">1</td><td class="c">00 → 0</td><td class="c">01 → 1</td><td class="c">10 → 2</td><td>(T1)(T3)(T2)</td><td>없음</td></tr>
+<tr><td class="c">2</td><td class="c">10 → 2</td><td class="c">11 → 3</td><td class="c">10 → 2</td><td>(T1,T3)(T2)</td><td>T1&amp;T3</td></tr>
+<tr><td class="c">3</td><td class="c">10 → 2</td><td class="c">01 → 1</td><td class="c">01 → 1</td><td>(T1)(T2,T3)</td><td>T2&amp;T3</td></tr>
+</table></div>
+<p><span class="step">STEP 3</span> 쌍마다 충돌 수를 센다. T1&amp;T2는 0, T2&amp;T3는 2, T1&amp;T3는 1이다. 원문 값과 같다 <code>[c06#b024]</code>.</p>
+<p><span class="step">STEP 4</span> 순서를 정한다. 충돌이 가장 많은 T2–T3를 먼저 붙이고, T3와 다음으로 많이 충돌한 T1을 그 옆에 둔다. 메모리 순서는 T2, T3, T1이다. 이 순서가 3절에서 본 adaptive 형식의 루트 순서(V21, V31, V11)다. 그 뒤 버킷 안 트리를 라운드 로빈으로 스레드에 나눠 부하를 대략 고르게 한다 <code>[c06#b018]</code>.</p>
+
+<h3>쌍 비교와 비용 비교</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:24%">방법</th><th>계산 복잡도</th><th>공간 복잡도</th><th>트리 3000개일 때</th></tr>
+<tr><td>쌍별 비교 (pairwise)</td><td>\(O(2^{D_{tree}} \cdot N_{trees}^2)\)</td><td>\(O(N_{trees}^2)\)</td><td>쌍 4,498,500개, 최대 19분 <code>[c06#b012]</code></td></tr>
+<tr class="y"><td>SimHash + LSH</td><td>\(O(D_{tree} \cdot N_{trees}) + O(N_{trees})\)</td><td>\(O(N_{tokens} L_{hash}) + O(N_{trees} M)\)</td><td>노드 재배치 단계가 쌍 비교보다 37배 넘게 빠름 <code>[c09#b025]</code></td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">복잡도 근거 <code>[c06#b020]</code> <code>[c06#b022]</code>. 서재 추출본은 쌍별 비교 복잡도를 \(O(2^{D_{tree}} * N_{trees})\), 공간을 \(O(N_{trees})\)로 적었지만 PDF 원문(5~6쪽)에는 \(N_{trees}^2\)으로 되어 있어 원문을 따랐다. 쌍 수 \(3000 \times 2999 / 2\)는 직접 계산했다.</p>
+
+<div class="quiz" data-answer="c">
+  <div class="q">Q. 충돌 수가 T1&amp;T2 = 3, T2&amp;T3 = 0, T1&amp;T3 = 1이라면 원문 규칙으로 정한 메모리 순서로 가장 알맞은 것은?</div>
+  <label><input type="radio" name="q-s9-1" value="a"> T2, T3, T1</label>
+  <label><input type="radio" name="q-s9-1" value="b"> T3, T2, T1</label>
+  <label><input type="radio" name="q-s9-1" value="c"> T2, T1, T3</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="가장 많이 충돌한 T1–T2를 먼저 붙이고, 남은 T3는 T1과 1번 충돌했으므로 T1 옆에 둔다. 원문 4.2절: 트리 A는 A와 가장 많이 충돌한 트리 B 옆에 놓인다 [c06#b018]. 원문 예(0, 2, 1 → T2, T3, T1)와 같은 방식이다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s9-mine" placeholder="충돌 수로 트리 순서를 정하는 과정"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c06">서재에서 4절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 10 ============ -->
+<section id="s10">
+<h2>분석적 성능 모델 읽기</h2>
+<div class="audio"><span class="lbl">🔊 듣기 D (10~11절)</span><audio controls preload="none" src="audio/Xie_2021_Tahoe_D.mp3"></audio></div>
+<p class="paper">원문 <b>6.1절</b> 식 (1)~(7) <code>[c08#b006]</code>~<code>[c08#b031]</code>, Table 1 <code>[c08#b012]</code>, <b>7.3·7.4절</b> <code>[c09#b023]</code> <code>[c09#b026]</code></p>
+
+<div class="core">분석적 성능 모델(analytical performance model)은 실행해 보지 않고 식으로 시간을 예측한다. 각 항은 "옮길 바이트 수 ÷ 대역폭"이고, 배치마다 한 번 드는 비용은 배치 크기 \(N_{batch}\)로 나눠 샘플 하나의 몫으로 바꾼다.</div>
+
+<p>원문은 샘플 하나를 처리하는 시간을 네 항의 합으로 놓는다 <code>[c08#b006]</code>. 노드에서 비교하는 계산은 모든 전략에서 같으므로 뺐다 <code>[c08#b004]</code>.</p>
+$$ T = T_{SMEM} + T_{GMEM} + T_{B\_REDU} + T_{G\_REDU} \qquad (1) $$
+
+<div class="table-wrap"><table>
+<tr><th style="width:20%">기호</th><th>뜻</th><th class="num" style="width:22%">아래 예제 값 (가정)</th></tr>
+<tr><td class="c">\(T_{SMEM}, T_{GMEM}\)</td><td>shared / global memory 접근 시간</td><td class="num">—</td></tr>
+<tr><td class="c">\(T_{B\_REDU}, T_{G\_REDU}\)</td><td>블록 단위 / 전역 리덕션 시간</td><td class="num">—</td></tr>
+<tr><td class="c">\(D_{tree}\)</td><td>트리 평균 깊이 (샘플 하나가 트리 하나에서 읽는 노드 수)</td><td class="num">8</td></tr>
+<tr><td class="c">\(N_{trees}\)</td><td>트리 수</td><td class="num">100</td></tr>
+<tr><td class="c">\(N_{nodes}\)</td><td>트리 하나의 노드 수 (포레스트 조각을 올릴 때 씀)</td><td class="num">255</td></tr>
+<tr><td class="c">\(S_{node}, S_{att}\)</td><td>노드 하나, 속성 하나의 바이트 수</td><td class="num">8, 4 B</td></tr>
+<tr><td class="c">\(BW\_RSMEM, BW\_WSMEM\)</td><td>shared memory 읽기·쓰기 대역폭</td><td class="num">2000 B/ns</td></tr>
+<tr><td class="c">\(BW\_R^{COA}_{GMEM}\)</td><td>병합된 접근일 때 global memory 읽기 대역폭</td><td class="num">500 B/ns</td></tr>
+<tr><td class="c">\(BW\_R^{NCOA}_{GMEM}\)</td><td>병합이 전혀 안 될 때의 대역폭</td><td class="num">50 B/ns</td></tr>
+<tr><td class="c">\(G\_rate\)</td><td>블록 하나당 전역 리덕션 비용 (오프라인 측정 상수)</td><td class="num">1000 ns</td></tr>
+<tr><td class="c">\(P\)</td><td>스레드 블록 수 = 포레스트 조각 수 (식의 \(Num\_of\_thrd\_blocks\))</td><td class="num">5</td></tr>
+<tr><td class="c">\(N_{batch}\)</td><td>배치 크기 (한 번에 처리하는 샘플 수)</td><td class="num">100 / 100,000</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">기호는 원문 Table 1·식 (2)~(7)의 표기다. 오른쪽 값은 계산 연습용으로 만든 숫자이며 원문 측정값이 아니다 <span class="infer">추론</span>. 1 GB/s = 1 B/ns라서 바이트를 B/ns로 나누면 바로 ns가 나온다.</p>
+
+<h3>원문의 세 가정</h3>
+<div class="table-wrap"><table>
+<tr><th class="c" style="width:8%">번호</th><th>가정</th><th>식에서 보이는 곳</th><th>근거</th></tr>
+<tr><td class="c">1</td><td>adaptive 형식 덕에 포레스트는 병합된 접근으로 읽힘. 측정 효율 45.8% → 병합 대역폭의 절반으로 둠</td><td>포레스트 항의 분모 \(BW\_R^{COA}_{GMEM}/2\)</td><td><code>[c08#b008]</code></td></tr>
+<tr><td class="c">2</td><td>샘플 속성 읽기는 완전히 무작위, 병합 없음</td><td>속성 항의 분모 \(BW\_R^{NCOA}_{GMEM}\)</td><td><code>[c08#b008]</code></td></tr>
+<tr><td class="c">3</td><td>트리 재배치 덕에 부하 불균형은 작음 (CV 12.7%)</td><td>불균형 항이 식에 없음</td><td><code>[c08#b008]</code></td></tr>
+</table></div>
+
+<h3>숫자로 따라가기 (직접 만든 예)</h3>
+<p>direct와 splitting shared forest 두 전략을 같은 포레스트로 비교한다.</p>
+<p><span class="step">STEP 1</span> direct, 식 (5). 포레스트는 global memory에서 절반 대역폭으로, 속성은 병합 없이 읽는다. 배치와 무관하다.</p>
+$$ T_{GMEM} = \frac{8 \times 100 \times 8}{500/2} + \frac{8 \times 100 \times 4}{50} = \frac{6400}{250} + \frac{3200}{50} = 25.6 + 64 = 89.6\ \text{ns} $$
+<p><span class="step">STEP 2</span> splitting shared forest, 식 (7)과 식 (3). 포레스트 조각을 올리는 비용과 전역 리덕션은 배치마다 한 번이라 \(N_{batch}\)로 나눈다.</p>
+$$ T = \underbrace{\frac{255 \times 100 \times 8}{2000\,N_{batch}} + \frac{255 \times 100 \times 8}{500\,N_{batch}}}_{\text{포레스트 조각 올리기}} + \underbrace{\frac{8 \times 100 \times 8}{2000}}_{3.2} + \underbrace{\frac{8 \times 100 \times 4}{50}}_{64} + \underbrace{\frac{1000 \times 5}{N_{batch}}}_{T_{G\_REDU}} $$
+$$ = 67.2 + \frac{102 + 408 + 5000}{N_{batch}} = 67.2 + \frac{5510}{N_{batch}}\ \text{ns} $$
+<p><span class="step">STEP 3</span> 배치 100과 100,000을 넣는다. 원문 7.2절에서 배치 100은 낮은 병렬(low-latency) 작업, 100K는 높은 병렬(high-throughput) 작업을 나타낸다 <code>[c09#b010]</code>.</p>
+<div class="table-wrap"><table>
+<tr><th>\(N_{batch}\)</th><th class="num">포레스트 조각 올리기</th><th class="num">포레스트 읽기 (shared)</th><th class="num">속성 읽기</th><th class="num">전역 리덕션 \(T_{G\_REDU}\)</th><th class="num">splitting 합계</th><th class="num">리덕션 몫</th><th class="num">direct</th><th>더 빠른 쪽</th></tr>
+<tr><td class="num">100</td><td class="num">5.10</td><td class="num">3.2</td><td class="num">64</td><td class="num">50.0</td><td class="num">122.3</td><td class="num">40.9%</td><td class="num">89.6</td><td>direct</td></tr>
+<tr class="y"><td class="num">100,000</td><td class="num">0.0051</td><td class="num">3.2</td><td class="num">64</td><td class="num">0.05</td><td class="num">67.26</td><td class="num">0.07%</td><td class="num">89.6</td><td>splitting shared forest</td></tr>
+</table></div>
+<p>(단위 ns, Python 검산.) 같은 포레스트인데 배치 크기만 바꿔도 승자가 바뀐다. 이 숫자로는 \(67.2 + 5510/N_{batch} = 89.6\)을 풀면 \(N_{batch} \approx 246\)에서 순위가 뒤집힌다. 원문 Higgs에서 10K를 경계로 승자가 바뀐 것도 같은 구조다 <code>[c07#b020]</code>. 원문 7.2절은 높은 병렬 작업에서 리덕션 비용이 상각(amortize)되어 Tahoe의 이득이 더 크다고 설명한다 <code>[c09#b011]</code>.</p>
+
+<h3>모델이 실제로 맞았나</h3>
+<div class="table-wrap"><table>
+<tr><th>항목</th><th>원문 값</th><th>근거</th></tr>
+<tr><td>네 전략의 순위를 맞힌 경우</td><td>90건 중 87건</td><td><code>[c09#b023]</code></td></tr>
+<tr><td>틀린 3건의 성능 (수동 최적 대비)</td><td>4.73x · 2.71x · 2.26x (최적 4.96x · 2.86x · 2.31x)</td><td><code>[c09#b023]</code></td></tr>
+<tr><td>모델 계산 비용</td><td>원문 표기 부동소수점 연산 90개(덧셈 8·곱셈 26·나눗셈 14를 더하면 48이라 원문 합계가 맞지 않는다 <span class="infer">추론</span>), K80 0.92ns · P100 0.28ns · V100 0.17ns</td><td><code>[c09#b026]</code></td></tr>
+</table></div>
+<p>모델은 배치마다 한 번 계산하고(Algorithm 1의 8~15줄), 예측 시간이 가장 짧은 전략을 실행한다 <code>[c08#b028]</code> <code>[c08#b034]</code>. 포레스트가 shared memory보다 작으면 shared forest를, 크면 splitting shared forest를 후보로 넣는다.</p>
+
+<div class="quiz" data-answer="b">
+  <div class="q">Q. 식 (3) \(T_{G\_REDU} = G\_rate \times Num\_of\_thrd\_blocks / N_{batch}\)에서 배치 크기를 10배로 키우면 샘플 하나당 전역 리덕션 시간은?</div>
+  <label><input type="radio" name="q-s10-1" value="a"> 10배 커진다</label>
+  <label><input type="radio" name="q-s10-1" value="b"> 1/10로 줄어든다</label>
+  <label><input type="radio" name="q-s10-1" value="c"> 변하지 않는다</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="전역 리덕션은 배치마다 한 번 일어나므로 그 비용을 배치 안 샘플 수로 나누면 샘플당 몫이 된다 [c08#b011] [c08#b029]. 분모가 10배가 되면 몫은 1/10이다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-s10-mine" placeholder="성능 모델의 항 하나를 읽는 법"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c08">서재에서 6절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 11 ============ -->
+<section id="next">
+<h2>다음 단계와 점검</h2>
+<p class="paper">이 노트 다음은 <a href="Xie_2021_Tahoe_논문_해설.html">논문 해설</a>이다. 해설은 논문 절 순서대로 원문 인용과 함께 설계와 실험을 따라간다.</p>
+
+<div class="core">이 노트의 개념 10개는 논문의 세 문제(병합되지 않은 접근, 부하 불균형, 리덕션 비용)와 두 해법(adaptive forest format, 성능 모델로 고르는 추론 전략)에 그대로 연결된다.</div>
+
+<h3>남은 원문 절과 난도</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:24%">원문 절</th><th class="c" style="width:10%">난도</th><th>먼저 볼 노트 절</th><th>읽을 때 볼 것</th></tr>
+<tr><td>1 Introduction</td><td class="c">쉬움</td><td>1, 4, 5, 6</td><td>27.2%, 최대 10배, 세 문제의 순서</td></tr>
+<tr><td>2 Background</td><td class="c">쉬움</td><td>1, 2, 3</td><td>Figure 1의 두 줄 비교</td></tr>
+<tr><td>3 Motivation</td><td class="c">보통</td><td>4, 5, 6</td><td>Figure 2 (a)(b)(c)와 13.7%·49.1%·53%</td></tr>
+<tr><td>4 Adaptive Forest Format</td><td class="c">어려움</td><td>2, 3, 8, 9</td><td>Figure 3 흐름, 가변 길이 속성 번호 (최대 23.6% 절약 <code>[c06#b027]</code>)</td></tr>
+<tr><td>5 Inference Strategies</td><td class="c">보통</td><td>6, 7</td><td>Figure 4·5·6, 배치 크기에 따른 승자</td></tr>
+<tr><td>6 Tahoe</td><td class="c">어려움</td><td>10</td><td>식 (4)~(7)의 항별 의미, Algorithm 1</td></tr>
+<tr><td>7 Evaluation</td><td class="c">보통</td><td>4, 5, 10</td><td>배속 조건(GPU·배치), Table 3, 7.4 오버헤드</td></tr>
+<tr><td>8 Related Work, 9 Conclusions</td><td class="c">쉬움</td><td>1</td><td>RF와 GBM 구분, FIL과의 차이</td></tr>
+</table></div>
+<div class="ok">초록의 배속 3.82x·2.59x·2.75x(K80·P100·V100) <code>[c02#b002]</code>는 7.2절의 높은 병렬 평균(5.31·3.67·4.05)과 낮은 병렬 평균(2.34·1.52·1.45)을 산술평균한 값과 일치한다. \((5.31+2.34)/2 = 3.825\), \((3.67+1.52)/2 = 2.595\), \((4.05+1.45)/2 = 2.75\) <code>[c09#b011]</code>. 원문은 이 관계를 적지 않았다 <span class="infer">추론</span>.</div>
+
+<h3>자료 없이 말할 수 있어야 할 것</h3>
+<ul class="check-list">
+<li><label><input type="checkbox" data-key="tahoe-c1"> 결정 노드가 담는 세 가지(속성 번호, 비교 값, 기본 경로)와 추론 경로가 샘플마다 달라지는 이유</label></li>
+<li><label><input type="checkbox" data-key="tahoe-c2"> 간선 확률로 노드 확률을 구하는 법, Tree#1의 \(V_{14}\) = 0.48 계산</label></li>
+<li><label><input type="checkbox" data-key="tahoe-c3"> reorg 형식이 세 트리의 노드를 놓는 순서, 3층에서 V14·V24·V35가 흩어지는 이유</label></li>
+<li><label><input type="checkbox" data-key="tahoe-c4"> 128바이트 트랜잭션과 요청/가져온 비율, FIL의 27.2%와 7~10층의 13.7%</label></li>
+<li><label><input type="checkbox" data-key="tahoe-c5"> CV = 표준편차 ÷ 평균, FIL 49.1%에서 재배치 뒤 12.7%</label></li>
+<li><label><input type="checkbox" data-key="tahoe-c6"> 네 전략을 "shared memory에 무엇을 두나 / 리덕션이 있나"로 구분하기</label></li>
+<li><label><input type="checkbox" data-key="tahoe-c7"> Figure 3의 체크섬 → [0,1,0,0,1,0,1,0] → 충돌 수 0·2·1 → 순서 T2, T3, T1</label></li>
+<li><label><input type="checkbox" data-key="tahoe-c8"> 성능 모델에서 배치마다 한 번 드는 비용을 \(N_{batch}\)로 나누는 이유와, 배치 100과 100K에서 승자가 바뀔 수 있는 이유</label></li>
+</ul>
+
+<h3>용어 대응 (원문 ↔ 노트)</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:45%">원문</th><th>이 노트</th></tr>
+<tr><td>decision tree inference</td><td>결정트리 추론</td></tr>
+<tr><td>ensemble / forest</td><td>앙상블 / 포레스트 (원문은 두 말을 같은 뜻으로 씀 <code>[c04#b005]</code>)</td></tr>
+<tr><td>attribute index / value / default path (D)</td><td>속성 번호 / 비교 값(임계값) / 기본 경로</td></tr>
+<tr><td>edge probability / node probability</td><td>간선 확률 / 노드 확률</td></tr>
+<tr><td>FIL (NVIDIA RAPIDS Forest Inference Library)</td><td>FIL</td></tr>
+<tr><td>reorg format, breadth-first order</td><td>reorg 형식, 너비 우선 순서</td></tr>
+<tr><td>adaptive forest format</td><td>적응형 포레스트 형식 (adaptive forest format)</td></tr>
+<tr><td>probability-based node rearrangement</td><td>노드 재배치</td></tr>
+<tr><td>similarity-based tree rearrangement</td><td>트리 재배치</td></tr>
+<tr><td>memory transaction</td><td>메모리 트랜잭션</td></tr>
+<tr><td>coalesced / uncoalesced access</td><td>병합된 접근(메모리 병합 접근) / 병합되지 않은 접근</td></tr>
+<tr><td>load imbalance</td><td>부하 불균형</td></tr>
+<tr><td>coefficient of variation (CV, A.C.V.)</td><td>변동계수 (평균 변동계수)</td></tr>
+<tr><td>blockwise reduction / global reduction</td><td>블록 단위 리덕션 / 전역 리덕션</td></tr>
+<tr><td>shared data / direct / shared forest / splitting shared forest</td><td>원어 그대로</td></tr>
+<tr><td>token, checksum, chunk, bucket, collision</td><td>토큰, 체크섬, 청크, 버킷, 충돌</td></tr>
+<tr><td>Locality Sensitive Hashing (LSH)</td><td>지역 민감 해싱</td></tr>
+<tr><td>batch size, high / low parallelism task</td><td>배치 크기, 높은 / 낮은 병렬 작업</td></tr>
+</table></div>
+
+<div class="mine-lbl">해설을 읽기 전에 남은 질문</div>
+<textarea class="mine" data-key="tahoe-next-mine" placeholder="해설에서 확인하고 싶은 것"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c09">서재에서 7절 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+</main>
+</div>
+<button id="toTop" type="button" aria-label="맨 위로">↑</button>
+<script>
+window.addEventListener('load',function(){
+  if(window.renderMathInElement){renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});}
+});
+document.querySelectorAll('.quiz').forEach(function(q){
+  var btn=q.querySelector('button'),fb=q.querySelector('.fb');
+  btn.addEventListener('click',function(){
+    var s=q.querySelector('input:checked');
+    if(!s){fb.className='fb wrong';fb.textContent='보기를 먼저 고르세요.';return;}
+    var ok=s.value===q.dataset.answer;
+    fb.className='fb '+(ok?'right':'wrong');
+    fb.textContent=(ok?'정답입니다. ':'다시 생각해 보세요. ')+fb.dataset.explain;
+  });
+});
+document.querySelectorAll('input[type=checkbox][data-key]').forEach(function(c){
+  try{c.checked=localStorage.getItem(c.dataset.key)==='1';}catch(e){}
+  c.addEventListener('change',function(){try{localStorage.setItem(c.dataset.key,c.checked?'1':'0');}catch(e){}});
+});
+document.querySelectorAll('textarea.mine[data-key]').forEach(function(t){
+  try{t.value=localStorage.getItem(t.dataset.key)||'';}catch(e){}
+  t.addEventListener('input',function(){try{localStorage.setItem(t.dataset.key,t.value);}catch(e){}});
+});
+document.querySelectorAll('.audio audio').forEach(function(a){
+  a.addEventListener('error',function(){
+    var s=document.createElement('span');s.className='miss';s.textContent='음성 파일이 아직 없습니다 (audio/ 폴더).';
+    a.replaceWith(s);
+  });
+});
+var t=document.getElementById('toTop');
+window.addEventListener('scroll',function(){t.classList.toggle('show',window.scrollY>600);});
+t.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>

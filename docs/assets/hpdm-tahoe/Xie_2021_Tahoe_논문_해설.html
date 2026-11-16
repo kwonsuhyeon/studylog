@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tahoe 논문 해설</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --bg:#f9f9f7; --card:#ffffff; --text:#1f1f1f; --muted:#6b6b66; --line:#e7e5df;
+  --blue:#2a78d6; --blue-soft:#eaf2fc; --orange:#eb6834; --orange-soft:#fdf0ea;
+  --green:#2f9e5b; --green-soft:#e9f6ee; --th:#f4f3ef; --code-bg:#f3f2ee; --top-btn:#111111;
+  --radius:14px; --sidebar-w:270px; --page-max:1400px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard",-apple-system,"Malgun Gothic",sans-serif;line-height:1.75;font-size:16px;word-break:keep-all}
+.layout{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr);gap:28px;max-width:var(--page-max);margin:0 auto;padding:32px 24px 80px}
+nav.toc{position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;font-size:14px}
+nav.toc .toc-title{font-weight:700;margin-bottom:10px}
+nav.toc .toc-group{font-size:12px;color:var(--orange);font-weight:700;margin:12px 6px 2px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 6px;border-radius:6px}
+nav.toc a:hover{background:var(--blue-soft);color:var(--blue)}
+main{min-width:0;counter-reset:sec}
+header.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 36px;margin-bottom:24px}
+header.hero h1{margin:0 0 8px;font-size:30px}
+header.hero p{margin:4px 0;color:var(--muted)}
+section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 36px;margin-bottom:24px;counter-increment:sec}
+section>h2{display:flex;align-items:center;gap:12px;margin:0 0 18px;font-size:24px}
+section>h2::before{content:counter(sec);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;flex:none}
+h3{font-size:19px;margin:30px 0 10px;padding-top:12px;border-top:1px dashed var(--line)}
+p{margin:8px 0}
+.core{background:var(--blue-soft);border-left:4px solid var(--blue);padding:14px 18px;border-radius:8px;margin:14px 0;font-weight:500}
+.warn{background:var(--orange-soft);border-left:4px solid var(--orange);padding:14px 18px;border-radius:8px;margin:14px 0}
+.ok{background:var(--green-soft);border-left:4px solid var(--green);padding:14px 18px;border-radius:8px;margin:14px 0}
+.paper{font-size:14px;color:var(--muted);margin:-8px 0 14px}
+.paper b{color:var(--blue)}
+.step{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px;margin-right:6px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;vertical-align:middle;text-align:left}
+th{background:var(--th);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+tr.y td{background:var(--orange-soft)}
+.hl{color:var(--orange);font-weight:700}
+.bl{color:var(--blue);font-weight:700}
+code{background:var(--code-bg);padding:1px 6px;border-radius:5px;font-size:.92em;font-family:Consolas,"D2Coding",monospace}
+pre{background:var(--code-bg);padding:14px 18px;border-radius:10px;overflow-x:auto;font-size:14px;line-height:1.6;font-family:Consolas,"D2Coding",monospace}
+.quiz{border:2px solid var(--blue-soft);border-radius:12px;padding:16px 20px;margin:18px 0;background:#fbfdff}
+.quiz .q{font-weight:700;margin-bottom:8px}
+.quiz label{display:block;padding:6px 10px;border-radius:8px;cursor:pointer}
+.quiz label:hover{background:var(--blue-soft)}
+.quiz button{margin-top:8px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:inherit;font-weight:600;cursor:pointer}
+.quiz .fb{display:none;margin-top:10px;padding:10px 14px;border-radius:8px}
+.quiz .fb.right{display:block;background:var(--green-soft)}
+.quiz .fb.wrong{display:block;background:var(--orange-soft)}
+details{margin:10px 0;border:1px solid var(--line);border-radius:10px;padding:10px 16px;background:#fcfcfa}
+details summary{cursor:pointer;font-weight:600;color:var(--blue)}
+.check-list{list-style:none;padding-left:0}
+.check-list li{padding:5px 0}
+.check-list input{transform:scale(1.15);margin-right:8px;accent-color:var(--blue)}
+.audio{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--th);border-radius:10px;padding:10px 16px;margin:0 0 18px}
+.audio .lbl{font-weight:700;font-size:14px}
+.audio audio{height:36px;flex:1;min-width:240px}
+.audio .miss{font-size:13px;color:var(--muted)}
+.mine{width:100%;min-height:64px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:15px;resize:vertical;background:#fffef9}
+.mine-lbl{font-weight:700;font-size:14px;color:var(--orange);margin-top:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.box h4{margin:0 0 6px;font-size:16px}
+svg text{font-family:"Pretendard",sans-serif}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0}
+@media (max-width:980px){.katex{max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle;position:relative;scrollbar-width:none}.katex::-webkit-scrollbar{display:none}}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.links a{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--blue-soft);color:var(--blue);text-decoration:none;font-weight:600;font-size:14px}
+#toTop{position:fixed;right:28px;bottom:28px;width:46px;height:46px;border-radius:50%;background:var(--top-btn);color:#fff;border:none;font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#toTop.show{opacity:1;pointer-events:auto}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;padding:16px}
+  nav.toc{position:static;max-height:none}
+  section,header.hero{padding:22px 18px}
+  .grid2{grid-template-columns:1fr}
+}
+/* paper-study 추가 요소 */
+.infer{display:inline-block;font-size:12px;font-weight:700;color:var(--orange);border:1px solid var(--orange);border-radius:999px;padding:0 8px;margin:0 4px;vertical-align:1px;background:#fff}
+.src-quote{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:10px;margin:14px 0;overflow:hidden}
+.src-quote .en{padding:12px 16px;background:#fcfcfa;font-size:15px}
+.src-quote .ko{padding:12px 16px;background:var(--blue-soft);font-size:15px}
+.src-quote .ref{grid-column:1/-1;font-size:12px;color:var(--muted);padding:5px 16px;border-top:1px solid var(--line);background:#fff}
+.src-quote .ref code{font-size:12px}
+.lib-link{display:inline-block;margin-top:14px;font-size:14px}
+.lib-link .local{color:var(--muted);font-size:12px;margin-left:6px}
+.sym{font-family:"KaTeX_Main",serif}
+@media (max-width:980px){.src-quote{grid-template-columns:1fr}}
+@media print{nav.toc,#toTop,.audio{display:none}.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-group">듣기 E · 지도·1~3절</div>
+  <a href="#map">1. 해설 지도</a>
+  <a href="#intro">2. 문제와 기여</a>
+  <a href="#motiv">3. 동기 실험</a>
+  <div class="toc-group">듣기 F · 4절</div>
+  <a href="#node">4. 확률 기반 노드 재배치</a>
+  <a href="#tree">5. 유사도 기반 트리 재배치</a>
+  <a href="#aff">6. 적응형 포레스트 형식</a>
+  <div class="toc-group">듣기 G · 5~6절</div>
+  <a href="#strat">7. 네 가지 추론 전략</a>
+  <a href="#model">8. 성능 모델</a>
+  <a href="#alg1">9. Algorithm 1</a>
+  <div class="toc-group">듣기 H · 7절 이후</div>
+  <a href="#setup">10. 실험 설정</a>
+  <a href="#result">11. 실험 결과</a>
+  <a href="#related">12. 관련 연구</a>
+  <a href="#limit">13. 한계와 토론</a>
+  <a href="#project">14. 내 연구와의 연결</a>
+  <a href="#check">15. 점검</a>
+</nav>
+<main>
+<header class="hero">
+  <h1>Tahoe 논문 해설</h1>
+  <p>Zhen Xie, Wenqian Dong, Jiawen Liu, Hang Liu, Dong Li. <i>Tahoe: Tree Structure-Aware High Performance Inference Engine for Decision Tree Ensemble on GPU</i>. EuroSys '21. <a href="https://doi.org/10.1145/3447786.3456251">doi:10.1145/3447786.3456251</a></p>
+  <p>논문 본문 1~9절을 절 순서대로 풀어 쓴 해설이다. 결정트리 추론, 메모리 병합 접근, 리덕션, SimHash 같은 기초 개념은 <a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트</a>가 맡는다. 여기서는 개념이 나올 때 한 줄로 짚고 노트의 절 번호를 단다.</p>
+  <p>수치와 인용은 원문 기준이다. 손 계산 예제는 이해를 돕기 위해 직접 만들었고 Python으로 검산했다. 원문에 없는 해석에는 <span class="infer">추론</span>을 붙였다.</p>
+  <div class="links"><a href="listen.html">🎧 듣기 전용</a><a href="Xie_2021_Tahoe_번역.html">📖 번역 읽기</a></div>
+</header>
+
+<!-- ============ 1 ============ -->
+<section id="map">
+<h2>해설 지도</h2>
+<div class="audio"><span class="lbl">🔊 듣기 E (1~3절)</span><audio controls preload="none" src="audio/Xie_2021_Tahoe_E.mp3"></audio></div>
+<p class="paper">원문 <b>전체</b> · 서재 id <code>itbb0228</code></p>
+
+<div class="core">GPU로 결정트리 앙상블을 추론할 때 생기는 문제 세 가지와 각각의 해결책이 이 논문의 전부다. 메모리 접근이 병합되지 않는 문제는 노드 재배치로, 스레드 사이 부하 불균형은 트리 재배치로, 리덕션 비용은 네 가지 추론 전략과 성능 모델로 다룬다.</div>
+
+<p>기존 엔진 FIL(NVIDIA RAPIDS Forest Inference Library)은 트리 구조를 보지 않고 노드를 저장하고 트리를 스레드에 나눠 준다. 저자들은 이 무관심을 성능 문제의 근본 원인으로 본다. Tahoe는 학습 뒤에 계산한 간선 확률(edge probability)로 자주 가는 자식 노드를 왼쪽에 모으고, SimHash와 LSH로 비슷한 트리끼리 메모리에 붙여 둔다. 그다음 shared memory에 샘플을 둘지 포레스트를 둘지, 리덕션을 둘지 없앨지를 네 전략으로 나누고, 배치마다 성능 모델로 가장 빠를 전략을 고른다. 결과는 FIL 대비 높은 병렬 작업 평균 5.31배·3.67배·4.05배, 낮은 병렬 작업 평균 2.34배·1.52배·1.45배(K80·P100·V100)다.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:24%">원문 절</th><th>답하는 질문</th><th style="width:14%">이 해설</th><th style="width:18%">배경지식 노트</th><th style="width:9%">난도</th></tr>
+<tr><td>Abstract, 1 Introduction</td><td>무엇이 문제이고 무엇을 기여했나</td><td>2절</td><td>1절</td><td>낮음</td></tr>
+<tr><td>2 Background</td><td>트리를 어떻게 저장하고 FIL은 어떻게 추론하나</td><td>2~3절에서 짚음</td><td>1·2·3절</td><td>낮음</td></tr>
+<tr><td>3 Motivation</td><td>문제가 실제로 얼마나 큰가 (Figure 2)</td><td>3절</td><td>4·5·6절</td><td>낮음</td></tr>
+<tr><td>4.1 Probability-based Node Rearrangement</td><td>노드 순서를 바꾸면 왜 병합 접근이 늘어나나</td><td>4절</td><td>2·3·4절</td><td>보통</td></tr>
+<tr><td>4.2 Similarity-based Tree Rearrangement</td><td>비슷한 트리를 어떻게 싸게 찾나</td><td>5절</td><td>8·9절</td><td class="hl">높음</td></tr>
+<tr><td>4.3 Adaptive Forest Format</td><td>세 기법을 저장 형식 하나로 어떻게 합치나</td><td>6절</td><td>3절</td><td>낮음</td></tr>
+<tr><td>5 Design of Inference Strategies</td><td>shared memory에 무엇을 둘까, 언제 어느 전략이 이기나</td><td>7절</td><td>6·7절</td><td>보통</td></tr>
+<tr><td>6.1 Performance Modeling</td><td>실행해 보지 않고 전략을 어떻게 고르나 (식 1~7)</td><td>8절</td><td>10절</td><td class="hl">높음</td></tr>
+<tr><td>6.2 Algorithm 1</td><td>무엇을 언제 어디서(CPU/GPU) 하나</td><td>9절</td><td>—</td><td>낮음</td></tr>
+<tr><td>7 Evaluation</td><td>얼마나 빠르고, 어느 기법이 얼마나 기여했나</td><td>10~11절</td><td>5절(CV)</td><td>보통</td></tr>
+<tr><td>8 Related Work, 9 Conclusions</td><td>기존 연구와 무엇이 다른가</td><td>12절</td><td>—</td><td>낮음</td></tr>
+<tr><td>(원문 밖)</td><td>어디서 깨질 수 있나, 내 프로젝트에 무엇을 가져오나</td><td>13~14절</td><td>11절</td><td>보통</td></tr>
+</table></div>
+<p>기초 개념 노트는 <a href="Xie_2021_Tahoe_배경지식_노트.html">Xie_2021_Tahoe_배경지식_노트.html</a>이다. 읽는 순서는 노트 1~3절 → 이 해설 1~3절 → 노트 4~9절 → 해설 4~7절 → 노트 10절 → 해설 8절 이후가 무난하다.</p>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="intro">
+<h2>문제와 기여 (1절)</h2>
+<p class="paper">원문 <b>Abstract</b>, <b>1 Introduction</b>, <b>2 Background</b> · 근거 <code>[c02#b002]</code> <code>[c03#b002]</code>~<code>[c03#b011]</code> <code>[c04#b003]</code> <code>[c04#b008]</code></p>
+
+<div class="core">결정트리 추론은 루트에서 리프까지 "속성 \(x_j \lt b_i\)" 비교를 반복하는 경로 따라가기다. 트리마다, 샘플마다 경로가 달라서 GPU 스레드들이 서로 먼 주소를 읽고, 서로 다른 시간에 일을 끝낸다.</div>
+
+<p>트리 추론의 기본 동작은 <a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 1절</a>에 있다. 각 결정 노드는 속성 번호(attribute index, 예: \(F_1\)), 임계값(예: \(V_{11}\)), 값이 없을 때 따라갈 기본 경로(default path, \(D\))를 담는다 <code>[c04#b003]</code>. 포레스트(forest)는 앙상블(ensemble)과 같은 뜻으로 쓰이고, 랜덤 포레스트(RF)와 GBDT 두 종류를 다룬다.</p>
+
+<h3>FIL의 추론 방식 (shared data)</h3>
+<p>FIL이 쓰는 기준 알고리즘을 원문은 <b>shared data</b>라고 부른다 <code>[c04#b008]</code>. 스레드 블록마다 포레스트 전체를 맡고, 블록 안에서는 트리를 라운드 로빈(round-robin)으로 스레드에 나눈다. 샘플은 shared memory가 꽉 찰 만큼 한 배치를 올린다. 스레드마다 자기 트리로 예측한 뒤 블록 단위 리덕션(blockwise reduction)으로 트리 결과를 합친다. 리덕션은 <a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 6절</a>에서 다룬다.</p>
+
+<div class="src-quote">
+  <div class="en" lang="en">However, different GPU threads traverse different trees, and can take different tree paths and access different attributes of input samples during the forest traverse, which causes irregular memory access patterns. Memory accesses from threads tend to be uncoalesced, which leads to poor performance, low hardware utilization and underutilized memory bandwidth. Using an industry-quality inference engine (i.e., FIL in NVIDIA RAPIDS suite [10]) to evaluate decision trees on GPU, we show that the ratio of requested data to total fetched data from global memory is only 27.2%, because of uncoalesced memory accesses.</div>
+  <div class="ko">그러나 GPU 스레드마다 다른 트리를 순회하고, 포레스트를 순회하는 동안 서로 다른 경로를 타며 입력 샘플의 서로 다른 속성에 접근하므로 메모리 접근 패턴이 불규칙해진다. 스레드의 메모리 접근은 병합되지 않는(uncoalesced) 경향이 있고, 그 결과 성능이 낮고 하드웨어 활용률이 떨어지며 메모리 대역폭을 다 쓰지 못한다. 산업 수준의 추론 엔진(NVIDIA RAPIDS의 FIL)으로 GPU에서 결정트리를 평가하면, 병합되지 않는 접근 때문에 전역 메모리에서 가져온 전체 데이터 가운데 실제로 요청한 데이터의 비율이 27.2%에 그친다.</div>
+  <div class="ref">원문 1절 <code>[c03#b004]</code> · p.1</div>
+</div>
+
+<div class="src-quote">
+  <div class="en" lang="en">As a result, trees in ensemble have different depths, and threads assigned with different trees to traverse have different workloads. Such workload imbalance across threads causes thread idling and low hardware utilization. Our preliminary work on FIL shows that execution time across threads has up to 10x difference.</div>
+  <div class="ko">그 결과 앙상블 안의 트리들은 깊이가 제각각이고, 서로 다른 트리를 받은 스레드들은 일의 양이 다르다. 이런 스레드 간 부하 불균형은 스레드를 놀게 하고 하드웨어 활용률을 떨어뜨린다. FIL을 대상으로 한 예비 실험에서 스레드 사이 실행 시간은 최대 10배까지 차이가 났다.</div>
+  <div class="ref">원문 1절 <code>[c03#b005]</code> · p.1</div>
+</div>
+
+<p>27.2%라는 비율은 메모리 병합 접근(memory coalescing)의 효율을 재는 지표다. warp의 32개 스레드가 128바이트 안의 주소를 읽으면 트랜잭션 하나로 끝나고, 흩어지면 여러 번 가져오면서 쓰지 않을 바이트까지 끌어온다(<a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 4절</a>). 트리 깊이가 다른 이유는 학습 때 속성을 무작위로 고르거나 사후 가지치기(post-pruning)를 하기 때문이다 <code>[c03#b005]</code>.</p>
+
+<h3>FIL이 부족한 이유</h3>
+<p>FIL의 reorg 형식은 여러 트리의 같은 위치 노드를 번갈아 저장한다(<a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 3절</a>). 이 방식은 트리들이 구조가 비슷하고 비슷한 경로로 순회된다고 가정하는데, 두 가정은 자주 깨진다 <code>[c03#b006]</code>. 원문은 트리 구조(tree structure)를 신경 쓰지 않는 설계를 근본 원인으로 꼽는다. 여기서 트리 구조는 깊이 같은 위상(topology)과 함께 "자주 지나가는 공통 경로"까지 포함한다 <code>[c03#b007]</code>.</p>
+
+<h3>기여 목록</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:6%">#</th><th>기여</th><th style="width:22%">대응 문제</th><th style="width:14%">원문 절</th></tr>
+<tr><td class="c">1</td><td>확률 기반 노드 재배치. 방문 확률이 높은 자식을 왼쪽에 두어 같은 층의 자주 가는 노드를 연속 주소에 배치</td><td>병합되지 않는 메모리 접근</td><td>4.1</td></tr>
+<tr><td class="c">2</td><td>유사도 기반 트리 재배치. SimHash·LSH로 비슷한 트리를 묶고 스레드에 고르게 배정</td><td>스레드 간 부하 불균형</td><td>4.2</td></tr>
+<tr><td class="c">3</td><td>가변 길이 속성 번호 표현. 두 재배치와 합쳐 적응형 포레스트 형식(adaptive forest format) 구성</td><td>저장 공간</td><td>4.3</td></tr>
+<tr><td class="c">4</td><td>shared memory 사용법과 리덕션이 다른 새 추론 전략 세 가지 (direct, shared forest, splitting shared forest)</td><td>리덕션 비용, shared memory 활용</td><td>5</td></tr>
+<tr><td class="c">5</td><td>전략을 고르는 분석적 성능 모델과 이를 쓰는 엔진 Tahoe</td><td>데이터·하드웨어마다 다른 최적 전략</td><td>6</td></tr>
+<tr><td class="c">6</td><td>세 세대 GPU(K80·P100·V100), 데이터셋 15개로 FIL과 비교</td><td>—</td><td>7</td></tr>
+</table></div>
+
+<div class="src-quote">
+  <div class="en" lang="en">Compared with FIL, Tahoe leads to 5.31x, 3.67x and 4.05x speedup (up to 9.58x, 8.77x, and 10.14x) for high parallelism tasks and 2.34x, 1.52x and 1.45x speedup (up to 5.08x, 3.82x, and 3.17x) for low parallelism tasks on Kepler, Pascal and Volta GPUs, respectively.</div>
+  <div class="ko">FIL과 비교하면 Tahoe는 Kepler, Pascal, Volta GPU에서 각각 높은 병렬 작업에 5.31배, 3.67배, 4.05배(최대 9.58배, 8.77배, 10.14배), 낮은 병렬 작업에 2.34배, 1.52배, 1.45배(최대 5.08배, 3.82배, 3.17배)의 속도 향상을 낸다.</div>
+  <div class="ref">원문 1절 <code>[c03#b011]</code> · p.2</div>
+</div>
+
+<h3>초록의 3.82배는 어디서 왔나</h3>
+<p>초록은 FIL 대비 3.82배, 2.59배, 2.75배라고 적는다 <code>[c02#b002]</code>. 이 숫자는 7.2절의 어떤 평균과도 바로 같지 않다. 높은 병렬 평균과 낮은 병렬 평균을 GPU별로 산술평균하면 초록 숫자와 맞는다 <span class="infer">추론</span>. 원문은 이 계산 관계를 적지 않았다.</p>
+<div class="table-wrap"><table>
+<tr><th>GPU</th><th class="num">높은 병렬 평균</th><th class="num">낮은 병렬 평균</th><th class="num">두 값의 평균</th><th class="num">초록 값</th></tr>
+<tr><td>K80 (Kepler)</td><td class="num">5.31</td><td class="num">2.34</td><td class="num">3.825</td><td class="num">3.82</td></tr>
+<tr><td>P100 (Pascal)</td><td class="num">3.67</td><td class="num">1.52</td><td class="num">2.595</td><td class="num">2.59</td></tr>
+<tr><td>V100 (Volta)</td><td class="num">4.05</td><td class="num">1.45</td><td class="num">2.75</td><td class="num">2.75</td></tr>
+</table></div>
+<p>발표에서 "평균 몇 배"를 말할 때는 초록 숫자보다 조건이 붙은 7.2절 숫자(배치 100K 또는 100, GPU 종류)를 쓰는 편이 안전하다 <span class="infer">추론</span>.</p>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c03">서재에서 1장(Introduction) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="motiv">
+<h2>동기 실험 (3절, Figure 2)</h2>
+<p class="paper">원문 <b>3 Motivation</b> · 근거 <code>[c05#b002]</code>~<code>[c05#b009]</code> · p.3~4</p>
+
+<div class="core">Higgs 데이터로 학습한 포레스트 하나를 FIL로 추론해 세 문제를 숫자로 보인다. 깊은 층에서 병합 효율 13.7%, 스레드 실행 시간 CV 49.1%, 리덕션이 전체 시간의 최대 53%다.</div>
+
+<h3>실험 조건</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:26%">항목</th><th>값</th></tr>
+<tr><td>데이터</td><td>Higgs, 70% 학습 / 30% 추론</td></tr>
+<tr><td>포레스트</td><td>XGBoost로 학습한 랜덤 포레스트, 트리 120개, 최대 깊이 10</td></tr>
+<tr><td>추론 엔진</td><td>FIL (shared data 전략)</td></tr>
+<tr><td>측정</td><td>성능 카운터로 전역 메모리 효율, 스레드 블록 하나의 스레드별 실행 시간(샘플 1000개), 리덕션 비중</td></tr>
+</table></div>
+
+<h3>세 문제 정리</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:18%">문제</th><th style="width:12%">그림</th><th>측정 결과</th><th style="width:28%">원인</th><th style="width:12%">해결 절</th></tr>
+<tr><td>병합되지 않는 메모리 접근</td><td>Figure 2(a)</td><td>같은 warp 이웃 스레드가 읽는 두 주소의 평균 거리가 층이 깊어질수록 커짐. 7~10층에서 요청/전체 가져온 데이터 비율 <b>13.7%</b></td><td>깊이 내려갈수록 트리마다 다른 가지로 갈 확률이 커짐, 트리 위상이 서로 다름</td><td>4.1, 4.3</td></tr>
+<tr><td>스레드 간 부하 불균형</td><td>Figure 2(c)</td><td>블록 하나의 스레드별 실행 시간 CV = <b>49.1%</b></td><td>라운드 로빈 배정이 트리 깊이를 보지 않아 키 큰 트리를 받은 스레드만 오래 일함</td><td>4.2</td></tr>
+<tr><td>높은 리덕션 비용</td><td>Figure 2(b)</td><td>트리 120개에서 리덕션이 전체 추론 시간의 최대 <b>53%</b>. 트리 수를 10~200으로 바꾸면 <b>35~72%</b>, 트리가 많을수록 커짐</td><td>shared data는 샘플마다 블록 단위 리덕션이 필요</td><td>5, 6</td></tr>
+</table></div>
+<p>변동계수(coefficient of variation, CV)는 표준편차를 평균으로 나눈 값이다(<a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 5절</a>). 49.1%라면 스레드 실행 시간의 표준편차가 평균의 절반쯤 된다는 뜻이다.</p>
+
+<div class="src-quote">
+  <div class="en" lang="en">In this example, as the distance between two memory accesses is greater than 128 bytes (the size of a memory translation), the two memory requests are not coalesced into the same memory transaction. Using performance counters to measure efficiency of global memory accesses, we observe that at the tree levels of 7-10, the ratio of requested data to total data fetched from global memory is only 13.7%, because of uncoalesced memory accesses.</div>
+  <div class="ko">이 예에서는 두 메모리 접근 사이 거리가 128바이트(메모리 트랜잭션 크기)보다 커서 두 요청이 같은 트랜잭션으로 병합되지 않는다. 성능 카운터로 전역 메모리 접근 효율을 재 보면, 트리의 7~10층에서 전역 메모리에서 가져온 전체 데이터 대비 요청 데이터 비율이 13.7%에 불과하다.</div>
+  <div class="ref">원문 3절 <code>[c05#b005]</code> · p.4 (원문의 "memory translation"은 transaction의 오기로 보인다)</div>
+</div>
+
+<div class="src-quote">
+  <div class="en" lang="en">Figure 2(b) shows the reduction overhead when we change the number of trees from 10 to 200. The figure shows that the reduction takes 35%-72% of the total inference time; As the number of trees in a forest becomes larger, the overhead becomes larger.</div>
+  <div class="ko">Figure 2(b)는 트리 수를 10개에서 200개로 바꿀 때의 리덕션 비용이다. 리덕션은 전체 추론 시간의 35~72%를 차지하고, 포레스트의 트리가 많을수록 비용이 커진다.</div>
+  <div class="ref">원문 3절 <code>[c05#b008]</code> · p.4</div>
+</div>
+
+<p>얕은 층에서 거리가 작은 이유는 reorg 형식 덕분이다. 같은 가지(왼쪽 또는 오른쪽)를 택한 스레드들은 인접 주소를 읽는다. 그런데 깊어질수록 트리마다 다른 가지를 고를 확률이 커진다 <code>[c05#b004]</code>. 원문은 이 세 문제가 희소 행렬 곱셈, 너비 우선 탐색 같은 불규칙 자료구조 응용에도 나타난다고 덧붙인다 <code>[c05#b009]</code>.</p>
+<div class="warn">Figure 2의 곡선·막대 값 자체는 본문에 없다. 이 해설은 본문에 적힌 13.7%, 49.1%, 53%, 35~72%만 쓴다. 그래프 모양은 원문 그림을 참고한다.</div>
+
+<div class="quiz" data-answer="b">
+  <div class="q">Q. 3절 동기 실험에서 "트리 수를 늘리면 커진다"고 보고된 문제는 무엇인가?</div>
+  <label><input type="radio" name="q-e-s3" value="a"> 7~10층의 메모리 병합 효율 저하</label>
+  <label><input type="radio" name="q-e-s3" value="b"> 블록 단위 리덕션이 전체 추론 시간에서 차지하는 비중</label>
+  <label><input type="radio" name="q-e-s3" value="c"> 스레드 실행 시간의 CV</label>
+  <label><input type="radio" name="q-e-s3" value="d"> 128바이트 메모리 트랜잭션 크기</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="원문 3절 [c05#b008]: 트리 수를 10→200으로 바꾸면 리덕션이 전체 추론 시간의 35~72%를 차지하고, 트리가 많을수록 비용이 커진다. 13.7%는 층 깊이, 49.1%는 트리 배정 방식과 연결된다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-e-s3-mine" placeholder="FIL의 세 문제를 한두 문장으로"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c05">서재에서 3장(Motivation) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="node">
+<h2>확률 기반 노드 재배치 (4.1절)</h2>
+<div class="audio"><span class="lbl">🔊 듣기 F (4~6절)</span><audio controls preload="none" src="audio/Xie_2021_Tahoe_F.mp3"></audio></div>
+<p class="paper">원문 <b>4.1 Probability-based Node Rearrangement</b>, <b>Figure 1</b> · 근거 <code>[c06#b004]</code>~<code>[c06#b008]</code> · p.4~5</p>
+
+<div class="core">자식 두 개 가운데 방문 확률이 높은 쪽을 항상 왼쪽에 둔다. 그러면 여러 트리의 "자주 가는 노드"가 reorg 형식에서 같은 위치 칸에 모이고, 스레드들이 연속 주소를 읽는다.</div>
+
+<p>간선 확률은 학습이 끝난 뒤 각 간선을 지나간 비율이고, 노드 확률(node probability)은 루트에서 그 노드까지 간선 확률의 곱이다 <code>[c04#b003]</code>. 정의와 손 계산은 <a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 2절</a>에 있다.</p>
+
+<div class="src-quote">
+  <div class="en" lang="en">To address the above problem, for each node with two children nodes, we ensure that the left child node always has higher possibility to be visited than the right child. Using this method, nodes that are at different trees (but at the same level of different trees) and have high probability to be visited are placed contiguously, so that they can be accessed by threads in a memory-coalesced way. The above method is implemented by swapping the two children nodes after tree training. [...] The descents of each child node go with the child node, as it is swapped. This method goes from top to bottom of the tree.</div>
+  <div class="ko">이 문제를 풀기 위해 자식이 둘인 모든 노드에서 왼쪽 자식의 방문 확률이 오른쪽보다 항상 높도록 만든다. 그러면 서로 다른 트리의 같은 층에 있으면서 방문 확률이 높은 노드들이 연속으로 놓여, 스레드들이 병합된 방식으로 접근할 수 있다. 구현은 학습이 끝난 뒤 두 자식을 맞바꾸는 것이다. [...] 자식을 바꿀 때 그 자식의 하위 노드도 함께 옮긴다. 이 과정은 트리 위에서 아래로 진행한다.</div>
+  <div class="ref">원문 4.1절 <code>[c06#b006]</code> · p.4</div>
+</div>
+
+<h3>원문의 예 (Figure 1, Tree#2)</h3>
+<div class="src-quote">
+  <div class="en" lang="en">In Tree#2, the edge possibility of two children nodes of the root node at the second level is 0.3 and 0.7. The right child node (\(V_{23}\)) has higher possibility to be visited than the left child node (\(V_{22}\)). Hence, the two children nodes are swapped. The descents of \(V_{23}\) (i.e., \(V_{24}\) and \(V_{25}\)) go with \(V_{23}\), as \(V_{23}\) is swapped. After swapping, the node \(V_{25}\) in Tree#2 and node \(V_{14}\) in Tree#1 are placed into contiguous memory space.</div>
+  <div class="ko">Tree#2에서 루트의 두 자식으로 가는 간선 확률은 0.3과 0.7이다. 오른쪽 자식(\(V_{23}\))의 방문 확률이 왼쪽(\(V_{22}\))보다 높으므로 둘을 맞바꾼다. \(V_{23}\)의 하위 노드 \(V_{24}\), \(V_{25}\)도 함께 옮겨 간다. 바꾼 뒤에는 Tree#2의 \(V_{25}\)와 Tree#1의 \(V_{14}\)가 연속된 메모리 공간에 놓인다.</div>
+  <div class="ref">원문 4.1절 <code>[c06#b007]</code> · p.4</div>
+</div>
+
+<h3>주소로 따라가기</h3>
+<p>원문은 노드 하나가 메모리 트랜잭션의 1/3 크기라고 가정한다. 트랜잭션 하나에 노드 세 개가 들어간다 <code>[c06#b005]</code>. 세 트리의 3층 노드는 reorg 형식에서 "위치(왼-왼, 왼-오, 오-왼, 오-오)마다 Tree#1, #2, #3" 순서로 12칸에 놓인다.</p>
+
+<p><span class="step">STEP 1</span> 재배치 전 3층의 저장 순서는 원문 그대로 "\(V_{14}\), NULL, \(V_{34}\), \(V_{15}\), NULL, \(V_{35}\), \(V_{16}\), \(V_{24}\), NULL, \(V_{17}\), \(V_{25}\), NULL"이다. Tree#2는 루트의 왼쪽 자식 \(V_{22}\)가 리프라 왼쪽 위치 두 칸이 NULL이다.</p>
+<p><span class="step">STEP 2</span> 원문 예에서 세 스레드는 \(V_{14}\), \(V_{24}\), \(V_{35}\)를 읽는다. 칸 번호는 0, 7, 5이고 트랜잭션 번호(칸 ÷ 3의 몫)는 0, 2, 1이다. 트랜잭션 세 번이 필요하다.</p>
+<p><span class="step">STEP 3</span> Tree#2의 두 자식을 바꾸면 \(V_{23}\)이 왼쪽으로 오고, 그 하위 노드 \(V_{24}\)(왼쪽), \(V_{25}\)(오른쪽)가 순서를 유지한 채 왼쪽 위치 두 칸으로 옮겨 간다. 3층은 "\(V_{14}\), \(V_{24}\), \(V_{34}\), \(V_{15}\), \(V_{25}\), \(V_{35}\), \(V_{16}\), NULL, NULL, \(V_{17}\), NULL, NULL"이 된다. 이 표는 Tree#2 교환 하나만 반영하고 트리 순서를 T1, T2, T3로 둔 단순화라서 \(V_{14}\) 옆 칸이 \(V_{24}\)다 <span class="infer">추론</span>. Figure 1 둘째 줄(적응형 포레스트 형식)은 트리 순서 T2, T3, T1과 Tree#1(\(V_{16}\)↔\(V_{17}\))·Tree#3(\(V_{34}\)↔\(V_{35}\))의 교환까지 반영해 3층이 "\(V_{24}\), \(V_{35}\), \(V_{14}\), \(V_{25}\), \(V_{34}\), \(V_{15}\), NULL, NULL, \(V_{17}\), NULL, NULL, \(V_{16}\)"이다. 여기서는 \(V_{14}\) 옆 칸이 \(V_{25}\)라서 원문 본문의 설명과 맞는다.</p>
+<p><span class="step">STEP 4</span> 세 스레드가 모두 왼쪽-왼쪽 위치로 갔다고 가정하면 \(V_{14}\), \(V_{24}\), \(V_{34}\)를 읽는다. 칸 0, 1, 2로 트랜잭션 0 하나에 들어간다 (직접 만든 가정, Python으로 칸·트랜잭션 번호 검산). Figure 1에서는 모든 교환을 마친 뒤 확률이 높은 쪽 노드 \(V_{24}\), \(V_{35}\), \(V_{14}\)가 3층 첫 세 칸에 모여 병합 접근(Coalesced)으로 표시된다.</p>
+
+<div class="table-wrap"><table>
+<tr><th class="c">칸</th><th class="c">트랜잭션</th><th>재배치 전</th><th>재배치 후 <span class="infer">추론</span></th><th>위치</th></tr>
+<tr class="y"><td class="c">0</td><td class="c">0</td><td><b>\(V_{14}\)</b> (접근)</td><td><b>\(V_{14}\)</b> (접근)</td><td rowspan="3">왼-왼 (T1·T2·T3)</td></tr>
+<tr class="y"><td class="c">1</td><td class="c">0</td><td>NULL</td><td><b>\(V_{24}\)</b> (접근)</td></tr>
+<tr class="y"><td class="c">2</td><td class="c">0</td><td>\(V_{34}\)</td><td><b>\(V_{34}\)</b> (접근)</td></tr>
+<tr><td class="c">3</td><td class="c">1</td><td>\(V_{15}\)</td><td>\(V_{15}\)</td><td rowspan="3">왼-오</td></tr>
+<tr><td class="c">4</td><td class="c">1</td><td>NULL</td><td>\(V_{25}\)</td></tr>
+<tr><td class="c">5</td><td class="c">1</td><td><b>\(V_{35}\)</b> (접근)</td><td>\(V_{35}\)</td></tr>
+<tr><td class="c">6</td><td class="c">2</td><td>\(V_{16}\)</td><td>\(V_{16}\)</td><td rowspan="3">오-왼</td></tr>
+<tr><td class="c">7</td><td class="c">2</td><td><b>\(V_{24}\)</b> (접근)</td><td>NULL</td></tr>
+<tr><td class="c">8</td><td class="c">2</td><td>NULL</td><td>NULL</td></tr>
+<tr><td class="c">9</td><td class="c">3</td><td>\(V_{17}\)</td><td>\(V_{17}\)</td><td rowspan="3">오-오</td></tr>
+<tr><td class="c">10</td><td class="c">3</td><td>\(V_{25}\)</td><td>NULL</td></tr>
+<tr><td class="c">11</td><td class="c">3</td><td>NULL</td><td>NULL</td></tr>
+<tr><td colspan="2" class="c"><b>트랜잭션 수</b></td><td><b>3</b> (0, 1, 2)</td><td><b>1</b> (0)</td><td></td></tr>
+</table></div>
+
+<svg viewBox="0 0 880 190" width="100%" style="max-width:880px;display:block;margin:10px auto" role="img" aria-label="재배치 전후 3층 저장 순서와 메모리 트랜잭션">
+  <text x="10" y="50" font-size="13" font-weight="700">재배치 전</text>
+  <text x="10" y="130" font-size="13" font-weight="700">재배치 후</text>
+  <g font-size="12" text-anchor="middle">
+    <!-- before row y=30 -->
+    <rect x="100" y="30" width="180" height="34" fill="none" stroke="#6b6b66" stroke-dasharray="4 3"/>
+    <rect x="280" y="30" width="180" height="34" fill="none" stroke="#6b6b66" stroke-dasharray="4 3"/>
+    <rect x="460" y="30" width="180" height="34" fill="none" stroke="#6b6b66" stroke-dasharray="4 3"/>
+    <rect x="640" y="30" width="180" height="34" fill="none" stroke="#6b6b66" stroke-dasharray="4 3"/>
+    <rect x="104" y="34" width="52" height="26" fill="#fdf0ea" stroke="#eb6834"/><text x="130" y="52">V14</text>
+    <rect x="164" y="34" width="52" height="26" fill="#f4f3ef" stroke="#e7e5df"/><text x="190" y="52" fill="#6b6b66">NULL</text>
+    <rect x="224" y="34" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="250" y="52">V34</text>
+    <rect x="284" y="34" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="310" y="52">V15</text>
+    <rect x="344" y="34" width="52" height="26" fill="#f4f3ef" stroke="#e7e5df"/><text x="370" y="52" fill="#6b6b66">NULL</text>
+    <rect x="404" y="34" width="52" height="26" fill="#fdf0ea" stroke="#eb6834"/><text x="430" y="52">V35</text>
+    <rect x="464" y="34" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="490" y="52">V16</text>
+    <rect x="524" y="34" width="52" height="26" fill="#fdf0ea" stroke="#eb6834"/><text x="550" y="52">V24</text>
+    <rect x="584" y="34" width="52" height="26" fill="#f4f3ef" stroke="#e7e5df"/><text x="610" y="52" fill="#6b6b66">NULL</text>
+    <rect x="644" y="34" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="670" y="52">V17</text>
+    <rect x="704" y="34" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="730" y="52">V25</text>
+    <rect x="764" y="34" width="52" height="26" fill="#f4f3ef" stroke="#e7e5df"/><text x="790" y="52" fill="#6b6b66">NULL</text>
+    <text x="190" y="80" font-size="11" fill="#6b6b66">트랜잭션 0</text>
+    <text x="370" y="80" font-size="11" fill="#6b6b66">트랜잭션 1</text>
+    <text x="550" y="80" font-size="11" fill="#6b6b66">트랜잭션 2</text>
+    <text x="730" y="80" font-size="11" fill="#6b6b66">트랜잭션 3</text>
+    <!-- after row y=110 -->
+    <rect x="100" y="110" width="180" height="34" fill="#eaf2fc" stroke="#2a78d6" stroke-width="2"/>
+    <rect x="280" y="110" width="180" height="34" fill="none" stroke="#6b6b66" stroke-dasharray="4 3"/>
+    <rect x="460" y="110" width="180" height="34" fill="none" stroke="#6b6b66" stroke-dasharray="4 3"/>
+    <rect x="640" y="110" width="180" height="34" fill="none" stroke="#6b6b66" stroke-dasharray="4 3"/>
+    <rect x="104" y="114" width="52" height="26" fill="#fdf0ea" stroke="#eb6834"/><text x="130" y="132">V14</text>
+    <rect x="164" y="114" width="52" height="26" fill="#fdf0ea" stroke="#eb6834"/><text x="190" y="132">V24</text>
+    <rect x="224" y="114" width="52" height="26" fill="#fdf0ea" stroke="#eb6834"/><text x="250" y="132">V34</text>
+    <rect x="284" y="114" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="310" y="132">V15</text>
+    <rect x="344" y="114" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="370" y="132">V25</text>
+    <rect x="404" y="114" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="430" y="132">V35</text>
+    <rect x="464" y="114" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="490" y="132">V16</text>
+    <rect x="524" y="114" width="52" height="26" fill="#f4f3ef" stroke="#e7e5df"/><text x="550" y="132" fill="#6b6b66">NULL</text>
+    <rect x="584" y="114" width="52" height="26" fill="#f4f3ef" stroke="#e7e5df"/><text x="610" y="132" fill="#6b6b66">NULL</text>
+    <rect x="644" y="114" width="52" height="26" fill="#fff" stroke="#e7e5df"/><text x="670" y="132">V17</text>
+    <rect x="704" y="114" width="52" height="26" fill="#f4f3ef" stroke="#e7e5df"/><text x="730" y="132" fill="#6b6b66">NULL</text>
+    <rect x="764" y="114" width="52" height="26" fill="#f4f3ef" stroke="#e7e5df"/><text x="790" y="132" fill="#6b6b66">NULL</text>
+  </g>
+  <text x="100" y="172" font-size="13" fill="#eb6834">주황 = 스레드 3개가 읽는 노드. 전: 트랜잭션 3번, 후: 트랜잭션 1번 (STEP 4의 가정)</text>
+</svg>
+
+<h3>왜 학습 데이터 확률을 믿어도 되나</h3>
+<p>원문은 이 기법이 학습 때 얻은 데이터 성질로 추론 성능을 끌어올린다고 정리한다 <code>[c06#b008]</code>. 근거로는 잘 학습된 모델이라면 학습 데이터와 추론 데이터의 성질이 비슷해야 정확도가 높다는 점을 든다(원문 p.5 첫 줄, 서재 덤프에서는 문장이 <code>[c06#b008]</code> 끝에서 끊겨 있다). 노드 순서만 바꾸므로 예측 결과는 그대로이고 저장 위치만 달라진다 <span class="infer">추론</span>.</p>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c06">서재에서 4장(Adaptive Forest Format) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="tree">
+<h2>유사도 기반 트리 재배치 (4.2절)</h2>
+<p class="paper">원문 <b>4.2 Similarity-based Tree Rearrangement</b>, <b>Figure 3</b> · 근거 <code>[c06#b011]</code>~<code>[c06#b024]</code> · p.5~6</p>
+
+<div class="core">트리를 짧은 비트열(SimHash 체크섬)로 요약하고, 비트열을 청크로 나눠 해시 충돌 수(LSH)로 비슷한 트리 쌍을 찾는다. 비슷한 트리를 메모리에 붙여 두고 라운드 로빈으로 스레드에 나누면 스레드끼리 하는 일이 비슷해진다.</div>
+
+<p>원문의 "비슷하다"는 추론할 때 비슷한 경로를 타고 비슷한 속성에 접근한다는 뜻이다 <code>[c06#b011]</code>. 쌍마다 비교하는 기존 방법은 트리 3000개 포레스트에서 최대 19분이 걸려 온라인으로 쓸 수 없다 <code>[c06#b012]</code>. 유사도는 추론이 시작되기 전에 온라인으로 계산하므로, 증분 학습(incremental learning)으로 트리가 바뀌어도 다시 계산할 수 있다.</p>
+
+<div class="src-quote">
+  <div class="en" lang="en">Our evaluation shows that using pairwise comparison can take up to 19 minutes for a tree ensemble with 3000 trees. Such large overhead is too large for an online solution. [...] In our case, SimHash is used to transform trees to items such that we can compare the similarity of trees, and LSH is used to hash similar items into the same buckets, such that we can group multiple trees with high similarity into the same group.</div>
+  <div class="ko">평가해 보면 쌍별 비교는 트리 3000개인 앙상블에서 최대 19분이 걸린다. 온라인 방법으로 쓰기에는 너무 크다. [...] 여기서 SimHash는 트리를 비교 가능한 항목으로 바꾸는 데 쓰고, LSH는 비슷한 항목을 같은 버킷으로 해시해 유사도가 높은 트리들을 한 그룹으로 묶는 데 쓴다.</div>
+  <div class="ref">원문 4.2절 <code>[c06#b012]</code> · p.5</div>
+</div>
+
+<h3>세 단계 흐름</h3>
+<svg viewBox="0 0 900 150" width="100%" style="max-width:900px;display:block;margin:10px auto" role="img" aria-label="토큰화, SimHash, LSH 세 단계 흐름">
+  <defs><marker id="ar5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#6b6b66"/></marker></defs>
+  <rect x="10" y="20" width="200" height="90" rx="10" fill="#eaf2fc" stroke="#2a78d6"/>
+  <text x="110" y="45" font-size="14" font-weight="700" text-anchor="middle">① 토큰화</text>
+  <text x="110" y="68" font-size="12" text-anchor="middle">루트→리프 경로를</text>
+  <text x="110" y="86" font-size="12" text-anchor="middle">노드 T_nodes개씩 자름</text>
+  <line x1="212" y1="65" x2="252" y2="65" stroke="#6b6b66" stroke-width="2" marker-end="url(#ar5)"/>
+  <rect x="256" y="20" width="300" height="90" rx="10" fill="#fdf0ea" stroke="#eb6834"/>
+  <text x="406" y="45" font-size="14" font-weight="700" text-anchor="middle">② SimHash</text>
+  <text x="406" y="68" font-size="12" text-anchor="middle">토큰 → SHA1 → 길이 L_hash ±1 벡터</text>
+  <text x="406" y="86" font-size="12" text-anchor="middle">× 노드 확률 가중치, 모두 더해 체크섬</text>
+  <line x1="558" y1="65" x2="598" y2="65" stroke="#6b6b66" stroke-width="2" marker-end="url(#ar5)"/>
+  <rect x="602" y="20" width="288" height="90" rx="10" fill="#e9f6ee" stroke="#2f9e5b"/>
+  <text x="746" y="45" font-size="14" font-weight="700" text-anchor="middle">③ LSH</text>
+  <text x="746" y="68" font-size="12" text-anchor="middle">부호로 0/1 정규화, M개 청크로 나눔</text>
+  <text x="746" y="86" font-size="12" text-anchor="middle">Rabin-Karp 해시 충돌 수로 순서 결정</text>
+  <text x="450" y="138" font-size="12" text-anchor="middle" fill="#6b6b66">Figure 3 예: T_nodes = 2, L_hash = 8, M = 4 · 실험 값: T_nodes = 4, L_hash = 128, M = 64</text>
+</svg>
+<p style="font-size:14px;color:var(--muted)">SimHash와 LSH의 일반 원리는 <a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 8절·9절</a>에서 다룬다. 그림 안의 T_nodes, L_hash, M은 아래 기호표의 \(T_{nodes}\), \(L_{hash}\), \(M\)과 같다.</p>
+
+<div class="src-quote">
+  <div class="en" lang="en">In this step, we first transform each token into a \(1 \times L_{hash}\) string using a hashing algorithm (SHA1 [16]) [...]. We multiple each string with a weight which is the node probability of the last node in the token transformed to that string. [...] After that, all strings of a tree are added to generate a new string, which is the SimHash result of that tree. We name the SimHash result checksum in the rest of the discussion.</div>
+  <div class="ko">이 단계에서는 먼저 해시 알고리즘(SHA1)으로 각 토큰을 \(1 \times L_{hash}\) 문자열로 바꾼다 [...]. 각 문자열에 가중치를 곱하는데, 가중치는 그 토큰의 마지막 노드의 노드 확률이다. [...] 그다음 트리의 모든 문자열을 더해 새 문자열을 만들고, 이것이 그 트리의 SimHash 결과다. 이후 이 결과를 체크섬(checksum)이라 부른다.</div>
+  <div class="ref">원문 4.2절 <code>[c06#b016]</code> · p.5</div>
+</div>
+
+<h3>Figure 3의 숫자로 따라가기 (Tree#1)</h3>
+<p>아래 토큰 벡터와 가중치는 원문 Figure 3에 실린 값이다. 덧셈과 정규화는 Python으로 다시 계산해 그림의 체크섬과 같음을 확인했다.</p>
+<p><span class="step">STEP 1</span> 토큰화. Tree#1의 노드를 1(루트), 2·3(2층), 4~7(3층)로 번호 매기면 \(T_{nodes}=2\)인 토큰은 1-2, 2-4, 2-5, 1-3, 3-7, 3-6 여섯 개다.</p>
+<p><span class="step">STEP 2</span> 가중치는 토큰 마지막 노드의 노드 확률이다. 그림의 가중치 0.80, 0.48, 0.32, 0.20, 0.14, 0.06은 간선 확률 0.8/0.2(루트), 0.6/0.4(노드 2 아래), 0.7/0.3(노드 3 아래)의 곱과 맞는다. 예를 들어 \(0.8\times0.6=0.48\), \(0.2\times0.7=0.14\)다 <span class="infer">추론</span>. 원문은 가중치만 적고 간선 확률 분해는 적지 않았다.</p>
+<div class="table-wrap"><table>
+<tr><th>토큰</th><th class="num">가중치 \(w\)</th><th class="c">b1</th><th class="c">b2</th><th class="c">b3</th><th class="c">b4</th><th class="c">b5</th><th class="c">b6</th><th class="c">b7</th><th class="c">b8</th></tr>
+<tr><td>1-2</td><td class="num">0.80</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td></tr>
+<tr><td>2-4</td><td class="num">0.48</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">−1</td></tr>
+<tr><td>2-5</td><td class="num">0.32</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">−1</td><td class="c">1</td></tr>
+<tr><td>1-3</td><td class="num">0.20</td><td class="c">−1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td></tr>
+<tr><td>3-7</td><td class="num">0.14</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td></tr>
+<tr><td>3-6</td><td class="num">0.06</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td><td class="c">−1</td><td class="c">1</td></tr>
+<tr class="y"><td><b>체크섬</b> \(\sum w\cdot b\)</td><td></td><td class="c">−0.28</td><td class="c">0.52</td><td class="c">−0.24</td><td class="c">−0.96</td><td class="c">1.60</td><td class="c">−0.52</td><td class="c">0.28</td><td class="c">−0.96</td></tr>
+<tr class="y"><td><b>정규화</b> (≥0 → 1)</td><td></td><td class="c">0</td><td class="c">1</td><td class="c">0</td><td class="c">0</td><td class="c">1</td><td class="c">0</td><td class="c">1</td><td class="c">0</td></tr>
+</table></div>
+<p><span class="step">STEP 3</span> 첫 칸을 손으로 더하면 \(-0.80+0.48+0.32-0.20-0.14+0.06=-0.28\)이다. 음수이므로 정규화 값은 0이다.</p>
+$$ c_1 = \sum_{t=1}^{6} w_t\, b_{t,1} = -0.28 \;\Rightarrow\; \hat c_1 = 0 $$
+<p><span class="step">STEP 4</span> 정규화된 8비트 \([0,1,0,0,1,0,1,0]\)을 \(M=4\)개 청크로 나누면 (0,1), (0,0), (1,0), (1,0)이다. 청크마다 Rabin-Karp 해시를 적용한다.</p>
+<p><span class="step">STEP 5</span> 같은 번호의 청크끼리 해시가 같으면 충돌 1회로 센다. Figure 3의 그룹 결과는 아래와 같다 (T2·T3의 체크섬 비트는 그림에 없다). 그림의 정규화 행렬 왼쪽 행 이름은 T1, T1, T2로 찍혀 있지만, 아래 그룹 줄과 충돌 수에 맞으려면 T1, T2, T3이어야 한다. 그렇게 고쳐 읽었다 <span class="infer">추론</span>.</p>
+<div class="table-wrap"><table>
+<tr><th>청크</th><th>Figure 3의 묶음</th><th class="c">T1&amp;T2</th><th class="c">T2&amp;T3</th><th class="c">T1&amp;T3</th></tr>
+<tr><td>Chunk 0</td><td>(T1)(T2, T3)</td><td class="c">0</td><td class="c">1</td><td class="c">0</td></tr>
+<tr><td>Chunk 1</td><td>(T1)(T3)(T2)</td><td class="c">0</td><td class="c">0</td><td class="c">0</td></tr>
+<tr><td>Chunk 2</td><td>(T1, T3)(T2)</td><td class="c">0</td><td class="c">0</td><td class="c">1</td></tr>
+<tr><td>Chunk 3</td><td>(T1)(T2, T3)</td><td class="c">0</td><td class="c">1</td><td class="c">0</td></tr>
+<tr class="y"><td colspan="2"><b>충돌 수 합</b></td><td class="c"><b>0</b></td><td class="c"><b>2</b></td><td class="c"><b>1</b></td></tr>
+</table></div>
+<p><span class="step">STEP 6</span> 충돌이 가장 많은 T2–T3을 붙이고, 그다음인 T3–T1을 잇는다. 메모리 순서는 T2, T3, T1이다 <code>[c06#b024]</code>. Figure 1의 적응형 포레스트 형식에서 루트 순서가 \(V_{21}, V_{31}, V_{11}\)인 것도 이 결과다. 이후 버킷 안의 트리를 라운드 로빈으로 스레드에 배정한다 <code>[c06#b018]</code>.</p>
+
+<h3>복잡도 비교</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:20%">방법</th><th>계산 복잡도</th><th>공간 복잡도</th></tr>
+<tr><td>쌍별 비교 (pairwise)</td><td>\(O(2^{D_{tree}}\cdot N_{trees}^2)\)</td><td>\(O(N_{trees}^2)\)</td></tr>
+<tr class="y"><td>SimHash + LSH</td><td>\(O(D_{tree}\cdot N_{trees}) + O(N_{trees})\)</td><td>\(O(N_{tokens}\cdot L_{hash}) + O(N_{trees}\cdot M)\)</td></tr>
+</table></div>
+<div class="warn">서재 덤프 <code>[c06#b020]</code>·<code>[c06#b022]</code>에는 쌍별 비교가 \(O(2^{D_{tree}} * N_{trees})\), 공간 \(O(N_{trees})\)로 적혀 있지만, PDF p.5~6에서는 두 곳 모두 \(N_{trees}^2\)다. 이 해설은 PDF를 따랐다. 원문은 공간 복잡도가 "매개변수 값에 따라 비슷하거나 훨씬 작다"고만 쓴다.</div>
+<div class="table-wrap"><table>
+<tr><th style="width:18%">기호</th><th>뜻 (원문 표기)</th><th style="width:22%">Figure 3 / 실험 값</th></tr>
+<tr><td class="c">\(D_{tree}\)</td><td>평균 트리 깊이 (<code>D_tree</code>)</td><td>—</td></tr>
+<tr><td class="c">\(N_{trees}\)</td><td>트리 개수 (<code>N_trees</code>)</td><td class="num">3 / 최대 3000</td></tr>
+<tr><td class="c">\(T_{nodes}\)</td><td>토큰 하나에 든 노드 수 (<code>T_nodes</code>, 원문에 <code>T_node</code>로도 표기)</td><td class="num">2 / 4</td></tr>
+<tr><td class="c">\(L_{hash}\)</td><td>토큰을 해시한 문자열 길이 (<code>L_hash</code>)</td><td class="num">8 / 128</td></tr>
+<tr><td class="c">\(M\)</td><td>체크섬을 나누는 청크 수</td><td class="num">4 / 64</td></tr>
+<tr><td class="c">\(N_{tokens}\)</td><td>토큰 개수</td><td class="num">트리당 6 / —</td></tr>
+</table></div>
+<p>감을 잡으려고 \(D_{tree}=8\), \(N_{trees}=3000\)을 넣으면 쌍별 비교 항은 \(2^8\times3000^2\approx2.3\times10^9\), SimHash+LSH 항은 \(8\times3000+3000=27{,}000\)이다 <span class="infer">추론</span>. 큰 O 표기라 상수는 무시한 비교다. 실측으로는 7.4절에서 쌍별 비교보다 37배 이상 빠르다고 보고한다.</p>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c06">서재에서 4장(Adaptive Forest Format) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="aff">
+<h2>적응형 포레스트 형식 (4.3절)</h2>
+<p class="paper">원문 <b>4.3 Adaptive Forest Format</b> · 근거 <code>[c06#b026]</code> <code>[c06#b027]</code> · p.6</p>
+
+<div class="core">reorg 형식의 틀(모든 트리의 루트 먼저, 그다음 층마다 번갈아 저장)은 그대로 두고 세 가지를 바꾼다. 루트 순서는 트리 재배치 결과로, 자식 좌우는 노드 재배치 결과로 정하고, 속성 번호는 필요한 만큼의 비트만 쓴다.</div>
+
+<div class="src-quote">
+  <div class="en" lang="en">The format stores the roots of all trees first (as the traditional reorg format). Different from the traditional format that place roots randomly, we decide which roots should be placed close to each other according to the results of similarity-based tree rearrangement. After the roots, we decide whether the order of left and right child nodes of each root should be switched, based on the probability-based node rearrangement.</div>
+  <div class="ko">이 형식은 기존 reorg 형식처럼 모든 트리의 루트를 먼저 저장한다. 루트를 무작위로 두는 기존 형식과 달리, 어떤 루트끼리 가까이 둘지는 유사도 기반 트리 재배치 결과로 정한다. 루트 다음에는 확률 기반 노드 재배치에 따라 각 루트의 왼쪽·오른쪽 자식 순서를 바꿀지 정한다.</div>
+  <div class="ref">원문 4.3절 <code>[c06#b026]</code> · p.6</div>
+</div>
+
+<div class="table-wrap"><table>
+<tr><th style="width:22%">구성 요소</th><th>reorg 형식 (FIL)</th><th>적응형 포레스트 형식 (Tahoe)</th><th style="width:16%">효과</th></tr>
+<tr><td>트리(루트) 순서</td><td>정하지 않음 (원문: 무작위)</td><td>SimHash·LSH 충돌 수로 비슷한 트리를 인접 배치</td><td>부하 균형</td></tr>
+<tr><td>자식 좌우 순서</td><td>학습 결과 그대로</td><td>방문 확률 높은 자식을 왼쪽으로 (위→아래)</td><td>병합 접근</td></tr>
+<tr><td>속성 번호 길이</td><td>고정 길이, 보통 4 또는 8바이트</td><td>포레스트에 나오는 서로 다른 속성 수를 겨우 담는 길이</td><td>저장 공간 최대 23.6% 절약</td></tr>
+</table></div>
+
+<div class="src-quote">
+  <div class="en" lang="en">Our storage format decides the length of the representation based on the number of different attributes in the forest. The length is just enough to index all attributes. Using this new representation instead of using a four-byte, fixed-length representation, we save storage space by up to 23.6% in our evaluated dataset.</div>
+  <div class="ko">이 저장 형식은 포레스트에 있는 서로 다른 속성의 수에 맞춰 표현 길이를 정한다. 길이는 모든 속성을 가리키기에 딱 충분한 만큼이다. 4바이트 고정 길이 대신 이 표현을 쓰면 평가한 데이터셋에서 저장 공간을 최대 23.6% 줄인다.</div>
+  <div class="ref">원문 4.3절 <code>[c06#b027]</code> · p.6</div>
+</div>
+<p>예를 들어 속성이 28개인 Higgs라면 5비트(\(2^5=32\))면 모든 속성을 가리킬 수 있다 <span class="infer">추론</span>. 원문은 데이터셋별 비트 수나 노드 하나의 바이트 배치를 밝히지 않았다. 23.6%는 노드 전체 크기 기준의 포레스트 저장 공간 절약이고, 7.4절에도 같은 숫자가 메모리 사용량 감소로 다시 나온다 <code>[c09#b025]</code>.</p>
+
+<div class="quiz" data-answer="c">
+  <div class="q">Q. Figure 3 예에서 메모리 순서가 T2, T3, T1이 되는 근거는?</div>
+  <label><input type="radio" name="q-e-s6" value="a"> 트리 깊이가 깊은 순서</label>
+  <label><input type="radio" name="q-e-s6" value="b"> 체크섬 비트 합이 큰 순서</label>
+  <label><input type="radio" name="q-e-s6" value="c"> 청크 해시 충돌 수가 T2&amp;T3 2, T1&amp;T3 1, T1&amp;T2 0이라서</label>
+  <label><input type="radio" name="q-e-s6" value="d"> 노드 확률이 높은 트리부터</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="원문 4.2절 [c06#b024]: 세 버킷 (T1,T2), (T2,T3), (T1,T3)의 충돌 수가 0, 2, 1이라 가장 비슷한 T2–T3을 붙이고 다음으로 T3–T1을 잇는다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-e-s6-mine" placeholder="노드 재배치와 트리 재배치가 각각 어떤 문제를 겨냥하는지"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c06">서재에서 4장(Adaptive Forest Format) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="strat">
+<h2>네 가지 추론 전략 (5절)</h2>
+<div class="audio"><span class="lbl">🔊 듣기 G (7~9절)</span><audio controls preload="none" src="audio/Xie_2021_Tahoe_G.mp3"></audio></div>
+<p class="paper">원문 <b>5.1 Inference Strategies</b>, <b>5.2 Performance Comparison and Analysis</b>, <b>Figure 4·5·6</b> · 근거 <code>[c07#b002]</code>~<code>[c07#b021]</code> · p.6~8</p>
+
+<div class="core">shared memory는 작아서 샘플과 포레스트 가운데 하나만 올릴 수 있다. 무엇을 올리느냐와 리덕션이 있느냐로 전략 네 개가 갈리고, 데이터셋과 배치 크기에 따라 이기는 전략이 바뀐다.</div>
+
+<p>shared memory 배치 선택의 일반론은 <a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 7절</a>에 있다. 1절에서 원문은 "샘플이나 트리 중 하나는 shared memory에 둘 수 있지만 용량 때문에 둘 다는 안 된다"고 적었다 <code>[c03#b009]</code>. 4절의 두 재배치가 전역 메모리 효율과 부하 불균형을 다뤘다면, 5절은 남은 리덕션 문제를 다룬다 <code>[c07#b002]</code>.</p>
+
+<h3>Figure 4 다시 그리기</h3>
+<svg viewBox="0 0 900 250" width="100%" style="max-width:900px;display:block;margin:10px auto" role="img" aria-label="네 추론 전략에서 shared memory에 두는 것과 리덕션">
+  <g font-size="12" text-anchor="middle">
+    <rect x="10" y="10" width="210" height="230" rx="10" fill="#fff" stroke="#e7e5df"/>
+    <text x="115" y="34" font-size="14" font-weight="700">shared data (FIL)</text>
+    <rect x="30" y="50" width="170" height="44" rx="6" fill="#fdf0ea" stroke="#eb6834"/><text x="115" y="70">SMEM: 샘플 배치</text><text x="115" y="86" fill="#6b6b66">(노란색 영역)</text>
+    <rect x="30" y="104" width="170" height="44" rx="6" fill="#f4f3ef" stroke="#6b6b66"/><text x="115" y="124">GMEM: 포레스트 전체</text><text x="115" y="140" fill="#6b6b66">스레드마다 트리 일부</text>
+    <rect x="30" y="160" width="170" height="34" rx="6" fill="#eaf2fc" stroke="#2a78d6"/><text x="115" y="182">블록 단위 리덕션</text>
+    <text x="115" y="222" fill="#6b6b66">기존 방식</text>
+
+    <rect x="235" y="10" width="210" height="230" rx="10" fill="#fff" stroke="#e7e5df"/>
+    <text x="340" y="34" font-size="14" font-weight="700">direct</text>
+    <rect x="255" y="50" width="170" height="44" rx="6" fill="#fff" stroke="#e7e5df" stroke-dasharray="4 3"/><text x="340" y="76" fill="#6b6b66">SMEM 사용 안 함</text>
+    <rect x="255" y="104" width="170" height="44" rx="6" fill="#f4f3ef" stroke="#6b6b66"/><text x="340" y="124">GMEM: 포레스트 + 샘플</text><text x="340" y="140" fill="#6b6b66">스레드마다 포레스트 전체</text>
+    <rect x="255" y="160" width="170" height="34" rx="6" fill="#e9f6ee" stroke="#2f9e5b"/><text x="340" y="182">리덕션 없음</text>
+    <text x="340" y="222" fill="#6b6b66">스레드 = 샘플 1개</text>
+
+    <rect x="460" y="10" width="210" height="230" rx="10" fill="#fff" stroke="#e7e5df"/>
+    <text x="565" y="34" font-size="14" font-weight="700">shared forest</text>
+    <rect x="480" y="50" width="170" height="44" rx="6" fill="#fdf0ea" stroke="#eb6834"/><text x="565" y="70">SMEM: 포레스트 전체</text><text x="565" y="86" fill="#6b6b66">(포레스트가 들어갈 때만)</text>
+    <rect x="480" y="104" width="170" height="44" rx="6" fill="#f4f3ef" stroke="#6b6b66"/><text x="565" y="124">GMEM: 샘플</text><text x="565" y="140" fill="#6b6b66">스레드마다 포레스트 전체</text>
+    <rect x="480" y="160" width="170" height="34" rx="6" fill="#e9f6ee" stroke="#2f9e5b"/><text x="565" y="182">리덕션 없음</text>
+    <text x="565" y="222" fill="#6b6b66">스레드 = 샘플 1개</text>
+
+    <rect x="685" y="10" width="205" height="230" rx="10" fill="#fff" stroke="#e7e5df"/>
+    <text x="787" y="34" font-size="14" font-weight="700">splitting shared forest</text>
+    <rect x="703" y="50" width="170" height="44" rx="6" fill="#fdf0ea" stroke="#eb6834"/><text x="788" y="70">SMEM: 포레스트 조각 1개</text><text x="788" y="86" fill="#6b6b66">(블록 P개가 나눠 맡음)</text>
+    <rect x="703" y="104" width="170" height="44" rx="6" fill="#f4f3ef" stroke="#6b6b66"/><text x="788" y="124">GMEM: 샘플</text><text x="788" y="140" fill="#6b6b66">블록마다 sp개 샘플</text>
+    <rect x="703" y="160" width="170" height="34" rx="6" fill="#eaf2fc" stroke="#2a78d6"/><text x="788" y="182">블록 간 전역 리덕션</text>
+    <text x="788" y="222" fill="#6b6b66">배치마다 한 번</text>
+  </g>
+</svg>
+<p style="font-size:14px;color:var(--muted)">원문 Figure 4는 새 전략 세 개만 그렸다. 비교를 위해 shared data를 왼쪽에 더해 다시 그렸다.</p>
+
+<div class="table-wrap"><table>
+<tr><th style="width:17%">전략</th><th>shared memory에 두는 것</th><th>리덕션</th><th>장점</th><th>약점</th></tr>
+<tr><td>shared data</td><td>샘플 배치</td><td>블록 단위 (샘플마다)</td><td>샘플을 빠르게 재사용</td><td>트리가 많으면 리덕션 비용 큼</td></tr>
+<tr><td>direct</td><td>없음</td><td>없음</td><td>리덕션·동기화 완전 제거</td><td>모든 접근이 전역 메모리</td></tr>
+<tr><td>shared forest</td><td>포레스트 전체</td><td>없음</td><td>포레스트를 전역 메모리에서 읽지 않음, 샘플 복사 비용도 없음</td><td>포레스트가 shared memory에 다 들어가야 함</td></tr>
+<tr><td>splitting shared forest</td><td>포레스트를 P개로 나눈 조각 하나 (블록 P개)</td><td>블록 P개에 걸친 전역 리덕션</td><td>shared forest의 용량 제약을 풂</td><td>배치마다 전역 리덕션, 포레스트를 다시 올려야 함</td></tr>
+</table></div>
+
+<div class="src-quote">
+  <div class="en" lang="en">Splitting shared forest. This is a variant of the shared forest strategy. The forest is split into P parts. Each part is a set of trees just big enough to be placed into shared memory. Each part is loaded from global memory to shared memory by a thread block (hence there are P thread blocks). [...] There is a global reduction across P thread blocks to gather results from each thread block for sp samples to make final predictions.</div>
+  <div class="ko">분할 공유 포레스트(splitting shared forest)은 shared forest 전략의 변형이다. 포레스트를 P개 부분으로 나누고, 각 부분은 shared memory에 겨우 들어갈 만큼의 트리 묶음이다. 부분마다 스레드 블록 하나가 전역 메모리에서 shared memory로 올린다(그래서 블록이 P개다). [...] sp개 샘플의 최종 예측을 내려고 P개 블록의 결과를 모으는 전역 리덕션을 한다.</div>
+  <div class="ref">원문 5.1절 <code>[c07#b010]</code> · p.7</div>
+</div>
+
+<h3>Figure 5, 어느 데이터셋에서 누가 이기나</h3>
+<p>조건은 P100, 배치 100K, 데이터셋 15개, 네 전략 모두 적응형 포레스트 형식 사용이다 <code>[c07#b012]</code>. 막대 값은 본문에 없고, 본문은 데이터셋별 승자와 이유만 적었다.</p>
+<div class="table-wrap"><table>
+<tr><th style="width:18%">이긴 전략</th><th style="width:28%">데이터셋 (개수)</th><th>원문이 든 이유</th><th style="width:10%">근거</th></tr>
+<tr><td>shared data</td><td>allstate, covtype, cup98, year (4)</td><td>트리가 1K 미만으로 적지만 shared memory에는 다 안 들어가고, 샘플 속성 수가 적음. splitting은 배치마다 전역 리덕션을 해야 해 블록 리덕션 한 번보다 비싸고, direct는 전역 메모리 접근이 잦음</td><td><code>[c07#b015]</code></td></tr>
+<tr><td>direct</td><td>SVHN, gisette (2)</td><td>깊은 트리로 된 포레스트. 트리 재배치를 해도 부하 불균형이 심해 동기화·리덕션 비중이 큼. 이를 없애면 얻는 이득이 큼</td><td><code>[c07#b016]</code></td></tr>
+<tr><td>shared forest</td><td>HOCK, cifar10, ijcnn1, phishing, letter (5)</td><td>포레스트가 shared memory에 들어가는 다섯 개. 블록 리덕션이 없고, 포레스트가 샘플보다 더 자주 재사용돼 포레스트를 캐시하는 쪽이 유리</td><td><code>[c07#b017]</code></td></tr>
+<tr><td>splitting shared forest</td><td>Higgs, SUSY, hepmass, aloi (4)</td><td>포레스트를 공유하는 이득. 트리 하나가 작아 전역 리덕션으로 모을 데이터가 적음</td><td><code>[c07#b018]</code></td></tr>
+</table></div>
+<p>Table 2와 맞춰 보면 direct가 이긴 SVHN(깊이 15)과 gisette(깊이 20)는 15개 중 가장 깊은 두 포레스트다. splitting이 이긴 네 개는 트리가 2000~3000개로 가장 많은 포레스트다 <span class="infer">추론</span>.</p>
+
+<h3>Figure 6, 배치 크기를 바꾸면</h3>
+<div class="src-quote">
+  <div class="en" lang="en">For example, for Higgs dataset, when the batch size is less than 10K, the shared data method performs best; Otherwise, the splitting shared forest performs best. [...] When the batch size is small, the shared data method can effectively utilize shared memory to cache samples, which leads to high performance. As the batch size increases, the global reduction overhead for each sample in the splitting shared forest becomes smaller, because the overhead is amortized.</div>
+  <div class="ko">예를 들어 Higgs에서는 배치가 10K보다 작으면 shared data가 가장 빠르고, 그 이상이면 splitting shared forest가 가장 빠르다. [...] 배치가 작을 때는 shared data가 shared memory에 샘플을 효과적으로 캐시해 성능이 높다. 배치가 커지면 splitting shared forest의 샘플당 전역 리덕션 비용이 분산(amortize)되어 작아진다.</div>
+  <div class="ref">원문 5.2절 <code>[c07#b020]</code> · p.8</div>
+</div>
+<p>Figure 6은 Higgs와 SVHN에서 배치 100, 1K, 10K, 100K, 1M 다섯 가지를 비교한다. 본문은 Higgs의 전환점(10K)만 적었고 SVHN의 결과는 말로 설명하지 않았다. 5.2절의 결론(Insight)은 "배치 크기, 데이터셋, 포레스트가 다르면 늘 이기는 전략 하나는 없다"이다 <code>[c07#b021]</code>. 6절 성능 모델은 이 결론에서 출발한다.</p>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c07">서재에서 5장(Inference Strategies) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="model">
+<h2>성능 모델 (6.1절)</h2>
+<p class="paper">원문 <b>6.1 Performance Modeling for Tree Inference</b>, <b>Table 1</b>, 식 (1)~(7) · 근거 <code>[c08#b004]</code>~<code>[c08#b031]</code> · p.8~9</p>
+
+<div class="core">샘플 하나를 처리하는 시간을 "읽는 바이트 수 ÷ 대역폭"의 합과 "리덕션 비용 ÷ 배치 크기"로 쓴다. 전략마다 어떤 항이 0이 되는지가 다르고, 배치마다 네 식을 계산해 가장 작은 전략을 고른다.</div>
+
+<p>성능 모델 읽는 법(시간 = 바이트 ÷ 대역폭, 배치로 나눠 샘플당 비용)은 <a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 10절</a>에 있다. 모델은 shared memory·전역 메모리 접근, 블록 단위 리덕션(<code>cub::BlockReduce</code>), 블록 간 전역 리덕션(<code>cub::DeviceSegmentedReduce</code>)만 센다. 노드마다 비교하는 계산 비용은 모든 전략에서 같으므로 빼 둔다 <code>[c08#b004]</code>.</p>
+
+<h3>Table 1 기호표</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:12%">출처</th><th style="width:26%">이 해설 표기</th><th style="width:22%">원문 표기</th><th>뜻</th></tr>
+<tr><td rowspan="2">샘플</td><td>\(S_{sample}\)</td><td><code>S_sample</code></td><td>샘플 하나의 크기 (바이트)</td></tr>
+<tr><td>\(N_{batch}\)</td><td><code>N_batch</code>, <code>N\_batch</code></td><td>배치 하나의 샘플 수</td></tr>
+<tr><td rowspan="6">포레스트</td><td>\(D_{tree}\)</td><td><code>D_tree</code></td><td>트리 깊이 (본문 설명은 평균 깊이)</td></tr>
+<tr><td>\(N_{trees}\)</td><td><code>N_trees</code></td><td>포레스트의 트리 수</td></tr>
+<tr><td>\(S_{node}\)</td><td><code>S_node</code></td><td>결정 노드 하나의 크기</td></tr>
+<tr><td>\(S_{att}\)</td><td><code>S_att</code></td><td>속성 하나의 크기</td></tr>
+<tr><td>\(N_{nodes}\)</td><td><code>N_nodes</code></td><td>트리 하나의 노드 수</td></tr>
+<tr><td>\(S_{forest}\)</td><td><code>S_forest</code></td><td>포레스트 전체 크기</td></tr>
+<tr><td rowspan="8">하드웨어</td><td>\(\text{BW\_RSMEM}\)</td><td><code>BW_RSMEM</code></td><td>shared memory 읽기 대역폭</td></tr>
+<tr><td>\(\text{BW\_WSMEM}\)</td><td><code>BW_WSMEM</code></td><td>shared memory 쓰기 대역폭</td></tr>
+<tr><td>\(\text{BW\_R}^{\text{COA}}_{\text{GMEM}}\)</td><td><code>BW_R^COA_GMEM</code></td><td>병합된 접근일 때 전역 메모리 읽기 대역폭</td></tr>
+<tr><td>\(\text{BW\_R}^{\text{NCOA}}_{\text{GMEM}}\)</td><td><code>BW_R^NCOA_GMEM</code></td><td>병합되지 않은 접근일 때 전역 메모리 읽기 대역폭</td></tr>
+<tr><td>\(\text{Num\_of\_threads}\)</td><td><code>Num_of_threads</code></td><td>스레드 블록 하나의 스레드 수</td></tr>
+<tr><td>\(\text{Num\_of\_thrd\_blocks}\)</td><td><code>Num_of_thrd_blocks</code></td><td>스레드 블록 수</td></tr>
+<tr><td>\(\text{B\_rate}\)</td><td><code>B_rate</code></td><td>블록 리덕션 비례 상수 (오프라인 측정)</td></tr>
+<tr><td>\(\text{G\_rate}\)</td><td><code>G_rate</code></td><td>전역 리덕션 비례 상수 (오프라인 측정)</td></tr>
+<tr><td rowspan="5">시간 (Table 1 밖, 본문 <code>[c08#b005]</code> <code>[c08#b007]</code>)</td><td>\(T\)</td><td><code>T</code></td><td>샘플 하나의 추론 시간</td></tr>
+<tr><td>\(T_{\text{SMEM}}\)</td><td><code>T_SMEM</code>, <code>TSMEM</code></td><td>shared memory 접근 시간</td></tr>
+<tr><td>\(T_{\text{GMEM}}\)</td><td><code>T_GMEM</code>, <code>TGMEM</code></td><td>전역 메모리 접근 시간</td></tr>
+<tr><td>\(T_{\text{B\_REDU}}\)</td><td><code>T_B_REDU</code>, <code>TB_REDU</code></td><td>블록 단위 리덕션 시간</td></tr>
+<tr><td>\(T_{\text{G\_REDU}}\)</td><td><code>T_G_REDU</code>, <code>TG_REDU</code></td><td>전역 리덕션 시간</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">서재 덤프의 Table 1 <code>[c08#b013]</code>은 머리글만 남아 있어 내용은 PDF p.8에서 옮겼다. 원문은 같은 기호를 <code>T_SMEM</code>과 <code>TSMEM</code>처럼 섞어 쓴다.</p>
+
+<h3>세 가지 가정</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:5%">#</th><th>가정</th><th style="width:30%">근거 수치</th><th style="width:22%">식에 미치는 영향</th></tr>
+<tr><td class="c">1</td><td>전역 메모리의 포레스트 접근은 적응형 포레스트 형식 덕분에 잘 병합된다</td><td>추론 접근 기록으로 돌린 마이크로벤치마크에서 요청/가져온 비율 <b>45.8%</b> → 완전 병합 대역폭의 절반으로 가정</td><td>포레스트 읽기 분모 \(\text{BW\_R}^{\text{COA}}_{\text{GMEM}}/2\)</td></tr>
+<tr><td class="c">2</td><td>샘플 속성 읽기는 트리 순회 특성상 완전 무작위, 병합이 전혀 없다</td><td>—</td><td>속성 읽기 분모 \(\text{BW\_R}^{\text{NCOA}}_{\text{GMEM}}\)</td></tr>
+<tr><td class="c">3</td><td>트리 재배치 덕분에 스레드 간 부하 불균형이 거의 없다</td><td>재배치 뒤 스레드 실행 시간 CV <b>12.7%</b>, 원래 포레스트의 약 1/4</td><td>불균형 항을 두지 않음</td></tr>
+</table></div>
+<p>쓰기 접근은 예측 결과를 쓰는 데만 쓰이고 전체 메모리 접근의 1% 미만이라 무시한다 <code>[c08#b008]</code>.</p>
+
+<div class="src-quote">
+  <div class="en" lang="en">Using micro-benchmarks to load forests based on memory access traces collected from inference, we find that the ratio of requested data to total fetched data from global memory to access the forests is 45.8%. Hence we assume that the bandwidth of memory accesses to the forest in global memory is equal to half of the bandwidth consumed by fully coalesced memory accesses. [...] After the rearrangement, the coefficient of variation (CV) for execution time across threads is only 12.7%, which is four times smaller than that for the original forests.</div>
+  <div class="ko">추론에서 모은 메모리 접근 기록으로 포레스트를 읽는 마이크로벤치마크를 돌리면, 포레스트 접근에서 전역 메모리가 가져온 전체 데이터 대비 요청 데이터 비율은 45.8%다. 그래서 전역 메모리의 포레스트 접근 대역폭을 완전히 병합된 접근 대역폭의 절반으로 가정한다. [...] 재배치 뒤 스레드 간 실행 시간의 변동계수(CV)는 12.7%로, 원래 포레스트보다 네 배 작다.</div>
+  <div class="ref">원문 6.1절 <code>[c08#b008]</code> · p.8</div>
+</div>
+
+<h3>공통 식 (1)~(3)</h3>
+$$ T = T_{\text{SMEM}} + T_{\text{GMEM}} + T_{\text{B\_REDU}} + T_{\text{G\_REDU}} \tag{1} $$
+$$ T_{\text{B\_REDU}} = \text{B\_rate} \times \text{Num\_of\_threads} \,/\, N_{batch} \tag{2} $$
+$$ T_{\text{G\_REDU}} = \text{G\_rate} \times \text{Num\_of\_thrd\_blocks} \,/\, N_{batch} \tag{3} $$
+<p>블록 리덕션 시간은 블록 안 스레드 수에, 전역 리덕션 시간은 블록 수에 비례한다고 본다. 둘 다 샘플 하나에 돌아가는 몫을 구하려고 \(N_{batch}\)로 나눈다 <code>[c08#b009]</code> <code>[c08#b011]</code>. 서재 덤프에는 식 (3)이 두 번(<code>[c08#b014]</code>, <code>[c08#b016]</code>) 들어 있는데 같은 식이다.</p>
+
+<h3>전략별 식 (4)~(7)</h3>
+<p><b>shared data</b> (적응형 포레스트 형식 사용). 샘플을 shared memory에 쓰고 거기서 속성을 읽는다. 포레스트는 전역 메모리에서 절반 대역폭으로 읽는다. \(T_{\text{G\_REDU}}=0\)이고 블록 리덕션은 식 (2)를 쓴다 <code>[c08#b020]</code>~<code>[c08#b022]</code>.</p>
+$$ T_{\text{SMEM}} = \frac{S_{sample}}{\text{BW\_WSMEM}} + \frac{D_{tree} N_{trees} S_{att}}{\text{BW\_RSMEM}}, \qquad T_{\text{GMEM}} = \frac{S_{sample}}{\text{BW\_R}^{\text{COA}}_{\text{GMEM}}} + \frac{D_{tree} N_{trees} S_{node}}{\text{BW\_R}^{\text{COA}}_{\text{GMEM}}/2} \tag{4} $$
+<p><b>direct</b>. shared memory도 리덕션도 없다. 포레스트는 절반 대역폭, 샘플 속성은 병합 없는 대역폭으로 전역 메모리에서 읽는다 <code>[c08#b023]</code>~<code>[c08#b025]</code>.</p>
+$$ T_{\text{GMEM}} = \frac{D_{tree} N_{trees} S_{node}}{\text{BW\_R}^{\text{COA}}_{\text{GMEM}}/2} + \frac{D_{tree} N_{trees} S_{att}}{\text{BW\_R}^{\text{NCOA}}_{\text{GMEM}}} \tag{5} $$
+<p><b>shared forest</b>. 리덕션이 없다. 포레스트를 shared memory에 올리는 시간은 반복 사용으로 분산되므로 무시한다. 포레스트는 shared memory에서, 속성은 전역 메모리에서 병합 없이 읽는다 <code>[c08#b026]</code>.</p>
+$$ T_{\text{SMEM}} = \frac{D_{tree} N_{trees} S_{node}}{\text{BW\_RSMEM}}, \qquad T_{\text{GMEM}} = \frac{D_{tree} N_{trees} S_{att}}{\text{BW\_R}^{\text{NCOA}}_{\text{GMEM}}} \tag{6} $$
+<p><b>splitting shared forest</b>. shared forest와 같되 \(N_{batch}\)개 샘플마다 포레스트를 다시 올리고(무시하지 못함) 전역 리덕션을 한다. 포레스트를 올리는 항(각 식의 첫 항)만 \(N_{batch}\)로 나눈다 <code>[c08#b029]</code>~<code>[c08#b031]</code>. 전역 리덕션은 식 (3)이다.</p>
+$$ T_{\text{SMEM}} = \frac{N_{nodes} N_{trees} S_{node}}{\text{BW\_WSMEM}\cdot N_{batch}} + \frac{D_{tree} N_{trees} S_{node}}{\text{BW\_RSMEM}}, \qquad T_{\text{GMEM}} = \frac{N_{nodes} N_{trees} S_{node}}{\text{BW\_R}^{\text{COA}}_{\text{GMEM}}\cdot N_{batch}} + \frac{D_{tree} N_{trees} S_{att}}{\text{BW\_R}^{\text{NCOA}}_{\text{GMEM}}} \tag{7} $$
+
+<h3>전략별로 0이 되는 항</h3>
+<div class="table-wrap"><table>
+<tr><th>전략</th><th class="c">\(T_{\text{SMEM}}\)</th><th class="c">\(T_{\text{GMEM}}\)</th><th class="c">\(T_{\text{B\_REDU}}\)</th><th class="c">\(T_{\text{G\_REDU}}\)</th><th>식</th></tr>
+<tr><td>shared data</td><td class="c">샘플 쓰기 + 속성 읽기</td><td class="c">샘플 읽기 + 포레스트 (½ 대역폭)</td><td class="c">식 (2)</td><td class="c hl">0</td><td>(4) + (2)</td></tr>
+<tr><td>direct</td><td class="c hl">0</td><td class="c">포레스트 (½) + 속성 (병합 없음)</td><td class="c hl">0</td><td class="c hl">0</td><td>(5)</td></tr>
+<tr><td>shared forest</td><td class="c">포레스트 읽기</td><td class="c">속성 (병합 없음)</td><td class="c hl">0</td><td class="c hl">0</td><td>(6)</td></tr>
+<tr><td>splitting shared forest</td><td class="c">포레스트 쓰기/\(N_{batch}\) + 포레스트 읽기</td><td class="c">포레스트 적재/\(N_{batch}\) + 속성 (병합 없음)</td><td class="c hl">0</td><td class="c">식 (3)</td><td>(7) + (3)</td></tr>
+</table></div>
+<p>식을 나란히 놓으면 핵심 비교가 하나로 좁혀진다. shared data는 포레스트를 전역 메모리에서 \(S_{node}/(\text{BW\_R}^{\text{COA}}_{\text{GMEM}}/2)\)의 값으로 읽고, 포레스트를 shared memory에 두는 전략들은 속성을 \(S_{att}/\text{BW\_R}^{\text{NCOA}}_{\text{GMEM}}\)의 값으로 읽는다. 둘 다 \(D_{tree}N_{trees}\)를 곱하므로, 어느 쪽이 작은지와 리덕션 항이 배치 크기로 얼마나 줄어드는지가 승부를 가른다 <span class="infer">추론</span>.</p>
+
+<h3>숫자로 두 전략 비교하기 (직접 만든 예)</h3>
+<p>하드웨어·포레스트 값은 모두 직접 만든 값이다 <span class="infer">추론</span>. 실제 GPU 측정치가 아니고, 배치 크기에 따라 승자가 바뀌는 모습을 식으로 확인하려고 골랐다. 대역폭 단위를 GB/s로 두면 1 GB/s = 1 바이트/ns이므로 "바이트 ÷ GB/s"가 곧 ns다. 계산은 Python으로 검산했다.</p>
+<div class="table-wrap"><table>
+<tr><th style="width:30%">기호</th><th class="num" style="width:16%">값</th><th>설명</th></tr>
+<tr><td>\(N_{trees}\), \(D_{tree}\)</td><td class="num">100, 8</td><td>\(D_{tree}N_{trees}=800\)</td></tr>
+<tr><td>\(N_{nodes}\)</td><td class="num">255</td><td>깊이 8 완전 이진트리 (\(2^8-1\))</td></tr>
+<tr><td>\(S_{node}\), \(S_{att}\)</td><td class="num">16 B, 4 B</td><td>포레스트 크기 \(255\times100\times16=408{,}000\) B</td></tr>
+<tr><td>\(S_{sample}\)</td><td class="num">112 B</td><td>속성 28개 × 4 B (Higgs 속성 수를 빌림)</td></tr>
+<tr><td>\(\text{BW\_R}^{\text{COA}}_{\text{GMEM}}\), \(\text{BW\_R}^{\text{NCOA}}_{\text{GMEM}}\)</td><td class="num">500, 125 GB/s</td><td>병합 없는 접근을 1/4로 가정</td></tr>
+<tr><td>\(\text{BW\_RSMEM}\), \(\text{BW\_WSMEM}\)</td><td class="num">5000, 5000 GB/s</td><td>—</td></tr>
+<tr><td>\(\text{B\_rate}\), \(\text{Num\_of\_threads}\)</td><td class="num">5 ns, 256</td><td>블록 리덕션 1회 1280 ns</td></tr>
+<tr><td>\(\text{G\_rate}\), \(\text{Num\_of\_thrd\_blocks}\)</td><td class="num">2000 ns, 9</td><td>shared memory 48 KB에 나눠 담으면 \(\lceil 408000/49152\rceil=9\)조각, 전역 리덕션 1회 18000 ns</td></tr>
+</table></div>
+<p>포레스트가 408 KB라 48 KB shared memory에 안 들어가므로 shared forest는 후보에서 빠진다(Algorithm 1의 10행). 남는 shared data와 splitting shared forest를 배치 100과 100K에서 비교한다.</p>
+
+<p><span class="step">STEP 1</span> shared data, 배치와 무관한 부분 (식 4).</p>
+$$ T_{\text{SMEM}} = \tfrac{112}{5000} + \tfrac{800\times4}{5000} = 0.0224 + 0.64 = 0.6624\ \text{ns} $$
+$$ T_{\text{GMEM}} = \tfrac{112}{500} + \tfrac{800\times16}{500/2} = 0.224 + 51.2 = 51.424\ \text{ns} $$
+<p><span class="step">STEP 2</span> shared data의 리덕션 (식 2). \(5\times256/N_{batch}=1280/N_{batch}\)이므로 배치 100에서 12.8 ns, 100K에서 0.0128 ns다. 합계는 각각 <b>64.89 ns</b>, <b>52.10 ns</b>다.</p>
+<p><span class="step">STEP 3</span> splitting shared forest의 메모리 항 (식 7). 포레스트 적재 항은 \(408000/(5000N_{batch})=81.6/N_{batch}\)와 \(408000/(500N_{batch})=816/N_{batch}\)이다. 나머지는 \(800\times16/5000=2.56\) ns와 \(800\times4/125=25.6\) ns다.</p>
+<p><span class="step">STEP 4</span> splitting shared forest의 전역 리덕션 (식 3). \(2000\times9/N_{batch}=18000/N_{batch}\)이다. 배치 100이면 180 ns로 이것 하나가 전체를 지배한다.</p>
+<div class="table-wrap"><table>
+<tr><th>전략 / 배치</th><th class="num">\(T_{\text{SMEM}}\)</th><th class="num">\(T_{\text{GMEM}}\)</th><th class="num">\(T_{\text{B\_REDU}}\)</th><th class="num">\(T_{\text{G\_REDU}}\)</th><th class="num">합계 \(T\) (ns)</th></tr>
+<tr class="y"><td>shared data, 100</td><td class="num">0.662</td><td class="num">51.424</td><td class="num">12.800</td><td class="num">0</td><td class="num"><b>64.89</b></td></tr>
+<tr><td>splitting, 100</td><td class="num">3.376</td><td class="num">33.760</td><td class="num">0</td><td class="num">180.000</td><td class="num">217.14</td></tr>
+<tr><td>shared data, 100K</td><td class="num">0.662</td><td class="num">51.424</td><td class="num">0.013</td><td class="num">0</td><td class="num">52.10</td></tr>
+<tr class="y"><td>splitting, 100K</td><td class="num">2.561</td><td class="num">25.608</td><td class="num">0</td><td class="num">0.180</td><td class="num"><b>28.35</b></td></tr>
+<tr><td>(참고) direct, 둘 다</td><td class="num">0</td><td class="num">76.800</td><td class="num">0</td><td class="num">0</td><td class="num">76.80</td></tr>
+</table></div>
+<p><span class="step">STEP 5</span> 두 전략이 같아지는 배치를 구한다. shared data는 \(52.09 + 1280/N_{batch}\), splitting은 \(28.16 + 18897.6/N_{batch}\)이다. 같다고 놓으면 \(N_{batch}\approx 736\)이다.</p>
+$$ 52.086 + \frac{1280}{N_{batch}} = 28.16 + \frac{18897.6}{N_{batch}} \;\Rightarrow\; N_{batch} = \frac{17617.6}{23.926} \approx 736 $$
+<p>배치가 작으면 shared data, 크면 splitting이 이긴다. 5.2절 Higgs의 관찰(10K 미만은 shared data, 이상은 splitting)과 방향이 같다. 전환점 숫자는 직접 고른 값에 따라 달라지므로 원문의 10K와 비교할 대상은 아니다 <span class="infer">추론</span>.</p>
+
+<div class="quiz" data-answer="a">
+  <div class="q">Q. 식 (6) shared forest에 포레스트를 shared memory로 올리는 시간 항이 없는 이유는?</div>
+  <label><input type="radio" name="q-e-s8" value="a"> 한 번 올린 포레스트를 계속 재사용해 적재 시간이 분산되므로 무시한다</label>
+  <label><input type="radio" name="q-e-s8" value="b"> 포레스트는 전역 메모리에서 바로 읽기 때문이다</label>
+  <label><input type="radio" name="q-e-s8" value="c"> 적재 시간이 \(T_{\text{G\_REDU}}\)에 포함되기 때문이다</label>
+  <label><input type="radio" name="q-e-s8" value="d"> 가정 1(45.8%) 때문에 0이 되기 때문이다</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="원문 6.1절 [c08#b026]: 포레스트는 올린 뒤 추론에 반복 사용되므로 적재 시간이 쉽게 분산되어 무시한다. splitting shared forest는 배치마다 다시 올려야 해서 식 (7)에 그 항이 N_batch로 나뉘어 들어간다 [c08#b030]."></div>
+</div>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c08">서재에서 6장(Tahoe, 성능 모델) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 9 ============ -->
+<section id="alg1">
+<h2>Algorithm 1 (6.2절)</h2>
+<p class="paper">원문 <b>6.2 Adaptive Inference Engine based on Performance Models</b>, <b>Algorithm 1</b> · 근거 <code>[c08#b028]</code> <code>[c08#b033]</code> <code>[c08#b034]</code> · p.9~10</p>
+
+<div class="core">Tahoe의 일은 세 시점으로 나뉜다. 플랫폼마다 한 번 하는 하드웨어 측정, 포레스트가 바뀔 때마다 CPU에서 하는 형식 변환, 배치마다 GPU에서 하는 전략 선택과 실행이다.</div>
+
+<div class="table-wrap"><table>
+<tr><th style="width:18%">부분</th><th style="width:10%">줄</th><th style="width:14%">어디서·언제</th><th>하는 일</th></tr>
+<tr><td>정의</td><td class="c">1~3</td><td>—</td><td>입력 샘플(\(S_{samples}\), \(N_{batches}\)), 학습된 포레스트(\(D_{tree}\), \(N_{trees}\), \(S_{node}\), \(S_{att}\), \(\text{COA\_rate}\)), 하드웨어 매개변수</td></tr>
+<tr><td>하드웨어 매개변수 측정 (오프라인)</td><td class="c">4</td><td>CPU, 플랫폼마다 1회</td><td>마이크로벤치마크로 대역폭, \(\text{B\_rate}\), \(\text{G\_rate}\) 등 측정</td></tr>
+<tr><td>포레스트 형식 최적화 (온라인)</td><td class="c">5~7</td><td>CPU, 시스템 초기화 때와 포레스트가 바뀔 때</td><td>GPU에서 트리와 간선 확률을 가져옴 → 노드 재배치, 유사도 탐지, 형식 변환 → GPU로 보냄</td></tr>
+<tr class="y"><td>배치 처리 (온라인)</td><td class="c">8~16</td><td>GPU, 배치마다</td><td>식 (4)로 shared data, 식 (5)로 direct 예측. shared memory &gt; 포레스트 크기이면 식 (6) shared forest, 아니면 식 (7) splitting 예측. 스레드 수는 지연을 숨길 만큼 최대로, 블록 수는 레지스터 점유율이 최대가 되게 설정. 예측 시간이 가장 짧은 전략 실행. 추론하면서 간선 확률 집계</td></tr>
+</table></div>
+
+<div class="src-quote">
+  <div class="en" lang="en">The offline part happens only once on a given platform. In the online part, Tahoe collects those sample and forest parameters listed in Table 1, rearranges tree nodes, detects the similarity of trees, and converts the forest. [...] In the scenario of incremental learning, the above procedure is triggered whenever the forest is updated based on the learned new knowledge. We use CPU for the above procedure to avoid performance impact on GPU. At the inference time on GPU, Tahoe uses the performance models for once for each batch of samples to decide which inference strategy should be used for best performance.</div>
+  <div class="ko">오프라인 부분은 플랫폼마다 한 번만 실행한다. 온라인 부분에서 Tahoe는 Table 1의 샘플·포레스트 매개변수를 모으고, 트리 노드를 재배치하고, 트리 유사도를 찾고, 포레스트 형식을 변환한다. [...] 증분 학습 상황에서는 새로 배운 내용으로 포레스트가 갱신될 때마다 이 절차가 다시 실행된다. GPU 성능에 영향을 주지 않으려고 이 절차는 CPU에서 한다. GPU 추론 중에는 샘플 배치마다 한 번 성능 모델을 써서 가장 빠를 추론 전략을 정한다.</div>
+  <div class="ref">원문 6.2절 <code>[c08#b034]</code> · p.10</div>
+</div>
+
+<p>16행 "추론 중 간선 확률 집계"와 5행 "GPU에서 간선 확률 가져오기"가 짝을 이룬다. 추론하면서 쌓은 확률이 다음 형식 변환 때 노드 재배치에 다시 쓰인다 <span class="infer">추론</span>. 원문은 이 순환을 그림으로 그리지 않았지만 두 행을 함께 읽으면 이렇게 이어진다.</p>
+<div class="warn">Algorithm 1 3행의 하드웨어 매개변수 표기(\(BR_{SMEM}\), \(BW_{SMEM}\), \(BR^{COA}_{GMEM}\), \(BR^{NCOA}_{GMEM}\), \(Cost_{sync}\))와 2행의 \(\text{COA\_rate}\)는 식 (1)~(7)과 Table 1에 같은 이름으로 나오지 않는다. \(BR\)은 읽기, \(BW\)는 쓰기 대역폭으로 보이고, \(Cost_{sync}\)와 \(\text{COA\_rate}\)는 식에 쓰이지 않는다 <span class="infer">추론</span>.</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-e-s9-mine" placeholder="Tahoe가 배치마다 하는 일을 한두 문장으로"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c08">서재에서 6장(Tahoe, Algorithm 1) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 10 ============ -->
+<section id="setup">
+<h2>실험 설정 (7.1절)</h2>
+<div class="audio"><span class="lbl">🔊 듣기 H (10~15절)</span><audio controls preload="none" src="audio/Xie_2021_Tahoe_H.mp3"></audio></div>
+<p class="paper">원문 <b>7.1 Experimental Setup</b>, <b>Table 2</b> · 근거 <code>[c09#b003]</code>~<code>[c09#b008]</code> · p.10</p>
+
+<div class="core">GPU 세 세대(K80·P100·V100), UCI·LIBSVM 데이터셋 15개, 데이터셋마다 70% 학습 / 30% 추론으로 포레스트 15개를 만든다. 비교 대상은 FIL 하나다.</div>
+
+<div class="table-wrap"><table>
+<tr><th style="width:22%">항목</th><th>값</th><th style="width:14%">근거</th></tr>
+<tr><td>GPU</td><td>Tesla K80 (Kepler), Tesla P100 (Pascal), Tesla V100 (Volta), 확장성 실험은 NVIDIA DGX-2 클러스터(V100 최대 128장)</td><td><code>[c09#b003]</code> <code>[c09#b021]</code></td></tr>
+<tr><td>CPU·OS (7.1절)</td><td>Xeon 8168 두 개(각 24코어), Linux 4.18</td><td><code>[c09#b003]</code></td></tr>
+<tr><td>CPU·OS (부록)</td><td>Xeon E6-2760 v3 24코어 2.30GHz, Ubuntu 16.04 (커널 4.4), CUDA 11.0, FIL v0.18</td><td><code>[c12#b003]</code> <code>[c12#b011]</code>~<code>[c12#b015]</code></td></tr>
+<tr><td>학습</td><td>XGBoost, 하이퍼파라미터는 기존 연구와 Kaggle 대회 기준</td><td><code>[c09#b004]</code></td></tr>
+<tr><td>배치 크기</td><td>100K = 높은 병렬(high-throughput), 100 = 낮은 병렬(low-latency)</td><td><code>[c09#b010]</code></td></tr>
+</table></div>
+<div class="warn">7.1절과 부록의 CPU·OS 정보가 다르다. 7.1절은 Xeon 8168 ×2와 Linux 4.18, 부록은 Xeon E6-2760 v3 24코어와 Ubuntu 16.04다. 원문은 차이를 설명하지 않는다.</div>
+
+<h3>Table 2 데이터셋과 포레스트</h3>
+<div class="table-wrap"><table>
+<tr><th class="c">No.</th><th>데이터셋</th><th class="num">샘플 수</th><th class="num">속성 수</th><th class="c">포레스트 유형</th><th class="num">\(N_{trees}\)</th><th class="num">\(D_{tree}\)</th><th>5.2절 승자 (P100, 100K)</th></tr>
+<tr><td class="c">1</td><td>HOCK</td><td class="num">1,993</td><td class="num">4,862</td><td class="c">GBDT</td><td class="num">8</td><td class="num">8</td><td>shared forest</td></tr>
+<tr><td class="c">2</td><td>Higgs</td><td class="num">250,000</td><td class="num">28</td><td class="c">RF</td><td class="num">3000</td><td class="num">8</td><td>splitting</td></tr>
+<tr><td class="c">3</td><td>SUSY</td><td class="num">1,000,000</td><td class="num">18</td><td class="c">GBDT</td><td class="num">2000</td><td class="num">8</td><td>splitting</td></tr>
+<tr><td class="c">4</td><td>SVHN</td><td class="num">1,000,000</td><td class="num">3,072</td><td class="c">GBDT</td><td class="num">218</td><td class="num">15</td><td>direct</td></tr>
+<tr><td class="c">5</td><td>allstate</td><td class="num">588,318</td><td class="num">130</td><td class="c">RF</td><td class="num">800</td><td class="num">5</td><td>shared data</td></tr>
+<tr><td class="c">6</td><td>cifar10</td><td class="num">60,000</td><td class="num">3,072</td><td class="c">GBDT</td><td class="num">10</td><td class="num">8</td><td>shared forest</td></tr>
+<tr><td class="c">7</td><td>covtype</td><td class="num">581,012</td><td class="num">54</td><td class="c">RF</td><td class="num">500</td><td class="num">3</td><td>shared data</td></tr>
+<tr><td class="c">8</td><td>cup98</td><td class="num">17,535</td><td class="num">481</td><td class="c">GBDT</td><td class="num">150</td><td class="num">8</td><td>shared data</td></tr>
+<tr><td class="c">9</td><td>gisette</td><td class="num">13,500</td><td class="num">5,000</td><td class="c">GBDT</td><td class="num">20</td><td class="num">20</td><td>direct</td></tr>
+<tr><td class="c">10</td><td>year</td><td class="num">515,345</td><td class="num">90</td><td class="c">RF</td><td class="num">150</td><td class="num">6</td><td>shared data</td></tr>
+<tr><td class="c">11</td><td>hepmass</td><td class="num">10,500,000</td><td class="num">28</td><td class="c">GBDT</td><td class="num">2000</td><td class="num">10</td><td>splitting</td></tr>
+<tr><td class="c">12</td><td>ijcnn1</td><td class="num">49,990</td><td class="num">22</td><td class="c">RF</td><td class="num">10</td><td class="num">6</td><td>shared forest</td></tr>
+<tr><td class="c">13</td><td>phishing</td><td class="num">11,055</td><td class="num">68</td><td class="c">RF</td><td class="num">15</td><td class="num">6</td><td>shared forest</td></tr>
+<tr><td class="c">14</td><td>aloi</td><td class="num">108,000</td><td class="num">128</td><td class="c">RF</td><td class="num">2000</td><td class="num">6</td><td>splitting</td></tr>
+<tr><td class="c">15</td><td>letter</td><td class="num">15,000</td><td class="num">16</td><td class="c">RF</td><td class="num">150</td><td class="num">4</td><td>shared forest</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">원문 Table 2 <code>[c09#b008]</code>. 여기서 \(N_{trees}\)와 \(D_{tree}\)는 학습 때 정한 최대 트리 수와 최대 깊이다. 6.1절 성능 모델의 \(D_{tree}\)(평균 깊이)와 뜻이 조금 다르다. 마지막 열은 5.2절 본문 <code>[c07#b015]</code>~<code>[c07#b018]</code>을 표에 옮겨 붙였다.</p>
+
+<h3>Tahoe 매개변수</h3>
+<div class="src-quote">
+  <div class="en" lang="en">We test various values of \(T_{nodes}\), \(L_{hash}\) and \(M\), and found that \(T_{nodes} \in [4, 6]\), \(L_{hash} \ge 128\) and \(M \ge 64\) are usually sufficient to group these trees and give a correct order of trees based on their similarity. Hence, we choose \(T_{nodes} = 4\), \(L_{hash} = 128\), and \(M = 64\) in our evaluation.</div>
+  <div class="ko">\(T_{nodes}\), \(L_{hash}\), \(M\)을 여러 값으로 시험해 보니 \(T_{nodes} \in [4, 6]\), \(L_{hash} \ge 128\), \(M \ge 64\)이면 대체로 트리를 묶고 유사도에 따라 올바른 순서를 얻기에 충분했다. 그래서 평가에서는 \(T_{nodes} = 4\), \(L_{hash} = 128\), \(M = 64\)를 쓴다.</div>
+  <div class="ref">원문 7.1절 <code>[c09#b005]</code> · p.10</div>
+</div>
+<div class="table-wrap"><table>
+<tr><th style="width:16%">매개변수</th><th class="num" style="width:10%">값</th><th>원문의 이유 <code>[c09#b006]</code></th></tr>
+<tr><td>\(T_{nodes}\)</td><td class="num">4</td><td>너무 크면 순서 정확도를 잃고, 너무 작으면 토큰이 많아 오래 걸림. 4이면 정확도를 잃지 않고 평균 약 0.226 ms</td></tr>
+<tr><td>\(L_{hash}\)</td><td class="num">128</td><td>서로 다른 메모리 접근 순서를 구별하고, 해시 문자열이 캐시 라인 크기에 정렬됨</td></tr>
+<tr><td>\(M\)</td><td class="num">64</td><td>서로 다른 트리 버킷을 구별하기에 충분히 큼</td></tr>
+</table></div>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c09">서재에서 7장(Evaluation) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 11 ============ -->
+<section id="result">
+<h2>실험 결과 (7.2~7.5절)</h2>
+<p class="paper">원문 <b>7.2 Overall Performance</b>, <b>7.3 Performance Breakdown</b>, <b>7.4 Overhead Analysis</b>, <b>7.5 Scalability Analysis</b>, <b>Figure 7·8·9</b>, <b>Table 3</b> · 근거 <code>[c09#b010]</code>~<code>[c09#b029]</code> · p.10~12</p>
+
+<div class="core">Tahoe는 15개 데이터셋 모두에서 FIL보다 빠르다. 이득은 배치가 큰 높은 병렬 작업에서 더 크고, 메모리 병합 접근·부하 균형·리덕션 제거의 효과는 각각 따로 잰다.</div>
+
+<h3>결과를 읽는 순서</h3>
+<ol>
+<li>7.2절 Figure 7의 평균 배속(GPU × 배치 크기)으로 전체 크기를 잡는다.</li>
+<li>Figure 8로 세 기법 중 무엇이 어떤 포레스트에서 효과적인지 본다.</li>
+<li>7.3절의 카운터 수치(메모리 효율, CV, 리덕션 제거 건수, 모델 정확도)로 3절의 세 문제가 실제로 줄었는지 확인한다.</li>
+<li>7.4절 오버헤드와 7.5절 확장성으로 실제 운용 비용을 본다.</li>
+</ol>
+
+<h3>Figure 7, FIL 대비 배속</h3>
+<div class="table-wrap"><table>
+<tr><th>GPU</th><th class="num">높은 병렬 (배치 100K) 평균</th><th class="num">높은 병렬 최대</th><th class="num">낮은 병렬 (배치 100) 평균</th><th class="num">낮은 병렬 최대</th></tr>
+<tr><td>K80 (Kepler)</td><td class="num"><b>5.31</b></td><td class="num">9.58</td><td class="num"><b>2.34</b></td><td class="num">5.08</td></tr>
+<tr><td>P100 (Pascal)</td><td class="num"><b>3.67</b></td><td class="num">8.77</td><td class="num"><b>1.52</b></td><td class="num">3.82</td></tr>
+<tr><td>V100 (Volta)</td><td class="num"><b>4.05</b></td><td class="num">10.14</td><td class="num"><b>1.45</b></td><td class="num">3.17</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">평균은 7.2절 <code>[c09#b011]</code>, 최대는 1절 기여 목록 <code>[c03#b011]</code>. 데이터셋별 막대 값은 본문에 없다.</p>
+<svg viewBox="0 0 760 230" width="100%" style="max-width:760px;display:block;margin:10px auto" role="img" aria-label="GPU별 평균 배속 막대">
+  <g font-size="12">
+    <line x1="60" y1="190" x2="740" y2="190" stroke="#6b6b66"/>
+    <text x="50" y="194" text-anchor="end" fill="#6b6b66">0</text>
+    <text x="50" y="134" text-anchor="end" fill="#6b6b66">2</text>
+    <text x="50" y="74" text-anchor="end" fill="#6b6b66">4</text>
+    <line x1="60" y1="130" x2="740" y2="130" stroke="#e7e5df"/>
+    <line x1="60" y1="70" x2="740" y2="70" stroke="#e7e5df"/>
+    <!-- scale 30px per 1x -->
+    <rect x="100" y="30.7" width="60" height="159.3" fill="#2a78d6"/><text x="130" y="25" text-anchor="middle">5.31</text>
+    <rect x="165" y="119.8" width="60" height="70.2" fill="#eb6834"/><text x="195" y="114" text-anchor="middle">2.34</text>
+    <text x="162" y="210" text-anchor="middle" font-weight="700">K80</text>
+    <rect x="320" y="79.9" width="60" height="110.1" fill="#2a78d6"/><text x="350" y="74" text-anchor="middle">3.67</text>
+    <rect x="385" y="144.4" width="60" height="45.6" fill="#eb6834"/><text x="415" y="139" text-anchor="middle">1.52</text>
+    <text x="382" y="210" text-anchor="middle" font-weight="700">P100</text>
+    <rect x="540" y="68.5" width="60" height="121.5" fill="#2a78d6"/><text x="570" y="63" text-anchor="middle">4.05</text>
+    <rect x="605" y="146.5" width="60" height="43.5" fill="#eb6834"/><text x="635" y="141" text-anchor="middle">1.45</text>
+    <text x="602" y="210" text-anchor="middle" font-weight="700">V100</text>
+    <rect x="560" y="8" width="12" height="12" fill="#2a78d6"/><text x="578" y="18">높은 병렬 (100K)</text>
+    <rect x="660" y="8" width="12" height="12" fill="#eb6834"/><text x="678" y="18">낮은 병렬 (100)</text>
+  </g>
+</svg>
+
+<div class="src-quote">
+  <div class="en" lang="en">(1) Tahoe brings larger benefits to the high parallelism task than to the low parallelism task, because a high parallelism task allows more samples to be processed in parallel, which sufficiently leverages thread-level parallelism and amortizes the overhead of reduction. (2) K80 has higher speedup than other GPUs for low parallelism tasks, because K80 has smaller memory bandwidth and cache size, and K80 suffers more from memory uncoalesced problem [...]. (3) V100 has higher speedup than P100, because V100 brings shorter inference time, which leads to more frequent occurrence of load imbalance (detailed data are shown in Table 3).</div>
+  <div class="ko">(1) Tahoe는 낮은 병렬 작업보다 높은 병렬 작업에서 이득이 크다. 높은 병렬 작업은 더 많은 샘플을 동시에 처리해 스레드 수준 병렬성을 충분히 쓰고 리덕션 비용을 분산하기 때문이다. (2) 낮은 병렬 작업에서는 K80의 배속이 다른 GPU보다 높다. K80은 메모리 대역폭과 캐시가 작아 병합되지 않는 접근 문제를 더 크게 겪고 [...]. (3) V100의 배속은 P100보다 높다. V100은 추론 시간이 짧아 부하 불균형이 더 자주 나타나기 때문이다(자세한 값은 Table 3).</div>
+  <div class="ref">원문 7.2절 <code>[c09#b011]</code> · p.10</div>
+</div>
+
+<h3>Figure 8, 기법별 기여</h3>
+<p>(a) 노드 재배치 → (b) 트리 재배치 → (c) 성능 모델 기반 전략 선택을 차례로 얹고, 얹을 때마다 늘어난 FIL 대비 배속을 그 기법의 기여로 본다. 결과는 세 기법을 모두 쓴 총 배속으로 정규화했다 <code>[c09#b012]</code>. 막대 값은 본문에 없고 관찰 세 개만 있다 <code>[c09#b015]</code>.</p>
+<div class="table-wrap"><table>
+<tr><th style="width:24%">기법</th><th style="width:28%">효과가 큰 포레스트</th><th>원문의 이유</th></tr>
+<tr><td>(a) 확률 기반 노드 재배치</td><td>얕은 트리: 5 allstate, 7 covtype, 10 year, 15 letter (깊이 3~6)</td><td>얕은 트리일수록 다른 트리의 노드를 같은 메모리 트랜잭션에 넣을 기회가 많음</td></tr>
+<tr><td>(b) 유사도 기반 트리 재배치</td><td>트리가 많은 포레스트: 2 Higgs, 3 SUSY, 11 hepmass, 14 aloi (2000~3000개)</td><td>트리가 많을수록 스레드 간 부하 불균형이 심함</td></tr>
+<tr><td>(c) 전략 선택</td><td>낮은 병렬 작업에서는 기여가 작음</td><td>배치가 작으면 네 전략의 성능 차이가 작음</td></tr>
+</table></div>
+
+<h3>Table 3, 부하 불균형 (A.C.V.)</h3>
+<div class="table-wrap"><table>
+<tr><th>GPU</th><th class="num">높은 병렬 FIL</th><th class="num">높은 병렬 Tahoe</th><th class="num">감소율 (원문)</th><th class="num">낮은 병렬 FIL</th><th class="num">낮은 병렬 Tahoe</th><th class="num">감소율 (원문)</th></tr>
+<tr><td>K80</td><td class="num">47.2%</td><td class="num">13.1%</td><td class="num">72.25%</td><td class="num">36.4%</td><td class="num">10.8%</td><td class="num">70.33%</td></tr>
+<tr><td>P100</td><td class="num">51.3%</td><td class="num">16.2%</td><td class="num">68.42%</td><td class="num">42.9%</td><td class="num">13.5%</td><td class="num">68.53%</td></tr>
+<tr><td>V100</td><td class="num">54.6%</td><td class="num">15.9%</td><td class="num">70.88%</td><td class="num">44.7%</td><td class="num">12.5%</td><td class="num">70.04%</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--muted)">A.C.V.는 15개 포레스트에서 블록 안 스레드 실행 시간 CV의 평균이다. 표 값은 <code>[c09#b017]</code>, 감소율은 본문 <code>[c09#b020]</code>.</p>
+<div class="warn">감소율을 Table 3 값으로 다시 계산하면 다섯 칸은 원문과 같지만 V100 낮은 병렬은 \((44.7-12.5)/44.7=72.04\%\)로, 본문의 70.04%와 다르다 (Python 검산). 오기로 보이며 어느 쪽이 맞는지 원문만으로는 확인할 수 없다.</div>
+<p>V100의 FIL CV가 가장 크다(54.6%, 44.7%). 관찰 (3)의 "V100은 추론 시간이 짧아 부하 불균형이 더 자주 나타난다"는 설명이 이 숫자를 가리킨다.</p>
+
+<h3>7.3절 성능 분해</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:20%">측정</th><th class="num">K80</th><th class="num">P100</th><th class="num">V100</th><th style="width:10%">근거</th></tr>
+<tr><td>shared memory 요청 비율 (FIL → Tahoe)</td><td class="num">28.4% → 45.9%</td><td class="num">28.7% → 48.3%</td><td class="num">29.7% → 50.6%</td><td><code>[c09#b019]</code></td></tr>
+<tr><td>전역 메모리 읽기 처리량 (FIL → Tahoe)</td><td class="num">62.4 → 174.7 GB/s</td><td class="num">98.8 → 314.0 GB/s</td><td class="num">112.4 → 378.5 GB/s</td><td><code>[c09#b019]</code></td></tr>
+<tr><td>메모리 병합 개선에 따른 성능 (높은 / 낮은 병렬)</td><td class="num">2.38× / 1.61×</td><td class="num">1.85× / 1.22×</td><td class="num">1.98× / 1.21×</td><td><code>[c09#b019]</code></td></tr>
+<tr><td>트리 재배치에 따른 성능 (높은 / 낮은)</td><td class="num">2.03× / 1.51×</td><td class="num">1.64× / 1.20×</td><td class="num">1.73× / 1.19×</td><td><code>[c09#b020]</code></td></tr>
+<tr><td>블록 리덕션 제거에 따른 성능 (높은 / 낮은)</td><td class="num">2.94× / 1.16×</td><td class="num">2.20× / 1.06×</td><td class="num">2.37× / 1.05×</td><td><code>[c09#b022]</code></td></tr>
+</table></div>
+<ul>
+<li>전역 메모리 처리량은 GPU마다 약 2.8~3.4배로 늘었다 (174.7/62.4 ≈ 2.80, 378.5/112.4 ≈ 3.37) <span class="infer">추론</span>.</li>
+<li>7 covtype, 8 cup98, 11 hepmass는 포레스트 안에서 트리 깊이 편차가 커서 부하 균형의 이득이 가장 크다 <code>[c09#b020]</code>.</li>
+<li><b>블록 리덕션 제거</b>: 높은 병렬 45건(데이터셋 15 × GPU 3) 중 27건에서 다른 전략을 골라 블록 리덕션을 없앴고 18건은 shared data를 골랐다. 낮은 병렬 45건에서는 13건만 없앴고 32건은 shared data였다 <code>[c09#b022]</code>.</li>
+<li><b>성능 모델 정확도</b>: 90건(15 × 2 배치 × 3 GPU) 중 87건에서 네 전략의 순서를 맞혔다. 틀린 3건도 4.73×, 2.71×, 2.26×로, 손으로 고른 최적(4.96×, 2.86×, 2.31×)에 가깝다. 상위 전략들의 성능이 서로 비슷했기 때문이다 <code>[c09#b023]</code>.</li>
+</ul>
+<p>표의 세 배속(메모리 병합, 트리 재배치, 리덕션 제거)은 각자 다른 조건에서 잰 값이다. K80 높은 병렬에서 셋을 곱하면 \(2.38\times2.03\times2.94\approx14.2\)로 전체 평균 5.31과 맞지 않는다. 곱해서 전체 배속을 설명하면 안 된다 <span class="infer">추론</span>.</p>
+
+<div class="src-quote">
+  <div class="en" lang="en">Among 45 cases we evaluate with high parallelism tasks on the three GPUs, Tahoe removes blockwise reduction for 27 cases (Tahoe chooses the shared data method with blockwise reduction for other 18 cases for best performance); Among 45 cases we evaluate with low parallelism tasks, Tahoe removes reduction for 13 cases (Tahoe chooses the shared data method with blockwise reduction for other 32 cases for best performance).</div>
+  <div class="ko">세 GPU에서 높은 병렬 작업으로 평가한 45건 가운데 Tahoe는 27건에서 블록 단위 리덕션을 없앴다(나머지 18건은 블록 리덕션이 있는 shared data가 가장 빨라 그것을 골랐다). 낮은 병렬 작업 45건에서는 13건에서 리덕션을 없앴다(나머지 32건은 shared data를 골랐다).</div>
+  <div class="ref">원문 7.3절 <code>[c09#b022]</code> · p.12</div>
+</div>
+<p>낮은 병렬에서 shared data가 많이 뽑히는 것은 5.2절 Higgs 결과(배치가 작으면 shared data)와 같은 방향이다 <span class="infer">추론</span>.</p>
+
+<h3>7.4절 오버헤드</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:44%">CPU 부분 (추론 1회 시간 대비)</th><th class="num">배수</th></tr>
+<tr><td>(1) GPU에서 모은 간선 확률 가져오기</td><td class="num">8~12×</td></tr>
+<tr><td>(2) 트리 노드 재배치</td><td class="num">1~4×</td></tr>
+<tr><td>(3) 트리 유사도 탐지</td><td class="num">6~13×</td></tr>
+<tr><td>(4) 포레스트 형식 변환</td><td class="num">1~5×</td></tr>
+<tr><td>(5) 변환한 포레스트를 GPU로 복사</td><td class="num">11~15×</td></tr>
+<tr class="y"><td><b>CPU 부분 전체</b></td><td class="num"><b>28~57×</b></td></tr>
+</table></div>
+<p>CPU 부분은 GPU 추론과 동시에 돌아 쉽게 숨겨지고, 적응형 포레스트 형식의 메모리 사용량은 원래보다 23.6% 적다 <code>[c09#b025]</code>. 원문은 "쌍별 비교와 비교하면 부분 (2)가 실행 시간을 37배 넘게 줄인다"고 적는다. 쌍별 비교와 맞서는 단계는 유사도 탐지인 (3)이어서, (2)는 (3)의 오기일 수 있다 <span class="infer">추론</span>.</p>
+<p>GPU 쪽 오버헤드는 배치마다 성능 모델을 계산하는 비용이다. 원문은 "덧셈 8, 곱셈 26, 나눗셈 14, 모두 90개 부동소수점 연산"이라 적는데 8+26+14는 48이다. 이 계산은 K80·P100·V100에서 0.92·0.28·0.17 ns로, 최소 추론 시간(25.42·8.29·5.63 ns)보다 한 자릿수 작다 <code>[c09#b026]</code>.</p>
+
+<h3>7.5절 확장성</h3>
+<ul>
+<li><b>강한 확장(strong scaling)</b>: 추론 데이터를 GPU 수 \(NG\)로 똑같이 나눠 V100 1~128장에서 잰다(Figure 9). 대체로 잘 확장되지만 HOCK, gisette, phishing은 데이터가 작아 GPU당 몫이 줄면 스레드 수준 병렬성이 모자라 확장되지 않는다 <code>[c09#b028]</code>.</li>
+<li><b>약한 확장(weak scaling)</b>: 데이터를 \(NG\)배로 복제해 나누면 성능 편차가 5% 미만이다. GPU 사이 통신이 거의 없기 때문이고, 결과 그림은 지면 때문에 싣지 않았다 <code>[c09#b029]</code>.</li>
+</ul>
+
+<div class="quiz" data-answer="d">
+  <div class="q">Q. 낮은 병렬 작업(배치 100)에서 Tahoe가 블록 리덕션을 없앤 경우는 45건 중 몇 건인가?</div>
+  <label><input type="radio" name="q-e-s11" value="a"> 27건</label>
+  <label><input type="radio" name="q-e-s11" value="b"> 18건</label>
+  <label><input type="radio" name="q-e-s11" value="c"> 32건</label>
+  <label><input type="radio" name="q-e-s11" value="d"> 13건</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="원문 7.3절 [c09#b022]: 높은 병렬은 27건 제거/18건 shared data, 낮은 병렬은 13건 제거/32건 shared data. 배치가 작으면 shared data가 유리하다는 5.2절 관찰과 같은 방향이다."></div>
+</div>
+
+<div class="mine-lbl">내 말로 정리</div>
+<textarea class="mine" data-key="tahoe-e-s11-mine" placeholder="실험에서 가장 설득력 있는 숫자와 그 이유"></textarea>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c09">서재에서 7장(Evaluation) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 12 ============ -->
+<section id="related">
+<h2>관련 연구 (8절)와 결론 (9절)</h2>
+<p class="paper">원문 <b>8 Related Work</b>, <b>9 Conclusions</b> · 근거 <code>[c10#b002]</code>~<code>[c10#b005]</code> <code>[c11#b002]</code> · p.12~13</p>
+
+<div class="core">GPU에서 결정트리 추론 처리량을 다룬 연구는 FIL 정도로 드물다. 가장 가까운 Ren 등의 SIMD 연구와 Tahoe의 차이는 네 가지다.</div>
+
+<div class="table-wrap"><table>
+<tr><th style="width:20%">분야</th><th>원문 요약</th></tr>
+<tr><td>앙상블 종류</td><td>독립 앙상블(랜덤 포레스트)과 의존 앙상블(GBM, 앞 트리가 다음 트리 학습에 영향). 원문은 GBM이 보통 얕은 트리를 많이 쓰고, 랜덤 포레스트는 더 적지만 더 깊은 트리를 쓴다고 정리한다</td></tr>
+<tr><td>학습</td><td>XGBoost, LightGBM, CatBoost, 멀티코어 CPU·GPU 학습 병렬화. Tahoe는 학습이 아니라 추론을 다룸</td></tr>
+<tr><td>추론 최적화</td><td>FIL: 3절의 세 문제를 그대로 가짐. Ren 등(SIMD 불규칙 순회 가속)과의 차이는 아래 표</td></tr>
+</table></div>
+<div class="table-wrap"><table>
+<tr><th style="width:5%">#</th><th>Ren 등 [36]</th><th>Tahoe</th></tr>
+<tr><td class="c">1</td><td>데이터 레이아웃만 최적화, 트리 유사도를 보지 않고 모든 트리의 노드를 체계적으로 배치하지 않음</td><td>노드·트리 재배치 둘 다</td></tr>
+<tr><td class="c">2</td><td>프로그래머가 중간 언어로 순회를 지정</td><td>레이아웃을 자동으로 "학습"</td></tr>
+<tr><td class="c">3</td><td>샘플/트리 배치가 메모리·리덕션 비용에 주는 영향을 보지 않음</td><td>네 전략으로 다룸</td></tr>
+<tr><td class="c">4</td><td>성능 모델이 마지막 단계 캐시 미스만 보고, 온라인으로 쓰기에는 무거움</td><td>배치마다 90 FLOP(원문 표기)짜리 가벼운 모델</td></tr>
+</table></div>
+<div class="src-quote">
+  <div class="en" lang="en">This paper reveals that ignorance of tree structures is the fundamental reason accounting for the above performance problem. We introduce Tahoe, an inference engine on GPU that considers the common paths of tree traversal and the similarity of tree topologies to address the problem.</div>
+  <div class="ko">이 논문은 트리 구조를 무시하는 것이 위 성능 문제의 근본 원인임을 밝힌다. 이를 풀기 위해 트리 순회의 공통 경로와 트리 위상의 유사도를 고려하는 GPU 추론 엔진 Tahoe를 제안한다.</div>
+  <div class="ref">원문 9절 <code>[c11#b002]</code> · p.13</div>
+</div>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c10">서재에서 8장(Related Work) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 13 ============ -->
+<section id="limit">
+<h2>한계와 토론</h2>
+<p class="paper">원문 <b>4.1</b>, <b>5.1~5.2</b>, <b>6.1</b>, <b>7.2~7.5절</b> 종합 · 왼쪽 표는 원문 근거, 오른쪽 표는 해설의 해석</p>
+
+<div class="core">원문은 전략마다 있는 약점, 작은 데이터셋에서 확장이 안 되는 문제, 모델이 순서를 틀린 3건을 스스로 밝힌다. 성능 모델의 고정된 가정, 학습 데이터 기준의 간선 확률, FIL 하나뿐인 비교는 원문이 다루지 않은 부분이다.</div>
+
+<h3>원문이 인정한 한계</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:30%">한계</th><th>내용</th><th style="width:14%">근거</th></tr>
+<tr><td>shared forest의 용량 제약</td><td>포레스트가 shared memory에 다 들어가야 함. 15개 중 5개에만 적용</td><td><code>[c07#b009]</code> <code>[c07#b017]</code></td></tr>
+<tr><td>트리 재배치로도 남는 불균형</td><td>SVHN, gisette처럼 깊은 트리 포레스트는 재배치 뒤에도 불균형이 심함</td><td><code>[c07#b016]</code></td></tr>
+<tr><td>낮은 병렬에서 작은 이득</td><td>배치 100에서는 배속이 1.45~2.34배, 전략 선택의 기여가 작음</td><td><code>[c09#b011]</code> <code>[c09#b015]</code></td></tr>
+<tr><td>성능 모델 오차</td><td>90건 중 3건 순서가 틀림 (상위 전략이 비슷해 손실은 작음)</td><td><code>[c09#b023]</code></td></tr>
+<tr><td>작은 데이터셋의 강한 확장</td><td>HOCK, gisette, phishing은 GPU를 늘려도 빨라지지 않음</td><td><code>[c09#b028]</code></td></tr>
+<tr><td>노드 재배치의 전제</td><td>학습·추론 데이터의 성질이 비슷하다고 기대함</td><td><code>[c06#b008]</code></td></tr>
+</table></div>
+
+<h3>해설이 추론한 한계 <span class="infer">추론</span></h3>
+<div class="table-wrap"><table>
+<tr><th style="width:30%">쟁점</th><th>내용</th></tr>
+<tr><td>성능 모델 가정이 깨지는 경우</td><td>포레스트 읽기 대역폭을 늘 절반(45.8% 측정)으로, 샘플 속성 읽기를 늘 병합 없음으로 둔다. 속성 수가 16~28개처럼 작은 샘플은 캐시에 머물 수 있어 실제 속성 읽기가 모델보다 빠를 수 있다. 반대로 노드 재배치 효과가 작은 깊은 트리에서는 포레스트 읽기 효율이 45.8%보다 낮을 수 있다. 원문은 가정을 데이터셋별로 검증한 결과를 싣지 않았다</td></tr>
+<tr><td>간선 확률의 분포 변화</td><td>노드 재배치와 SimHash 가중치가 모두 학습 데이터 기준 확률에 기대므로, 추론 데이터 분포가 바뀌면 왼쪽 자식이 더는 자주 가는 쪽이 아니게 된다. Algorithm 1 16행이 추론 중 확률을 집계하지만, 다시 변환하는 기준(얼마나 바뀌면 재변환하나)은 원문에 없다</td></tr>
+<tr><td>비교 대상이 FIL 하나</td><td>CPU 추론 엔진이나 다른 GPU 추론 라이브러리와의 비교가 없다. FIL 버전도 부록의 v0.18 하나다</td></tr>
+<tr><td>2021년 GPU 세대</td><td>K80·P100·V100만 쓴다. shared memory 용량, L2 캐시, 대역폭이 커진 이후 세대에서는 네 전략의 경계와 이득 크기가 달라질 수 있다</td></tr>
+<tr><td>원문 수치의 불일치</td><td>V100 낮은 병렬 CV 감소율(70.04% vs 재계산 72.04%), FLOP 합계(90 vs 48), CPU·OS 사양(7.1절 vs 부록), 7.4절의 부분 번호, 서재 덤프의 복잡도 식 제곱 누락</td></tr>
+<tr><td>기법별 기여의 분해 방식</td><td>Figure 8은 (a)→(b)→(c) 한 순서로만 얹어 잰다. 순서를 바꾸면 기여 비율이 달라질 수 있다</td></tr>
+<tr><td>간선 확률 집계·재변환 비용</td><td>16행의 GPU 쪽 확률 집계 비용은 7.4절 GPU 오버헤드에 따로 나오지 않는다</td></tr>
+</table></div>
+
+<div class="quiz" data-answer="b">
+  <div class="q">Q. 다음 중 원문이 직접 밝힌 한계는?</div>
+  <label><input type="radio" name="q-e-s13" value="a"> 추론 데이터 분포가 바뀌면 노드 재배치를 다시 해야 하는 기준이 없다</label>
+  <label><input type="radio" name="q-e-s13" value="b"> HOCK, gisette, phishing은 GPU 수를 늘려도 성능이 확장되지 않는다</label>
+  <label><input type="radio" name="q-e-s13" value="c"> FIL 외의 추론 엔진과 비교하지 않았다</label>
+  <label><input type="radio" name="q-e-s13" value="d"> 성능 모델의 45.8% 가정이 깊은 트리에서 깨진다</label>
+  <button type="button">정답 확인</button>
+  <div class="fb" data-explain="원문 7.5절 [c09#b028]: 세 데이터셋은 작아서 GPU당 데이터가 줄면 스레드 수준 병렬성이 모자라 확장되지 않는다. 나머지 보기는 이 해설이 추론한 한계다."></div>
+</div>
+
+<p class="lib-link">📖 <a href="http://127.0.0.1:8780/library/itbb0228/c11">서재에서 9장(Conclusions) 원문·번역 보기</a><span class="local">(이 PC에서 study_helper가 켜져 있을 때만 열림)</span></p>
+</section>
+
+<!-- ============ 14 ============ -->
+<section id="project">
+<h2>내 연구와의 연결</h2>
+<p class="paper">원문 밖 · 고성능데이터마이닝 프로젝트 맥락 (주제 1 exact k-NN, 주제 2 빈발 패턴) · 이 절 전체가 <span class="infer">추론</span></p>
+
+<div class="core">Tahoe에서 가져올 것은 "배치 크기와 데이터 모양에 따라 최적 구현이 바뀌니, 식으로 미리 고른다"는 태도와 "비슷한 일을 묶어 스레드에 고르게 나눈다"는 부하 균형 방식이다.</div>
+
+<div class="table-wrap"><table>
+<tr><th style="width:20%">Tahoe의 요소</th><th>내 프로젝트의 대응</th><th style="width:26%">가져올 수 있는 것</th></tr>
+<tr><td>배치 100 vs 100K에서 최적 전략이 바뀜, 성능 모델로 선택</td><td>주제 1 GPU 1장 exact k-NN. 측정에서 top-k가 계산의 39~64%였고, 블록 크기와 질의 묶음 크기에 따라 GEMM이 memory-bound로 바뀌었다. 교차점도 예산마다 달랐다(B≈1,300/1,080/860)</td><td>"바이트 ÷ 대역폭 + 고정 비용 ÷ 묶음 크기" 꼴의 간단한 모델로 질의 묶음 크기와 top-k 구현을 미리 고르기. 식 (2)·(3)처럼 고정 비용을 배치로 나누는 항이 교차점을 설명</td></tr>
+<tr><td>shared memory에 무엇을 둘까 (샘플 vs 포레스트)</td><td>k-NN 블록 계산에서 질의 타일과 데이터 타일 중 무엇을 재사용 대상으로 둘지</td><td>5.2절처럼 "더 자주 재사용되는 쪽을 캐시"하는 기준으로 타일 배치 비교</td></tr>
+<tr><td>유사도 기반 트리 재배치로 부하 균형</td><td>주제 2 EdNet 빈발 패턴(Apriori 비트맵 AND + popcount) GPU 구현. 후보 항목집합마다 길이·지지도 계산량이 달라 부하 불균형이 생길 수 있음</td><td>작업량이 비슷한 후보끼리 묶어 스레드·블록에 라운드 로빈으로 배정. 불균형은 Tahoe처럼 스레드 실행 시간 CV로 측정</td></tr>
+<tr><td>리덕션 제거 (direct, shared forest)</td><td>지지도 합산, top-k 병합 같은 블록 간 리덕션</td><td>리덕션이 전체 시간에서 차지하는 비율을 먼저 재고(3절의 53%처럼), 리덕션이 없는 배정과 비교</td></tr>
+</table></div>
+
+<h3>flyKNNG(ICS '22)와 비교</h3>
+<p>두 논문 모두 shared memory·register에 무엇을 둘지, 리덕션·동기화 비용을 어떻게 줄일지를 설계의 중심에 둔다. flyKNNG는 거리 계산과 top-k를 커널 하나로 합쳐 중간 결과를 전역 메모리에 쓰지 않는다. Tahoe는 전략 네 개를 만들어 두고 성능 모델로 하나를 고른다. 내 프로젝트처럼 데이터 크기와 질의 묶음이 바뀌는 상황이라면 Tahoe 쪽 방식을 먼저 시험해 볼 만하다.</p>
+</section>
+
+<!-- ============ 15 ============ -->
+<section id="check">
+<h2>점검</h2>
+<p class="paper">이 해설 전체 · 발표·질의응답 대비</p>
+
+<h3>자료 없이 설명할 수 있어야 할 것</h3>
+<ul class="check-list">
+<li><label><input type="checkbox" data-key="tahoe-e1"> FIL의 세 문제(병합되지 않는 메모리 접근, 부하 불균형, 리덕션 비용)와 3절의 숫자 13.7%, 49.1%, 53%(35~72%)</label></li>
+<li><label><input type="checkbox" data-key="tahoe-e2"> 확률 기반 노드 재배치가 왜 메모리 트랜잭션 수를 줄이는지 Figure 1의 Tree#2(0.3/0.7) 예로</label></li>
+<li><label><input type="checkbox" data-key="tahoe-e3"> 토큰화 → SimHash(가중합, 부호) → LSH(청크 해시 충돌 수) 흐름과 Figure 3의 순서 T2, T3, T1</label></li>
+<li><label><input type="checkbox" data-key="tahoe-e4"> 적응형 포레스트 형식의 세 구성 요소와 23.6%</label></li>
+<li><label><input type="checkbox" data-key="tahoe-e5"> 네 추론 전략이 shared memory에 두는 것과 리덕션 종류, 각 전략이 이긴 데이터셋의 특징</label></li>
+<li><label><input type="checkbox" data-key="tahoe-e6"> 식 (1)의 네 항과, 전략마다 어느 항이 0이 되는지. 세 가정(45.8%, 병합 없음, CV 12.7%)</label></li>
+<li><label><input type="checkbox" data-key="tahoe-e7"> Algorithm 1의 오프라인(CPU 1회) / 온라인(CPU, 포레스트가 바뀔 때) / 배치마다(GPU) 세 부분</label></li>
+<li><label><input type="checkbox" data-key="tahoe-e8"> FIL 대비 평균 배속(높은 병렬 5.31·3.67·4.05, 낮은 병렬 2.34·1.52·1.45)과 초록 3.82·2.59·2.75의 관계</label></li>
+</ul>
+
+<h3>질의응답 대비 핵심 수치</h3>
+<div class="table-wrap"><table>
+<tr><th style="width:34%">항목</th><th>값</th><th style="width:16%">근거</th></tr>
+<tr><td>FIL 전역 메모리 요청/가져온 비율</td><td>27.2% (7~10층 13.7%)</td><td><code>[c03#b004]</code> <code>[c05#b005]</code></td></tr>
+<tr><td>스레드 실행 시간 차이 / CV</td><td>최대 10배 / 49.1% → 재배치 뒤 12.7%</td><td><code>[c03#b005]</code> <code>[c05#b006]</code> <code>[c08#b008]</code></td></tr>
+<tr><td>리덕션 비중</td><td>트리 120개에서 최대 53%, 10~200개에서 35~72%</td><td><code>[c05#b007]</code> <code>[c05#b008]</code></td></tr>
+<tr><td>쌍별 비교 시간</td><td>트리 3000개에서 최대 19분</td><td><code>[c06#b012]</code></td></tr>
+<tr><td>저장 공간 절약</td><td>최대 23.6%</td><td><code>[c06#b027]</code> <code>[c09#b025]</code></td></tr>
+<tr><td>Tahoe 매개변수</td><td>\(T_{nodes}=4\), \(L_{hash}=128\), \(M=64\) (SimHash 평균 약 0.226 ms)</td><td><code>[c09#b005]</code> <code>[c09#b006]</code></td></tr>
+<tr><td>성능 모델 가정</td><td>포레스트 읽기 45.8% → 대역폭 ½, 속성 읽기 병합 없음, CV 12.7%</td><td><code>[c08#b008]</code></td></tr>
+<tr><td>배속 평균 (K80·P100·V100)</td><td>높은 병렬 5.31·3.67·4.05, 낮은 병렬 2.34·1.52·1.45</td><td><code>[c09#b011]</code></td></tr>
+<tr><td>배속 최대 (K80·P100·V100)</td><td>높은 병렬 9.58·8.77·10.14, 낮은 병렬 5.08·3.82·3.17</td><td><code>[c03#b011]</code></td></tr>
+<tr><td>전역 메모리 처리량</td><td>62.4→174.7, 98.8→314.0, 112.4→378.5 GB/s</td><td><code>[c09#b019]</code></td></tr>
+<tr><td>블록 리덕션 제거</td><td>높은 병렬 27/45건, 낮은 병렬 13/45건</td><td><code>[c09#b022]</code></td></tr>
+<tr><td>성능 모델 정확도</td><td>90건 중 87건 순서 맞음</td><td><code>[c09#b023]</code></td></tr>
+<tr><td>오버헤드</td><td>CPU 부분 추론 1회의 28~57배(병렬로 숨김), GPU 모델 계산 0.92·0.28·0.17 ns</td><td><code>[c09#b025]</code> <code>[c09#b026]</code></td></tr>
+<tr><td>확장성</td><td>V100 1~128장 강한 확장, 약한 확장 편차 5% 미만</td><td><code>[c09#b028]</code> <code>[c09#b029]</code></td></tr>
+</table></div>
+<p>기초 개념을 다시 확인하려면 <a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트 11절(점검)</a>으로 돌아간다.</p>
+</section>
+</main>
+</div>
+<button id="toTop" type="button" aria-label="맨 위로">↑</button>
+<script>
+window.addEventListener('load',function(){
+  if(window.renderMathInElement){renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});}
+});
+document.querySelectorAll('.quiz').forEach(function(q){
+  var btn=q.querySelector('button'),fb=q.querySelector('.fb');
+  btn.addEventListener('click',function(){
+    var s=q.querySelector('input:checked');
+    if(!s){fb.className='fb wrong';fb.textContent='보기를 먼저 고르세요.';return;}
+    var ok=s.value===q.dataset.answer;
+    fb.className='fb '+(ok?'right':'wrong');
+    fb.textContent=(ok?'정답입니다. ':'다시 생각해 보세요. ')+fb.dataset.explain;
+  });
+});
+document.querySelectorAll('input[type=checkbox][data-key]').forEach(function(c){
+  try{c.checked=localStorage.getItem(c.dataset.key)==='1';}catch(e){}
+  c.addEventListener('change',function(){try{localStorage.setItem(c.dataset.key,c.checked?'1':'0');}catch(e){}});
+});
+document.querySelectorAll('textarea.mine[data-key]').forEach(function(t){
+  try{t.value=localStorage.getItem(t.dataset.key)||'';}catch(e){}
+  t.addEventListener('input',function(){try{localStorage.setItem(t.dataset.key,t.value);}catch(e){}});
+});
+document.querySelectorAll('.audio audio').forEach(function(a){
+  a.addEventListener('error',function(){
+    var s=document.createElement('span');s.className='miss';s.textContent='음성 파일이 아직 없습니다 (audio/ 폴더).';
+    a.replaceWith(s);
+  });
+});
+var t=document.getElementById('toTop');
+window.addEventListener('scroll',function(){t.classList.toggle('show',window.scrollY>600);});
+t.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>

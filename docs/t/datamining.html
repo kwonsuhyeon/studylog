@@ -21,7 +21,7 @@
     <nav class="crumb" aria-label="경로"><a href="../index.html">지도</a> <span>/</span> <a href="../t/stats.html">통계</a> <span>/</span> <b>데이터마이닝</b></nav>
     <h1><span class="dot" aria-hidden="true"></span>데이터마이닝</h1>
     <div class="def"><p>대량의 데이터에서 유용한 패턴을 찾는 방법. 객체 사이의 거리·유사도, 함께 나타나는 항목을 찾는 연관규칙, 레코드를 클래스로 나누는 분류, 비슷한 레코드를 묶는 군집으로 나뉜다. 고성능데이터마이닝 수업(2026-2)과 Tan 외 <em>Introduction to Data Mining</em> 2판(2·3·5·7장)을 기준으로 정리한다.</p></div>
-    <p class="tally mono"><span>공부 6</span><span>강의 0</span><span>최근 수정 <span class="upd" data-date="2026-11-10">2026.11.10</span></span></p>
+    <p class="tally mono"><span>공부 7</span><span>강의 0</span><span>최근 수정 <span class="upd" data-date="2026-11-16">2026.11.16</span></span></p>
   </div>
 </section>
 </div>
@@ -30,13 +30,19 @@
 <article class="topic-page" style="--c:var(--topic-6)">
   
   <div class="topic-body">
-    <section class="part summary"><p class="eyebrow">지금까지 정리한 것</p><ul><li><strong>거리·유사도</strong>: 민코프스키 거리(맨해튼 L1, 유클리드 L2, 상한 L∞), 이진 벡터의 SMC와 Jaccard, 코사인 유사도, 상관계수, 표준화</li><li><strong>연관규칙 평가</strong>: 지지도 s(X→Y) = σ(X∪Y)/N, 신뢰도 c = σ(X∪Y)/σ(X), 향상도 = c/P(Y)(1보다 작으면 음의 연관)</li><li><strong>Apriori</strong>: 빈발 항목집합의 부분집합도 빈발(지지도의 반단조성)하다는 원리로 후보를 가지치기. 표 5.1 예에서 후보 41개 → 13개</li><li><strong>FP-Growth</strong>: FP-tree로 거래를 압축하고 후보 생성 없이 조건부 패턴 베이스를 재귀로 마이닝</li><li><strong>결정트리</strong>: 지니·엔트로피·분류 오차, 정보 이득과 이득비, 연속 속성 분할점</li><li><strong>가지치기</strong>: 비관적 오차 추정 e'(T) = (e(T) + Ω·k)/N, 사전 가지치기(노드의 레코드 수 임계값 등)와 사후 가지치기(subtree replacement·raising)</li><li><strong>K-means</strong>: 초기 중심 → 가장 가까운 중심에 배정 → 평균으로 중심 갱신 반복, SSE, 초기화 문제와 K-means++</li><li><strong>kNN</strong>: 게으른 학습, 거리·k·다수결, 거리 가중 투표, 정규화가 필요한 이유</li></ul></section>
+    <section class="part summary"><p class="eyebrow">지금까지 정리한 것</p><ul><li><strong>거리·유사도</strong>: 민코프스키 거리(맨해튼 L1, 유클리드 L2, 상한 L∞), 이진 벡터의 SMC와 Jaccard, 코사인 유사도, 상관계수, 표준화</li><li><strong>연관규칙 평가</strong>: 지지도 s(X→Y) = σ(X∪Y)/N, 신뢰도 c = σ(X∪Y)/σ(X), 향상도 = c/P(Y)(1보다 작으면 음의 연관)</li><li><strong>Apriori</strong>: 빈발 항목집합의 부분집합도 빈발(지지도의 반단조성)하다는 원리로 후보를 가지치기. 표 5.1 예에서 후보 41개 → 13개</li><li><strong>FP-Growth</strong>: FP-tree로 거래를 압축하고 후보 생성 없이 조건부 패턴 베이스를 재귀로 마이닝</li><li><strong>결정트리</strong>: 지니·엔트로피·분류 오차, 정보 이득과 이득비, 연속 속성 분할점</li><li><strong>가지치기</strong>: 비관적 오차 추정 e'(T) = (e(T) + Ω·k)/N, 사전 가지치기(노드의 레코드 수 임계값 등)와 사후 가지치기(subtree replacement·raising)</li><li><strong>K-means</strong>: 초기 중심 → 가장 가까운 중심에 배정 → 평균으로 중심 갱신 반복, SSE, 초기화 문제와 K-means++</li><li><strong>kNN</strong>: 게으른 학습, 거리·k·다수결, 거리 가중 투표, 정규화가 필요한 이유</li><li><strong>Tahoe</strong> (Xie 외 2021): GPU 결정트리 앙상블 추론에서 노드와 트리를 재배치한 적응형 포레스트 형식으로 저장하고, 추론 전략 네 가지 중 하나를 성능 모델로 골라 쓰는 추론 엔진. FIL 대비 평균 2.59~3.82배</li></ul></section>
     <aside class="part todo"><p class="eyebrow">이어서 정리할 것</p><ul class="tasks"><li class="task"><label><input type="checkbox" data-key="datamining:0" disabled> <span>시험(2026-10-21) 뒤 실제 출제 경향 기록</span></label></li><li class="task"><label><input type="checkbox" data-key="datamining:1" disabled> <span>2장 전처리(집계·샘플링·차원 축소·이산화) 입문 해설 추가</span></label></li><li class="task"><label><input type="checkbox" data-key="datamining:2" disabled> <span>군집 평가(실루엣 계수)와 계층적 군집, DBSCAN 정리</span></label></li></ul>
       </aside>
   </div>
   <section class="block papers"><div class="block-head"><p class="eyebrow">papers-wiki</p><h2>관련 논문 <span class="mono">2</span></h2><p class="muted papers-note">이 PC에서 열면 노트와 원문 PDF가 함께 열려요.</p></div>
     <ul class="paper-list"><li class="paper" data-note="Ji_2022_flyKNNG-Exact-KNNG-Tensor-Cores" data-pdf="Ji_2022_flyKNNG-Exact-KNNG-Tensor-Cores.pdf"><span class="p-title">Efficient Exact K-Nearest Neighbor Graph Construction for Billion-Scale Datasets using GPUs with Tensor Cores</span><span class="p-meta mono">Zhuoran Ji, Cho-Li Wang · 2022</span></li><li class="paper" data-note="Xie_2021_Tahoe-Tree-Structure-Aware-High-Performance" data-pdf="Xie_2021_Tahoe-Tree-Structure-Aware-High-Performance.pdf"><span class="p-title">Tahoe: Tree Structure-Aware High Performance Inference Engine for Decision Tree Ensemble on GPU</span><span class="p-meta mono">Zhen Xie, Wenqian Dong, Jiawen Liu, Hang Liu, Dong Li · 2021</span></li></ul></section>
-  <section class="block"><div class="block-head"><p class="eyebrow">자료</p><h2>이 주제로 만든 것 <span class="mono">6</span></h2></div><div class="sec-block"><h3>공부 <span class="mono">6</span></h3><div class="items"><article class="item linked" data-section="study" data-date="2026-11-10">
+  <section class="block"><div class="block-head"><p class="eyebrow">자료</p><h2>이 주제로 만든 것 <span class="mono">7</span></h2></div><div class="sec-block"><h3>공부 <span class="mono">7</span></h3><div class="items"><article class="item linked" data-section="study" data-date="2026-11-16">
+  <p class="eyebrow">사이트 · 공부 · 고성능데이터마이닝 (2026-2)</p>
+  <h3><a class="stretch" href="../i/hpdm-tahoe.html">Tahoe 학습 노트 (GPU 결정트리 앙상블 추론 엔진)</a></h3>
+  <p class="desc">EuroSys '21 논문 Tahoe(Xie 외)를 읽기 위한 학습 자료다. Tahoe는 학습이 끝난 결정트리 앙상블을 GPU에서 빠르게 추론하는 엔진으로, 간선 확률과 트리 유사도로 노드와 트리를 재배치한 적응형 포레스트 형식, 추론 전략 네 가지, 전략을 고르는 성능 모델로 이루어진다. 배경지식 노트는 결정트리 추론,…</p>
+  <div class="item-foot"><div class="chips"><a class="chip sm" href="../t/datamining.html" style="--c:var(--topic-6)">데이터마이닝</a></div><time class="mono date" datetime="2026-11-16">2026.11.16</time><a class="open" href="../assets/hpdm-tahoe/index.html" target="_blank" rel="noopener" aria-label="Tahoe 학습 노트 (GPU 결정트리 앙상블 추론 엔진) 새 탭에서 열기">열기 ↗</a></div>
+</article>
+<article class="item linked" data-section="study" data-date="2026-11-10">
   <p class="eyebrow">사이트 · 공부</p>
   <h3><a class="stretch" href="../i/concepts-datamining.html">데이터마이닝 개념 색인</a></h3>
   <p class="desc">데이터마이닝 주제로 정리한 논문·책 노트에서 설명한 개념을 이름순으로 모은 표다. 개념마다 한 줄 정의와 그 개념을 설명한 노트의 절 링크가 있다. /paper-study가 자료를 올릴 때마다 다시 만든다.</p>

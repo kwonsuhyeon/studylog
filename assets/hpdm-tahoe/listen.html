@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tahoe: Tree Structure-Aware High Performance Inference Engine for Decision Tree Ensemble on GPU 듣기</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#f9f9f7; --card:#ffffff; --text:#1f1f1f; --muted:#6b6b66; --line:#e7e5df;
+  --blue:#2a78d6; --blue-soft:#eaf2fc; --orange:#eb6834; --orange-soft:#fdf0ea;
+  --green:#2f9e5b; --green-soft:#e9f6ee; --th:#f4f3ef; --code-bg:#f3f2ee; --top-btn:#111111;
+  --radius:14px; --sidebar-w:270px; --page-max:1400px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard",-apple-system,"Malgun Gothic",sans-serif;line-height:1.75;font-size:16px;word-break:keep-all}
+.layout{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr);gap:28px;max-width:var(--page-max);margin:0 auto;padding:32px 24px 80px}
+nav.toc{position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;font-size:14px}
+nav.toc .toc-title{font-weight:700;margin-bottom:10px}
+nav.toc .toc-group{font-size:12px;color:var(--orange);font-weight:700;margin:12px 6px 2px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 6px;border-radius:6px}
+nav.toc a:hover{background:var(--blue-soft);color:var(--blue)}
+main{min-width:0;counter-reset:sec}
+header.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 36px;margin-bottom:24px}
+header.hero h1{margin:0 0 8px;font-size:30px}
+header.hero p{margin:4px 0;color:var(--muted)}
+section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 36px;margin-bottom:24px;counter-increment:sec}
+section>h2{display:flex;align-items:center;gap:12px;margin:0 0 18px;font-size:24px}
+section>h2::before{content:counter(sec);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:16px;flex:none}
+h3{font-size:19px;margin:30px 0 10px;padding-top:12px;border-top:1px dashed var(--line)}
+p{margin:8px 0}
+.core{background:var(--blue-soft);border-left:4px solid var(--blue);padding:14px 18px;border-radius:8px;margin:14px 0;font-weight:500}
+.warn{background:var(--orange-soft);border-left:4px solid var(--orange);padding:14px 18px;border-radius:8px;margin:14px 0}
+.ok{background:var(--green-soft);border-left:4px solid var(--green);padding:14px 18px;border-radius:8px;margin:14px 0}
+.paper{font-size:14px;color:var(--muted);margin:-8px 0 14px}
+.paper b{color:var(--blue)}
+.step{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px;margin-right:6px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:9px 12px;vertical-align:middle;text-align:left}
+th{background:var(--th);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+tr.y td{background:var(--orange-soft)}
+.hl{color:var(--orange);font-weight:700}
+.bl{color:var(--blue);font-weight:700}
+code{background:var(--code-bg);padding:1px 6px;border-radius:5px;font-size:.92em;font-family:Consolas,"D2Coding",monospace}
+pre{background:var(--code-bg);padding:14px 18px;border-radius:10px;overflow-x:auto;font-size:14px;line-height:1.6;font-family:Consolas,"D2Coding",monospace}
+.quiz{border:2px solid var(--blue-soft);border-radius:12px;padding:16px 20px;margin:18px 0;background:#fbfdff}
+.quiz .q{font-weight:700;margin-bottom:8px}
+.quiz label{display:block;padding:6px 10px;border-radius:8px;cursor:pointer}
+.quiz label:hover{background:var(--blue-soft)}
+.quiz button{margin-top:8px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:inherit;font-weight:600;cursor:pointer}
+.quiz .fb{display:none;margin-top:10px;padding:10px 14px;border-radius:8px}
+.quiz .fb.right{display:block;background:var(--green-soft)}
+.quiz .fb.wrong{display:block;background:var(--orange-soft)}
+details{margin:10px 0;border:1px solid var(--line);border-radius:10px;padding:10px 16px;background:#fcfcfa}
+details summary{cursor:pointer;font-weight:600;color:var(--blue)}
+.check-list{list-style:none;padding-left:0}
+.check-list li{padding:5px 0}
+.check-list input{transform:scale(1.15);margin-right:8px;accent-color:var(--blue)}
+.audio{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--th);border-radius:10px;padding:10px 16px;margin:0 0 18px}
+.audio .lbl{font-weight:700;font-size:14px}
+.audio audio{height:36px;flex:1;min-width:240px}
+.audio .miss{font-size:13px;color:var(--muted)}
+.mine{width:100%;min-height:64px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:15px;resize:vertical;background:#fffef9}
+.mine-lbl{font-weight:700;font-size:14px;color:var(--orange);margin-top:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.box h4{margin:0 0 6px;font-size:16px}
+svg text{font-family:"Pretendard",sans-serif}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0}
+@media (max-width:980px){.katex{max-width:100%;overflow-x:auto;overflow-y:hidden;display:inline-block;vertical-align:middle;position:relative;scrollbar-width:none}.katex::-webkit-scrollbar{display:none}}
+#toTop{position:fixed;right:28px;bottom:28px;width:46px;height:46px;border-radius:50%;background:var(--top-btn);color:#fff;border:none;font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#toTop.show{opacity:1;pointer-events:auto}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;padding:16px}
+  nav.toc{position:static;max-height:none}
+  section,header.hero{padding:22px 18px}
+  .grid2{grid-template-columns:1fr}
+}
+/* paper-study 추가 요소 */
+.infer{display:inline-block;font-size:12px;font-weight:700;color:var(--orange);border:1px solid var(--orange);border-radius:999px;padding:0 8px;margin:0 4px;vertical-align:1px;background:#fff}
+.src-quote{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:10px;margin:14px 0;overflow:hidden}
+.src-quote .en{padding:12px 16px;background:#fcfcfa;font-size:15px}
+.src-quote .ko{padding:12px 16px;background:var(--blue-soft);font-size:15px}
+.src-quote .ref{grid-column:1/-1;font-size:12px;color:var(--muted);padding:5px 16px;border-top:1px solid var(--line);background:#fff}
+.src-quote .ref code{font-size:12px}
+.lib-link{display:inline-block;margin-top:14px;font-size:14px}
+.lib-link .local{color:var(--muted);font-size:12px;margin-left:6px}
+.sym{font-family:"KaTeX_Main",serif}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.links a{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--blue-soft);color:var(--blue);text-decoration:none;font-weight:600;font-size:14px}
+.review{background:var(--th);border-left:4px solid var(--muted);padding:14px 18px;border-radius:8px;margin:14px 0}
+.review .from{font-size:13px;color:var(--muted);margin-top:6px}
+@media (max-width:980px){.src-quote{grid-template-columns:1fr}}
+@media print{nav.toc,#toTop,.audio{display:none}.layout{grid-template-columns:1fr}}
+
+/* pages.py 추가 요소 */
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.links a{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--blue-soft);color:var(--blue);text-decoration:none;font-weight:600;font-size:14px}
+.listen{display:grid;grid-template-columns:minmax(320px,440px) minmax(0,1fr);gap:28px;max-width:var(--page-max);margin:0 auto;padding:0 24px 80px;align-items:start}
+.listen-head{max-width:var(--page-max);margin:0 auto;padding:32px 24px 0}
+.player{position:sticky;top:16px;z-index:5}
+section.plain>h2::before{display:none}
+.m{color:var(--muted);font-size:13px}
+.player .now{font-weight:700;font-size:18px;margin-bottom:4px}
+.player .sub{color:var(--muted);font-size:14px;margin-bottom:12px}
+.player audio{width:100%}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.ctl button,.ctl select{font-family:inherit;font-size:15px;font-weight:600;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 14px;cursor:pointer;min-height:44px}
+.ctl button.main{background:var(--blue);color:#fff;border-color:var(--blue);flex:1}
+.tracks{list-style:none;margin:0;padding:0}
+.tracks li{margin:0 0 8px}
+.tracks button{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;font-family:inherit;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:12px 14px;cursor:pointer;min-height:56px}
+.tracks button .tag{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--th);font-weight:700}
+.tracks button .t{font-weight:600}
+.tracks button .m{color:var(--muted);font-size:13px}
+.tracks button .len{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.tracks button.on{border-color:var(--blue);background:var(--blue-soft)}
+.tracks button.on .tag{background:var(--blue);color:#fff}
+.tracks button.done .tag{background:var(--green-soft);color:var(--green)}
+.doc-group{font-size:13px;color:var(--orange);font-weight:700;margin:16px 4px 8px}
+.tr{margin:10px 0}
+.tr .en{display:none;color:var(--muted);font-size:15px;border-left:3px solid var(--line);padding-left:12px;margin-top:6px}
+body.show-en .tr .en{display:block}
+.tr .bid{font-size:11px;color:var(--muted);font-family:Consolas,monospace;margin-left:6px;user-select:none}
+figure{margin:16px 0;text-align:center}
+figure img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px}
+figcaption{font-size:14px;color:var(--muted);margin-top:6px}
+blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid var(--line);color:var(--muted)}
+.en-toggle{position:fixed;right:28px;bottom:86px;border:none;border-radius:999px;background:var(--blue);color:#fff;font-family:inherit;font-weight:700;font-size:14px;padding:10px 16px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+@media (max-width:980px){
+  .listen{grid-template-columns:1fr;padding:0 16px 60px}
+  .listen-head{padding:16px 16px 0}
+  .player{top:8px}
+}
+</style>
+</head>
+<body>
+<div class="listen-head"><header class="hero"><h1>Tahoe: Tree Structure-Aware High Performance Inference Engine for Decision Tree Ensemble on GPU 듣기</h1><p>음성 8개 연속 재생 · 마지막 재생 위치 기억 · 잠금 화면에서 이전·다음 트랙 이동</p><div class="links"><a href="Xie_2021_Tahoe_배경지식_노트.html">배경지식 노트</a><a href="Xie_2021_Tahoe_논문_해설.html">논문 해설</a></div></header></div>
+<div class="listen">
+<section class="player">
+<div class="now" id="now"></div><div class="sub" id="sub"></div>
+<audio id="player" controls preload="metadata"></audio>
+<div class="ctl"><button type="button" id="prev">이전</button><button type="button" id="back">−15초</button><button type="button" id="toggle" class="main">재생</button><button type="button" id="fwd">+15초</button><button type="button" id="next">다음</button></div>
+<div class="ctl"><label for="rate">배속</label><select id="rate"><option value="0.8">0.8배</option><option value="1" selected>1배</option><option value="1.2">1.2배</option><option value="1.5">1.5배</option><option value="1.75">1.75배</option><option value="2">2배</option></select><button type="button" id="reset">처음부터 다시</button></div>
+</section>
+<section class="plain">
+<h2>트랙 목록</h2>
+<div class="doc-group">배경지식 노트</div><ul class="tracks"><li><button type="button"><span class="tag">A</span><span><div class="t">결정트리 추론과 배열 저장</div><div class="m">1~3절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">B</span><span><div class="t">병합 접근·부하 불균형·리덕션</div><div class="m">4~6절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">C</span><span><div class="t">추론 전략과 SimHash·LSH</div><div class="m">7~9절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">D</span><span><div class="t">성능 모델 읽기</div><div class="m">10~11절</div></span><span class="len"></span></button></li></ul><div class="doc-group">논문 해설</div><ul class="tracks"><li><button type="button"><span class="tag">E</span><span><div class="t">문제와 동기 실험</div><div class="m">1~3절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">F</span><span><div class="t">노드·트리 재배치와 적응형 형식</div><div class="m">4~6절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">G</span><span><div class="t">네 가지 전략과 성능 모델</div><div class="m">7~9절</div></span><span class="len"></span></button></li><li><button type="button"><span class="tag">H</span><span><div class="t">실험 결과와 토론</div><div class="m">10~15절</div></span><span class="len"></span></button></li></ul>
+</section>
+</div>
+<button id="toTop" type="button" aria-label="맨 위로">↑</button>
+<script>
+var T=[{"tag": "A", "title": "결정트리 추론과 배열 저장", "doc": "배경지식 노트", "sections": "1~3절", "len": "", "src": "audio/Xie_2021_Tahoe_A.mp3"}, {"tag": "B", "title": "병합 접근·부하 불균형·리덕션", "doc": "배경지식 노트", "sections": "4~6절", "len": "", "src": "audio/Xie_2021_Tahoe_B.mp3"}, {"tag": "C", "title": "추론 전략과 SimHash·LSH", "doc": "배경지식 노트", "sections": "7~9절", "len": "", "src": "audio/Xie_2021_Tahoe_C.mp3"}, {"tag": "D", "title": "성능 모델 읽기", "doc": "배경지식 노트", "sections": "10~11절", "len": "", "src": "audio/Xie_2021_Tahoe_D.mp3"}, {"tag": "E", "title": "문제와 동기 실험", "doc": "논문 해설", "sections": "1~3절", "len": "", "src": "audio/Xie_2021_Tahoe_E.mp3"}, {"tag": "F", "title": "노드·트리 재배치와 적응형 형식", "doc": "논문 해설", "sections": "4~6절", "len": "", "src": "audio/Xie_2021_Tahoe_F.mp3"}, {"tag": "G", "title": "네 가지 전략과 성능 모델", "doc": "논문 해설", "sections": "7~9절", "len": "", "src": "audio/Xie_2021_Tahoe_G.mp3"}, {"tag": "H", "title": "실험 결과와 토론", "doc": "논문 해설", "sections": "10~15절", "len": "", "src": "audio/Xie_2021_Tahoe_H.mp3"}], KEY="Xie_2021_Tahoe-listen", a=document.getElementById('player'), cur=0, lastSave=0;
+var rows=[].slice.call(document.querySelectorAll('.tracks button'));
+function store(o){try{localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}}
+function saved(){try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}}
+function mark(){
+  var s=saved(), done=s.done||{};
+  rows.forEach(function(b,i){b.classList.toggle('on',i===cur);b.classList.toggle('done',!!done[T[i].tag]);});
+  document.getElementById('now').textContent=T[cur].tag+'. '+T[cur].title;
+  document.getElementById('sub').textContent=[T[cur].doc,T[cur].sections].filter(Boolean).join(' · ')+'  ('+(cur+1)+'/'+T.length+')';
+  if('mediaSession' in navigator){
+    navigator.mediaSession.metadata=new MediaMetadata({title:T[cur].tag+'. '+T[cur].title,artist:"Tahoe: Tree Structure-Aware High Performance Inference Engine for Decision Tree Ensemble on GPU",album:'paper-study'});
+  }
+}
+function load(i,play,at){
+  cur=Math.max(0,Math.min(T.length-1,i));
+  a.src=T[cur].src; a.playbackRate=parseFloat(document.getElementById('rate').value);
+  if(at){a.addEventListener('loadedmetadata',function f(){a.removeEventListener('loadedmetadata',f);try{a.currentTime=at;}catch(e){}});}
+  mark(); if(play){var p=a.play(); if(p&&p.catch){p.catch(function(){});}}
+}
+function remember(extra){var s=saved(); s.i=cur; s.t=a.currentTime||0; s.rate=document.getElementById('rate').value; if(extra){s.done=s.done||{}; s.done[extra]=1;} store(s);}
+a.addEventListener('timeupdate',function(){var n=Date.now(); if(n-lastSave>5000){lastSave=n; remember();}});
+a.addEventListener('pause',function(){remember();});
+a.addEventListener('ended',function(){remember(T[cur].tag); if(cur+1<T.length){load(cur+1,true,0);} else {mark();}});
+a.addEventListener('ratechange',function(){});
+rows.forEach(function(b,i){b.addEventListener('click',function(){load(i,true,0);});});
+document.getElementById('prev').addEventListener('click',function(){load(cur-1,true,0);});
+document.getElementById('next').addEventListener('click',function(){load(cur+1,true,0);});
+document.getElementById('back').addEventListener('click',function(){a.currentTime=Math.max(0,a.currentTime-15);});
+document.getElementById('fwd').addEventListener('click',function(){a.currentTime=a.currentTime+15;});
+document.getElementById('toggle').addEventListener('click',function(){if(a.paused){a.play();}else{a.pause();}});
+a.addEventListener('play',function(){document.getElementById('toggle').textContent='일시정지';});
+a.addEventListener('pause',function(){document.getElementById('toggle').textContent='재생';});
+document.getElementById('rate').addEventListener('change',function(){a.playbackRate=parseFloat(this.value); remember();});
+document.getElementById('reset').addEventListener('click',function(){store({}); load(0,false,0);});
+if('mediaSession' in navigator){
+  navigator.mediaSession.setActionHandler('previoustrack',function(){load(cur-1,true,0);});
+  navigator.mediaSession.setActionHandler('nexttrack',function(){load(cur+1,true,0);});
+  navigator.mediaSession.setActionHandler('seekbackward',function(){a.currentTime=Math.max(0,a.currentTime-15);});
+  navigator.mediaSession.setActionHandler('seekforward',function(){a.currentTime=a.currentTime+15;});
+}
+(function(){var s=saved(); if(s.rate){document.getElementById('rate').value=s.rate;} load(s.i||0,false,s.t||0);})();
+
+var t=document.getElementById('toTop');
+window.addEventListener('scroll',function(){t.classList.toggle('show',window.scrollY>600);});
+t.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>
