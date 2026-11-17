@@ -158,10 +158,10 @@ table.fig-read th{width:27%}
 <!-- ============ 1 ============ -->
 <section id="g1">
 <h2>배경과 문제</h2>
-<p>Figure 1은 트리 세 그루를 메모리 배열에 어떻게 늘어놓는지 보여 주는 예시이고, Figure 2는 기존 엔진 FIL을 실제로 돌려 측정한 세 가지 문제다. Figure 2의 세 그래프는 축과 주장이 서로 달라 카드를 나눴다.</p>
+<p>Figure 1은 트리 세 개를 메모리 배열에 어떻게 늘어놓는지 보여 주는 예시이고, Figure 2는 기존 엔진 FIL을 실제로 돌려 측정한 세 가지 문제다. Figure 2의 세 그래프는 축과 주장이 서로 달라 카드를 나눴다.</p>
 
 <article class="figcard wide" id="fig1">
-<header><span class="fig-no">Figure 1</span><h3>트리 세 그루와 두 가지 저장 형식</h3>
+<header><span class="fig-no">Figure 1</span><h3>트리 세 개와 두 가지 저장 형식</h3>
 <label class="fig-done"><input type="checkbox" data-key="Xie_2021_Tahoe-fig-fig1">이해했음</label></header>
 <div class="fig-body">
 <figure class="fig-img"><a href="figures/fig1.png" target="_blank"><img loading="lazy" width="1425" height="339" src="figures/fig1.png" alt="Figure 1"></a>
@@ -169,7 +169,7 @@ table.fig-read th{width:27%}
 <div>
 <h4>읽는 법</h4>
 <div class="table-wrap"><table class="fig-read">
-<tr><th>위쪽 상자 (Forest)</th><td>트리 세 그루. 노드 안의 \(F_j\)는 비교할 속성 번호, \(V_{ti}\)는 트리 \(t\)의 \(i\)번 노드가 가진 비교 값</td></tr>
+<tr><th>위쪽 상자 (Forest)</th><td>트리 세 개. 노드 안의 \(F_j\)는 비교할 속성 번호, \(V_{ti}\)는 트리 \(t\)의 \(i\)번 노드가 가진 비교 값</td></tr>
 <tr><th>간선 위 숫자</th><td>그 간선을 탈 확률(간선 확률). <code>D</code>가 붙은 쪽은 속성 값이 없을 때 가는 기본 경로(default path)</td></tr>
 <tr><th>아래쪽 상자</th><td>같은 포레스트를 배열 한 줄로 저장한 모습. 윗줄은 Reorg Forest Format(FIL), 아랫줄은 Adaptive Forest Format(Tahoe)</td></tr>
 <tr><th>칸의 색</th><td>어느 트리의 노드인지 표시 (진한 회색 Tree#1, 중간 Tree#2, 연한 Tree#3). <code>NULL</code>은 그 자리에 노드가 없는 빈칸</td></tr>
@@ -204,7 +204,7 @@ table.fig-read th{width:27%}
 <tr><th>세로축</th><td>Distance of two addresses accessed by two threads with adjacent IDs within the same warp (같은 warp에서 ID가 이웃한 두 스레드가 읽는 주소 사이의 평균 거리). 단위 byte, 선형 눈금 0~600</td></tr>
 <tr><th>막대</th><td>층마다 여러 개씩 그려진 측정값</td></tr>
 <tr><th>좋은 방향</th><td>낮을수록 좋음. 128바이트를 넘으면 병합 실패</td></tr>
-<tr><th>측정 조건</th><td>Higgs 데이터셋, 트리 120그루, 최대 깊이 10, FIL(shared data 전략)</td></tr>
+<tr><th>측정 조건</th><td>Higgs 데이터셋, 트리 120개, 최대 깊이 10, FIL(shared data 전략)</td></tr>
 </table></div>
 </div>
 </div>
@@ -240,8 +240,8 @@ table.fig-read th{width:27%}
 <h4>핵심 관찰</h4>
 <ul>
 <li>트리 수를 10에서 200까지 바꿔 다시 학습하고 측정했더니 리덕션이 전체 추론 시간의 35%~72%를 차지했다 <code>[c05#b008]</code>.</li>
-<li>트리가 많을수록 비중이 커진다 <code>[c05#b008]</code>. 그림에서는 트리 100그루 부근부터 경계선의 기울기가 가팔라진다 <span class="approx">그림에서 읽음</span>.</li>
-<li>Figure 2(a)·(c)와 같은 조건인 120그루 포레스트에서는 리덕션이 최대 53%였다 <code>[c05#b007]</code>.</li>
+<li>트리가 많을수록 비중이 커진다 <code>[c05#b008]</code>. 그림에서는 트리 100개 부근부터 경계선의 기울기가 가팔라진다 <span class="approx">그림에서 읽음</span>.</li>
+<li>Figure 2(a)·(c)와 같은 조건인 트리 120개짜리 포레스트에서는 리덕션이 최대 53%였다 <code>[c05#b007]</code>.</li>
 </ul>
 <div class="fig-claim"><b>저자의 주장</b> shared data 전략은 샘플마다 블록 단위 리덕션을 해야 하고, 그 비용이 추론 시간의 절반을 넘기도 한다. 5절의 세 전략은 이 리덕션을 없애거나 줄이기 위해 나왔다 <code>[c07#b002]</code> <code>[c07#b004]</code>.</div>
 <details><summary>Q. 블록 단위 리덕션은 왜 필요한가?</summary>
@@ -320,7 +320,7 @@ table.fig-read th{width:27%}
 <li>체크섬 [-0.28, 0.52, -0.24, -0.96, 1.6, -0.52, 0.28, -0.96]에서 0 이상은 1, 음수는 0으로 바꾸면 [0, 1, 0, 0, 1, 0, 1, 0]이 된다 <code>[c06#b018]</code>.</li>
 <li>충돌 횟수는 T1&amp;T2가 0, T2&amp;T3이 2, T1&amp;T3이 1이다. 가장 많이 겹친 T2와 T3을 붙이고 그다음으로 겹친 T3과 T1을 붙여서 메모리 순서가 T2, T3, T1이 된다 <code>[c06#b024]</code>. Figure 1 아랫줄의 루트 순서와 같다.</li>
 </ul>
-<div class="fig-claim"><b>저자의 주장</b> 트리를 쌍마다 비교하지 않아도 SimHash와 LSH로 비슷한 트리를 찾아 묶을 수 있다. 쌍 비교는 트리 3,000그루에서 최대 19분이 걸려 추론 직전에 쓰기 어렵다 <code>[c06#b012]</code>.</div>
+<div class="fig-claim"><b>저자의 주장</b> 트리를 쌍마다 비교하지 않아도 SimHash와 LSH로 비슷한 트리를 찾아 묶을 수 있다. 쌍 비교는 트리 3,000개에서 최대 19분이 걸려 추론 직전에 쓰기 어렵다 <code>[c06#b012]</code>.</div>
 <details><summary>Q. 해시 벡터에 노드 확률을 곱하는 이유는?</summary>
 <p>자주 지나가는 경로를 체크섬에 더 크게 반영하기 위해서다. 원문은 이 가중치가 있어야 LSH가 트리 사이의 유사도를 잘 잡아낸다고 적었다 <code>[c06#b016]</code>. Tahoe가 말하는 비슷한 트리는 추론할 때 비슷한 경로를 타고 비슷한 속성을 읽는 트리다 <code>[c06#b011]</code>.</p></details>
 <details><summary>Q. Reps. 표의 행 이름이 T1, T1, T2인데 맞나?</summary>
@@ -457,7 +457,7 @@ table.fig-read th{width:27%}
 <div class="table-wrap"><table class="fig-read">
 <tr><th>표의 짜임</th><td>Source · Symbol · Description 세 열이 좌우로 두 벌. 왼쪽 벌은 샘플과 포레스트, 오른쪽 벌은 하드웨어</td></tr>
 <tr><th>Sample (2개)</th><td>\(S_{sample}\) 샘플 하나의 크기, \(N_{batch}\) 배치에 든 샘플 수</td></tr>
-<tr><th>Forest (6개)</th><td>\(D_{tree}\) 트리 깊이, \(N_{trees}\) 트리 수, \(S_{node}\) 결정 노드 크기, \(S_{att}\) 속성 하나의 크기, \(N_{nodes}\) 트리 한 그루의 노드 수, \(S_{forest}\) 포레스트 크기</td></tr>
+<tr><th>Forest (6개)</th><td>\(D_{tree}\) 트리 깊이, \(N_{trees}\) 트리 수, \(S_{node}\) 결정 노드 크기, \(S_{att}\) 속성 하나의 크기, \(N_{nodes}\) 트리 하나의 노드 수, \(S_{forest}\) 포레스트 크기</td></tr>
 <tr><th>Hardware parameters (8개)</th><td>shared memory 읽기·쓰기 대역폭(\(BW\_R_{SMEM}\), \(BW\_W_{SMEM}\)), global memory 읽기 대역폭 두 가지, 블록당 스레드 수, 스레드 블록 수, 리덕션 비례 상수 \(B\_rate\)·\(G\_rate\)</td></tr>
 <tr><th>위 첨자 COA · NCOA</th><td>병합된 접근(coalesced)일 때와 병합되지 않은 접근(uncoalesced)일 때의 global memory 읽기 대역폭</td></tr>
 </table></div>
@@ -497,7 +497,7 @@ table.fig-read th{width:27%}
 <h4>핵심 관찰</h4>
 <ul>
 <li>UCI 저장소와 LIBSVM에서 가져온 데이터셋 15개로 포레스트 15개를 만들었다. 데이터셋마다 70%로 학습하고 30%로 추론한다 <code>[c09#b004]</code>.</li>
-<li>포레스트의 모양이 크게 다르다. 트리 수는 8그루(HOCK)에서 3,000그루(Higgs)까지, 최대 깊이는 3(covtype)에서 20(gisette)까지 퍼져 있다.</li>
+<li>포레스트의 모양이 크게 다르다. 트리 수는 8개(HOCK)에서 3,000개(Higgs)까지, 최대 깊이는 3(covtype)에서 20(gisette)까지 퍼져 있다.</li>
 <li>샘플 수도 1,993개(HOCK)에서 10,500,000개(hepmass)까지 차이가 난다. 샘플이 적은 HOCK, phishing, gisette는 <a href="#fig9">Figure 9</a>에서 GPU를 늘려도 배속이 더 오르지 않는 데이터셋이다.</li>
 </ul>
 <div class="fig-claim"><b>저자의 주장</b> 샘플 수는 수천에서 수백만, 속성 수는 수십에서 수천에 이르는 데이터셋으로 평가했다 <code>[c09#b004]</code>. 뒤의 결과가 특정 모양의 포레스트에만 해당하지 않는다는 근거가 된다.</div>
@@ -663,7 +663,7 @@ table.fig-read th{width:27%}
 <tr><th style="width:13%">그림·표</th><th style="width:11%">역할</th><th style="width:33%">이 그림이 답하는 질문</th><th>답 한 줄</th></tr>
 <tr><td><a href="#fig1">Figure 1</a></td><td>배경</td><td>포레스트를 메모리에 어떻게 늘어놓는가</td><td>reorg 형식은 같은 층 노드를 트리별로 번갈아 저장. 깊은 층에서 접근이 흩어짐</td></tr>
 <tr><td><a href="#fig2a">Figure 2(a)</a></td><td>문제</td><td>깊은 층에서 메모리 접근이 얼마나 흩어지는가</td><td>주소 거리가 128바이트를 넘어 7~10층의 요청 데이터 비율 13.7%</td></tr>
-<tr><td><a href="#fig2b">Figure 2(b)</a></td><td>문제</td><td>리덕션이 추론 시간에서 얼마를 차지하는가</td><td>트리 10~200그루에서 35%~72%. 트리가 많을수록 증가</td></tr>
+<tr><td><a href="#fig2b">Figure 2(b)</a></td><td>문제</td><td>리덕션이 추론 시간에서 얼마를 차지하는가</td><td>트리 10~200개에서 35%~72%. 트리가 많을수록 증가</td></tr>
 <tr><td><a href="#fig2c">Figure 2(c)</a></td><td>문제</td><td>스레드마다 일하는 시간이 고른가</td><td>고르지 않음. 변동계수 49.1%</td></tr>
 <tr><td><a href="#fig3">Figure 3</a></td><td>방법</td><td>비슷한 트리를 어떻게 빨리 찾아 묶는가</td><td>토큰화 → SimHash → LSH. 충돌 횟수가 많은 트리끼리 인접 배치</td></tr>
 <tr><td><a href="#fig4">Figure 4</a></td><td>방법</td><td>블록 단위 리덕션을 없애는 방법은 무엇인가</td><td>shared memory를 안 쓰거나(Direct) 포레스트를 올림(Shared forest, Splitting shared forest)</td></tr>
